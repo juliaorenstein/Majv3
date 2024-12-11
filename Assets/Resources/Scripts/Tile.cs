@@ -1,20 +1,23 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Resources
 {
 	public class Tile
 	{
+		// properties
 		public int Id { get; private set; }
 		public Kind Kind { get; private set; }
 		public int Number { get; private set; }
 		public Suit Suit { get; private set; }
 		public Wind Wind { get; private set; }
+		
+		// mono reference
+		public Transform transform { get; set; }
 
-		public bool IsJoker => Kind == Kind.Joker;
-
+		// static items
 		public static List<Tile> AllTiles { get; } = new();
-    
 		public static List<Suit> Suits { get; private set; } = new()
 		{
 			Suit.Bam,
@@ -39,6 +42,8 @@ namespace Resources
 			Id = id;
 			AllTiles.Add(this);
 		}
+		
+		public bool IsJoker => Kind == Kind.Joker;
 
 		public override string ToString() => Kind switch
 		{
