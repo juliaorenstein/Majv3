@@ -3,30 +3,35 @@ using UnityEngine.UI;
 
 namespace Resources
 {
-    public class TileMonoGenerator : MonoBehaviour
+    public class SetupMono : MonoBehaviour
     {
-        private GameObject _tilePrefab;
-        private Transform _pool;
-
-        private void Start()
+        private Mono _mono;
+        
+        public void StartGame()
         {
-            _tilePrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/Tile");
-            _pool = GameObject.Find("Pool").GetComponent<Transform>();
-            GenerateTiles();
+            _mono = new();
+            TileSetup();
         }
 
-        void GenerateTiles()
+        void TileSetup()
         {
-            TileGenerator tileGenerator = new();
-            tileGenerator.GenerateTiles();
+            TileTrackerClient tileTracker = new(_mono);
+            new TileGenerator().GenerateTiles(tileTracker);
+            GenerateTileGameObjects(tileTracker);
+        }
+        
+        void GenerateTileGameObjects(TileTrackerClient tileTracker)
+        {
             int flowerCounter = 0;
+            GameObject tilePrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/Tile");
+            Transform pool = GameObject.Find("Pool").GetComponent<Transform>();
             
-            foreach (Tile tile in Tile.AllTiles)
+            foreach (Tile tile in tileTracker.AllTiles)
             {
                 // create tile game object
-                Transform newTileMono = Instantiate(_tilePrefab, _pool).transform;
+                Transform newTileMono = Instantiate(tilePrefab, pool).transform;
                 // set reference on the Tile object
-                tile.transform = newTileMono;
+                tile.TileTransform = newTileMono;
                 // set the game object name
                 newTileMono.name = tile.ToString();
                 // set the tile image
@@ -48,6 +53,8 @@ namespace Resources
                 else imageName = newTileMono.name;
                 newTileMono.GetComponentInChildren<Image>().sprite 
                     = UnityEngine.Resources.Load<Sprite>($"TileImages/{imageName}");
+                
+                _mono.AllTileTransforms.Add(newTileMono);
             }
         }
     }

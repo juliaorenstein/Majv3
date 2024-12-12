@@ -14,10 +14,10 @@ namespace Resources
 		public Wind Wind { get; private set; }
 		
 		// mono reference
-		public Transform transform { get; set; }
+		public Transform TileTransform { get; set; }
+		public bool IsMono => TileTransform != null;
 
 		// static items
-		public static List<Tile> AllTiles { get; } = new();
 		public static List<Suit> Suits { get; private set; } = new()
 		{
 			Suit.Bam,
@@ -33,6 +33,12 @@ namespace Resources
 			Wind.Flower
 		};
 
+		public Tile(TileTrackerClient tileTracker, Kind kind, int id = -1, int num = -1, Suit suit = Suit.None
+			, Wind wind = Wind.None) : this(kind, id, num, suit, wind)
+		{
+			tileTracker.AddTile(this);
+		}
+
 		public Tile(Kind kind, int id = -1, int num = -1, Suit suit = Suit.None, Wind wind = Wind.None)
 		{
 			Kind = kind;
@@ -40,7 +46,6 @@ namespace Resources
 			Suit = suit;
 			Wind = wind;
 			Id = id;
-			AllTiles.Add(this);
 		}
 		
 		public bool IsJoker => Kind == Kind.Joker;

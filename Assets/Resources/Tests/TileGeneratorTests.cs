@@ -10,11 +10,11 @@ namespace Resources
 		public void GenerateTiles_WhenCalled_GeneratesTiles()
 		{
 			TileGenerator tileGenerator = new();
+			TileTrackerClient tileTracker = new(new FakeMono());
 			
-			tileGenerator.GenerateTiles();
+			tileGenerator.GenerateTiles(tileTracker);
 			
-			Assert.AreEqual(152, Tile.AllTiles.Count);
+			Assert.AreEqual(152, tileTracker.AllTiles.Count);
 		}
-
 	}
 }

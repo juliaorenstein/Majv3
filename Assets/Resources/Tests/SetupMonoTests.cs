@@ -1,0 +1,26 @@
+using System.Collections;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
+
+namespace Resources
+{
+    public class SetupMonoTests : MonoBehaviour
+    {
+        [UnitySetUp]
+        public IEnumerator Setup()
+        {
+            SceneManager.LoadScene("Assets/Scenes/Scene.unity");
+            yield return null;
+        }
+		
+        [Test]
+        public void Start_WhenCalled_GeneratesTiles()
+        {
+            int numTiles = GameObject.Find("Pool").transform.childCount;
+			
+            Assert.AreEqual(152, numTiles);
+        }
+    }
+}

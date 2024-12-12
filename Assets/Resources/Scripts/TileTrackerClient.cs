@@ -4,17 +4,16 @@ namespace Resources
 {
 	public class TileTrackerClient
 	{
-		private Dictionary<int, CLoc> _tileToLoc = new();
-		private Dictionary<CLoc, List<int>> _locToList = new();
+		public List<Tile> AllTiles { get; } = new();
+		
+		private readonly IMono _mono;
+		private readonly Dictionary<int, CLoc> _tileToLoc = new();
+		private readonly Dictionary<CLoc, List<int>> _locToList = new();
 
-		public TileTrackerClient()
+		public TileTrackerClient(IMono mono)
 		{
+			_mono = mono;
 			InitializeLocToList();
-			for (int tileId = 0; tileId < Tile.AllTiles.Count; tileId++)
-			{
-				_tileToLoc[tileId] = CLoc.Pool;
-				_locToList[CLoc.Pool].Add(tileId);
-			}
 		}
 
 		void InitializeLocToList()
@@ -53,7 +52,16 @@ namespace Resources
 			// update tile location
 			_tileToLoc[tileId] = newLoc;
 			
-			//
+			// update UI
+			_mono.MoveTile(tileId, newLoc, ix);
+		}
+
+		public void AddTile(Tile tile)
+		{
+			AllTiles.Add(tile);
+			int tileId = tile.Id;
+			_tileToLoc[tileId] = CLoc.Pool;
+			_locToList[CLoc.Pool].Add(tileId);
 		}
 	}
 }
