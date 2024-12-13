@@ -33,12 +33,6 @@ namespace Resources
 			Wind.Flower
 		};
 
-		public Tile(TileTrackerClient tileTracker, Kind kind, int id = -1, int num = -1, Suit suit = Suit.None
-			, Wind wind = Wind.None) : this(kind, id, num, suit, wind)
-		{
-			tileTracker.AddTile(this);
-		}
-
 		public Tile(Kind kind, int id = -1, int num = -1, Suit suit = Suit.None, Wind wind = Wind.None)
 		{
 			Kind = kind;

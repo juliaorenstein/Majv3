@@ -4,16 +4,22 @@ namespace Resources
 {
 	public class TileTrackerClient
 	{
-		public List<Tile> AllTiles { get; } = new();
+		public List<Tile> AllTiles { get; private set; } = new();
 		
 		private readonly IMono _mono;
 		private readonly Dictionary<int, CLoc> _tileToLoc = new();
 		private readonly Dictionary<CLoc, List<int>> _locToList = new();
 
-		public TileTrackerClient(IMono mono)
+		public TileTrackerClient(IMono mono, List<Tile> allTiles)
 		{
 			_mono = mono;
+			AllTiles = allTiles;
 			InitializeLocToList();
+			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
+			{
+				_tileToLoc[tileId] = CLoc.Pool;
+				_locToList[CLoc.Pool].Add(tileId);
+			}
 		}
 
 		void InitializeLocToList()
@@ -56,12 +62,12 @@ namespace Resources
 			_mono.MoveTile(tileId, newLoc, ix);
 		}
 
-		public void AddTile(Tile tile)
+		public void ReceiveGameState(Dictionary<int, CLoc> gameState)
 		{
-			AllTiles.Add(tile);
-			int tileId = tile.Id;
-			_tileToLoc[tileId] = CLoc.Pool;
-			_locToList[CLoc.Pool].Add(tileId);
+			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
+			{
+				MoveTile(tileId, gameState[tileId]);
+			}
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,20 +7,22 @@ namespace Resources
     public class SetupMono : MonoBehaviour
     {
         private Mono _mono;
-        
+
         public void StartGame()
         {
             _mono = new();
-            TileSetup();
+            
+            // generate tiles and add to tracker
+            List<Tile> tiles = new TileGenerator().GenerateTiles();
+            TileTrackerClient tileTracker = new(_mono, tiles);
+            
+            // make the game objects
+            GenerateTileGameObjects(tileTracker);
+            // TODO: next line will be conditional on this client being the host
+            new SetupServer().StartGame(tileTracker.AllTiles);
+            // RPC_C2S_RequestRack();
         }
 
-        void TileSetup()
-        {
-            TileTrackerClient tileTracker = new(_mono);
-            new TileGenerator().GenerateTiles(tileTracker);
-            GenerateTileGameObjects(tileTracker);
-        }
-        
         void GenerateTileGameObjects(TileTrackerClient tileTracker)
         {
             int flowerCounter = 0;

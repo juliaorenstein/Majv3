@@ -1,16 +1,18 @@
+using System.Collections.Generic;
+
 namespace Resources
 {
 	public class TileGenerator
 	{
 		private int _id = 0;
-		private TileTrackerClient _tileTracker;
+		private List<Tile> _tiles = new();
     
-		public void GenerateTiles(TileTrackerClient tileTracker)
+		public List<Tile> GenerateTiles()
 		{
-			_tileTracker = tileTracker;
 			CreateNumberDragons();
 			CreateFlowerWinds();
 			CreateJokers();
+			return _tiles;
 		}
 
 		void CreateNumberDragons()
@@ -26,11 +28,11 @@ namespace Resources
 					{
 						if (num == 0)
 						{
-							new Tile(_tileTracker, Kind.Dragon, _id++, num, suit);
+							_tiles.Add(new Tile(Kind.Dragon, _id++, num, suit));
 						}
 						else
 						{
-							new Tile(_tileTracker, Kind.Number, _id++, num, suit);
+							_tiles.Add(new Tile(Kind.Number, _id++, num, suit));
 						}
 					}
 				}
@@ -45,14 +47,14 @@ namespace Resources
 				// four of each
 				for (int i = 0; i < 4; i++)
 				{
-					new Tile(_tileTracker, Kind.FlowerWind, _id++, wind: wind);
+					_tiles.Add(new Tile(Kind.FlowerWind, _id++, wind: wind));
 				}
 			}
 			
 			// four more flowers
 			for (int num = 0; num < 4; num++)
 			{
-				new Tile(_tileTracker, Kind.FlowerWind, _id++, wind: Wind.Flower);
+				_tiles.Add(new Tile(Kind.FlowerWind, _id++, wind: Wind.Flower));
 			}
 		}
 
@@ -61,7 +63,7 @@ namespace Resources
 			// 8 of these
 			for (int i = 0; i < 8; i++)
 			{
-				new Tile(_tileTracker, Kind.Joker, _id++);
+				_tiles.Add(new Tile(Kind.Joker, _id++));
 			}
 		}
 	}

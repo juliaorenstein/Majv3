@@ -13,8 +13,8 @@ namespace Resources
 		public void Setup()
 		{
 			_mono = new FakeMono();
-			_tileTracker = new(_mono);
-			new TileGenerator().GenerateTiles(_tileTracker);
+			List<Tile> tiles = new TileGenerator().GenerateTiles();
+			_tileTracker = new(_mono, tiles);
 		}
 		
 		[Test]
