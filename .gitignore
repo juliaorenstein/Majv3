@@ -217,5 +217,8 @@ ProjectSettings/UnityConnectSettings.asset
 .history
 .ionide
 
+# Photon Fusion
+Assets/Photon*
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,rider,unity
 
