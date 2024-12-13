@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ExitGames.Client.Photon;
 
 namespace Resources
 {
@@ -71,9 +72,51 @@ namespace Resources
 			MoveTile(tileId, rack);
 		}
 
-		public void SendGameState(Dictionary<int, SLoc> gameState)
+		private void SendGameStateToAll()
 		{
+			for (int playerId = 0; playerId < 4; playerId++)
+			{
+				SendGameStateToPlayer(playerId);
+			}
+		}
+
+		private Dictionary<int, CLoc> SendGameStateToPlayer(int playerId)
+		{
+			Dictionary<int, CLoc> playerGameState = new();
+			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerId);
 			
+			// translates each entry in tileToLoc to an entry for the client
+			// (for ex, tiles on other player's racks show as in the pool)
+			foreach (KeyValuePair<int, SLoc> kvp in _tileToLoc)
+			{
+				int tileId = kvp.Key;
+				SLoc sLoc = kvp.Value;
+				playerGameState[tileId] = sLocToCLoc[sLoc];
+			}
+
+			// RPC_S2C_SendGameStateToPlayer(playerId);
+			return playerGameState;
+		}
+		
+		Dictionary<SLoc, CLoc> SLocToCLoc(int playerId)
+		{
+			Dictionary<SLoc, CLoc> ret = new();
+			
+			// private racks
+			ret[PrivateRacks[playerId]] = CLoc.LocalPrivateRack;
+			ret[PrivateRacks[(playerId + 1) % 4]] = CLoc.Pool;
+			ret[PrivateRacks[(playerId + 2) % 4]] = CLoc.Pool;
+			ret[PrivateRacks[(playerId + 3) % 4]] = CLoc.Pool;
+			// display racks
+			ret[DisplayRacks[playerId]] = CLoc.LocalDisplayRack;
+			ret[DisplayRacks[(playerId + 1) % 4]] = CLoc.OtherDisplayRack1;
+			ret[DisplayRacks[(playerId + 2) % 4]] = CLoc.OtherDisplayRack2;
+			ret[DisplayRacks[(playerId + 3) % 4]] = CLoc.OtherDisplayRack3;
+			// other
+			ret[SLoc.Discard] = CLoc.Discard;
+			ret[SLoc.Wall] = CLoc.Pool;
+
+			return ret;
 		}
 	}
 }

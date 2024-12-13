@@ -10,7 +10,7 @@ namespace Resources
 
         public void StartGame()
         {
-            _mono = new();
+            _mono = gameObject.AddComponent<Mono>();
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
@@ -21,6 +21,9 @@ namespace Resources
             // TODO: next line will be conditional on this client being the host
             new SetupServer().StartGame(tileTracker.AllTiles);
             // RPC_C2S_RequestRack();
+            
+            // when done with setup, destroy this component
+            Destroy(this);
         }
 
         void GenerateTileGameObjects(TileTrackerClient tileTracker)
