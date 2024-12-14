@@ -21,6 +21,9 @@ namespace Resources
             // TODO: next line will be conditional on this client being the host
             new SetupServer().StartGame(tileTracker.AllTiles);
             // RPC_C2S_RequestRack();
+            // TODO: the following is for testing
+            GameObject dealMe = GameObject.Find("Deal Me");
+            dealMe.GetComponent<DealMeTest>().tileTracker = tileTracker;
             
             // when done with setup, destroy this component
             Destroy(this);

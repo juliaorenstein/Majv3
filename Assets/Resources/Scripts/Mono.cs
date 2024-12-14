@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Resources 
 {
@@ -30,6 +31,7 @@ namespace Resources
 			
 			tileTransform.SetParent(locationTransform);
 			if (ix != -1) tileTransform.SetSiblingIndex(ix);
+			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locationTransform);
 		}
 	}
 }
