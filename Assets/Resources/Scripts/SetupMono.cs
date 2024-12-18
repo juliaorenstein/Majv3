@@ -10,7 +10,7 @@ namespace Resources
 
         public void StartGame()
         {
-            _mono = gameObject.AddComponent<Mono>();
+            _mono = GameObject.Find("GameManager").AddComponent<Mono>();
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
@@ -25,8 +25,8 @@ namespace Resources
             GameObject dealMe = GameObject.Find("Deal Me");
             dealMe.GetComponent<DealMeTest>().tileTracker = tileTracker;
             
-            // when done with setup, destroy this component
-            Destroy(this);
+            // when done with setup, destroy the button this component
+            Destroy(gameObject);
         }
 
         void GenerateTileGameObjects(TileTrackerClient tileTracker)
@@ -62,7 +62,9 @@ namespace Resources
                 else imageName = newTileMono.name;
                 newTileMono.GetComponentInChildren<Image>().sprite 
                     = UnityEngine.Resources.Load<Sprite>($"TileImages/{imageName}");
-                
+                // set mono on Drag Handler
+                newTileMono.GetComponent<DragHandlerMono>().mono = _mono;
+                // add this to the list of tile transforms
                 _mono.AllTileTransforms.Add(newTileMono);
             }
         }

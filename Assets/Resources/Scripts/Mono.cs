@@ -27,11 +27,15 @@ namespace Resources
 		public void MoveTile(int tileId, CLoc loc, int ix = -1)
 		{
 			Transform tileTransform = AllTileTransforms[tileId];
-			Transform locationTransform = _locToTransform[loc];
-			
-			tileTransform.SetParent(locationTransform);
+			Transform locTransform = _locToTransform[loc];
+			MoveTile(tileTransform, locTransform, ix);
+		}
+
+		public void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
+		{
+			tileTransform.SetParent(locTransform);
 			if (ix != -1) tileTransform.SetSiblingIndex(ix);
-			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locationTransform);
+			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locTransform);
 		}
 	}
 }
