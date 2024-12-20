@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -42,7 +43,7 @@ namespace Resources
 		}
 
 		[Test]
-		public void MoveTile_WhenCalledWithoutIx_MovesTile()
+		public void MoveTile_RackRearrange_TileMoves()
 		{ 
 			_tileTracker.MoveTile(132, CLoc.LocalPrivateRack);
 			
@@ -59,5 +60,73 @@ namespace Resources
 			CollectionAssert.AreEqual(new List<int> { 132, 134, 133 }
 				, _tileTracker.GetLocContents(CLoc.LocalPrivateRack));
 		}
+		
+		[Test]
+		public void RequestMoveTile_WhenCalled_GameStateDoesntChange()
+		{
+			_tileTracker.RequestMove(84, CLoc.Discard);
+			
+			Assert.AreEqual(CLoc.Pool, _tileTracker.GetTileLoc(84));
+		}
+
+		[Test]
+		public void ReceiveGameState_NoPendingMove_UpdatesGameState()
+		{
+			CLoc[] newGameState = NewGameState();
+			newGameState[10] = CLoc.LocalPrivateRack;
+			newGameState[20] = CLoc.LocalDisplayRack;
+			newGameState[30] = CLoc.OtherDisplayRack1;
+			newGameState[40] = CLoc.Discard;
+			
+			_tileTracker.ReceiveGameState(101, newGameState);
+			
+			CollectionAssert.AreEqual(newGameState, _tileTracker.GameState);
+		}
+
+		[Test]
+		public void ReceiveGameState_RequestIdMatchesPendingMove_PendingMoveConfirmed_GameStateUpdates()
+		{
+			_tileTracker.RequestMove(84, CLoc.LocalPrivateRack); // request id should be 10 but might change with later functionality
+			CLoc[] newGameState = NewGameState();
+			newGameState[84] = CLoc.LocalPrivateRack;
+			
+			_tileTracker.ReceiveGameState(10, newGameState);
+			
+			CollectionAssert.AreEqual(newGameState, _tileTracker.GameState);
+		}
+		
+		[Test]
+		public void ReceiveGameState_RequestIdMatchesPendingMove_PendingMoveNotConfirmed_ShowError()
+		{
+			_tileTracker.RequestMove(84, CLoc.LocalPrivateRack);
+			CLoc[] newGameState = NewGameState();
+
+			throw new NotImplementedException();
+			// TODO: figure out how to actually handle this scenario
+		}
+
+	
+
+		[Test]
+		public void ReceiveGameState_RequestIdDoesntMatchPendingMove_UpdatesGameState()
+		{
+			_tileTracker.RequestMove(84, CLoc.LocalPrivateRack);
+			CLoc[] newGameState = NewGameState();
+			
+			_tileTracker.ReceiveGameState(101, newGameState);
+			
+			CollectionAssert.AreEqual(newGameState, _tileTracker.GameState);
+		}
+
+		CLoc[] NewGameState()
+		{
+			CLoc[] newGameState = new CLoc[152];
+			for (int tileId = 0; tileId < 152; tileId++)
+			{
+				newGameState[tileId] = CLoc.Pool;
+			}
+			
+			return newGameState;
+		} 
 	}
 }

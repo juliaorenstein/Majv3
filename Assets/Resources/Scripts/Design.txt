@@ -1,0 +1,33 @@
+Tile Tracking on the Client
+
+RACK REARRANGEMENT
+Local Private Rack to Local Private Rack
+1. private, no server engagement
+
+CLIENT-INITIATED CHANGE
+1. Update backend with pending move
+    - Pending Move Struct
+        - Request Id
+            - To ensure request Id is always unique, request Id = playerId + 10 * n, so that the request ID ends in a unique value for each player and is incremented by 10 on each player's local machine. i.e. the 5th request from player 3 will be id 53. The 10th request from player 2 will be 102.
+        - Tile Id
+        - Previous Location
+        - New Location
+2a. Request change from server w/ Request ID
+3a. Receive gamestate from server w/ same Request ID
+4a. Go into verify mode:
+    - If there are any differences between server gamestate and client gamestate (including pending changes), log an error and display notice to user. Revert UI with calls to Mono.MoveTile as necessary
+    - If everything is in sync, then commit the pending changes
+4b. No update received from server
+    - Log an error and display notice to user. Revert UI for pending changes with calls to Mono.MoveTile
+ 
+SERVER-INITIATED CHANGE
+1. Receive gamestate from server w/ Request ID that doesn't match a pending change
+2. Apply all changes with Mono.MoveTile
+
+TYPES OF CLIENT-INITIATED TILE MOVES
+- Rack rearrange
+- Charleston pass
+- Discard
+- Call
+- Expose
+- Joker exchange

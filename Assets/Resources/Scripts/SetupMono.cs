@@ -38,11 +38,11 @@ namespace Resources
             foreach (Tile tile in tileTracker.AllTiles)
             {
                 // create tile game object
-                Transform newTileMono = Instantiate(tilePrefab, pool).transform;
+                Transform newTileTransform = Instantiate(tilePrefab, pool).transform;
                 // set reference on the Tile object
-                tile.TileTransform = newTileMono;
+                tile.TileTransform = newTileTransform;
                 // set the game object name
-                newTileMono.name = tile.ToString();
+                newTileTransform.name = tile.ToString();
                 // set the tile image
                 string imageName;
                 if (tile.Wind == Wind.Flower)
@@ -59,13 +59,15 @@ namespace Resources
                         _ => "Winter",
                     };
                 }
-                else imageName = newTileMono.name;
-                newTileMono.GetComponentInChildren<Image>().sprite 
+                else imageName = newTileTransform.name;
+                newTileTransform.GetComponentInChildren<Image>().sprite 
                     = UnityEngine.Resources.Load<Sprite>($"TileImages/{imageName}");
-                // set mono on Drag Handler
-                newTileMono.GetComponent<DragHandlerMono>().mono = _mono;
+                // set mono and tiletracker on Drag Handler
+                newTileTransform.GetComponent<DragHandlerMono>().mono = _mono;
+                newTileTransform.GetComponent<DragHandlerMono>().TileTracker = tileTracker;
+                newTileTransform.GetComponent<DragHandlerMono>().tileId = tile.Id;
                 // add this to the list of tile transforms
-                _mono.AllTileTransforms.Add(newTileMono);
+                _mono.AllTileTransforms.Add(newTileTransform);
             }
         }
     }

@@ -7,9 +7,9 @@ namespace Resources
 	{
 		public TileTrackerServer TileTracker;
 		
-		public void StartGame(List<Tile> tiles)
+		public void StartGame(IReadOnlyList<Tile> tiles)
 		{
-			TileTracker = new(tiles);
+			TileTracker = new(tiles.ToList());
 			Shuffle();
 			Deal();
 		}
