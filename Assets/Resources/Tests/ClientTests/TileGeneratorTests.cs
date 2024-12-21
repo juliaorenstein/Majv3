@@ -1,7 +1,7 @@
-using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace Resources
+namespace Resources.ClientTests
 {
 	public class TileGeneratorTests
 	{
@@ -9,9 +9,9 @@ namespace Resources
 		public void GenerateTiles_WhenCalled_GeneratesTiles()
 		{
 			TileGenerator tileGenerator = new();
-			TileTrackerClient tileTracker = new(new FakeMono(), tileGenerator.GenerateTiles());
+			List<Tile> tiles = tileGenerator.GenerateTiles();
 			
-			Assert.AreEqual(152, tileTracker.AllTiles.Count);
+			Assert.AreEqual(152, tiles.Count);
 		}
 	}
 }

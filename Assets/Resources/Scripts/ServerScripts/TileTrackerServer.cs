@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using ExitGames.Client.Photon;
 
-namespace Resources
+namespace Resources.Scripts.ServerScripts
 {
 	public class TileTrackerServer
 	{

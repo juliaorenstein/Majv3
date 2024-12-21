@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Resources.Scripts.ServerScripts;
 
-namespace Resources
+namespace Resources.ServerTests
 {
 	public class SetupServerTests
 	{

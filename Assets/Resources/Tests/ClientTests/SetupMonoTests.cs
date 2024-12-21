@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace Resources
+namespace Resources.ClientTests
 {
     public class SetupMonoTests : MonoBehaviour
     {

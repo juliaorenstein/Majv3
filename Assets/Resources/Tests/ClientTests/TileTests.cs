@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Resources
+namespace Resources.ClientTests
 {
     public class TileTests
     {

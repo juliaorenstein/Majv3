@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Resources
+namespace Resources.Scripts.ServerScripts
 {
 	public class SetupServer
 	{

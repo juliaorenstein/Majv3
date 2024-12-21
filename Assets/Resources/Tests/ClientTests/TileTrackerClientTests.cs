@@ -1,9 +1,10 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
+using Resources.Scripts.ClientScripts;
 
-namespace Resources
+namespace Resources.ClientTests
 {
 	public class TileTrackerClientTests
 	{

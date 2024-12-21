@@ -1,12 +1,10 @@
-using System;
-using UnityEngine.EventSystems;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-namespace Resources
+namespace Resources.Scripts.ClientScripts
 {
 	public class DragHandlerMono : MonoBehaviour
 		, IBeginDragHandler, IDragHandler, IEndDragHandler

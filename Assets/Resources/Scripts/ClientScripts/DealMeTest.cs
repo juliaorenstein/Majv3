@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Resources
+namespace Resources.Scripts.ClientScripts
 {
     public class DealMeTest : MonoBehaviour
     {

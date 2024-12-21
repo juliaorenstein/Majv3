@@ -1,4 +1,6 @@
-namespace Resources
+using Resources.Scripts.ClientScripts;
+
+namespace Resources.ClientTests
 {
 	public class FakeMono : IMono
 	{

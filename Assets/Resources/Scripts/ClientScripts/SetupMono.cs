@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Resources
+namespace Resources.Scripts.ClientScripts
 {
     public class SetupMono : MonoBehaviour
     {
@@ -19,7 +19,8 @@ namespace Resources
             // make the game objects
             GenerateTileGameObjects(tileTracker);
             // TODO: next line will be conditional on this client being the host
-            new SetupServer().StartGame(tileTracker.AllTiles);
+            // BUG: RPC to server instead of calling directly
+            // new SetupServer().StartGame(tileTracker.AllTiles);
             // RPC_C2S_RequestRack();
             // TODO: the following is for testing
             GameObject dealMe = GameObject.Find("Deal Me");

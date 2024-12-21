@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Resources 
+namespace Resources.Scripts.ClientScripts 
 {
 	public class Mono : MonoBehaviour, IMono
 	{
