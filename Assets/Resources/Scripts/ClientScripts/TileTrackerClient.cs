@@ -18,10 +18,12 @@ namespace Resources.Scripts.ClientScripts
 
 		public TileTrackerClient(IMono mono, List<Tile> allTiles)
 		{
+			// initialize variables
 			_mono = mono;
 			AllTiles = allTiles;
 			// TODO: set _nextRequestId to playerId to start.
 			InitializeLocToList();
+			// put all the tiles in the tile pool to start
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
 				_gameState[tileId] = CLoc.Pool;
@@ -43,12 +45,15 @@ namespace Resources.Scripts.ClientScripts
 			_locToList[CLoc.Pool] = new();
 		}
 		
+		// returns tile's location (CLoc). If unknown, returns Pool.
 		public CLoc GetTileLoc(int tileId) => _gameState[tileId];
+		// returns position of tile in its location
 		public int GetTileIx(int tileId) => _locToList[_gameState[tileId]].IndexOf(tileId);
 
 		// Allow external callers to see contents of list without modifying
 		public List<int> GetLocContents(CLoc loc) => new(_locToList[loc]);
 		
+		/* Moves tile on the backend. Should not be called directly from client request unless for a Rack Rearrange. All other tile moves should go through RequestMove */
 		public void MoveTile(int tileId, CLoc newLoc, int ix = -1)
 		{
 			// if tile is already here, quit out
@@ -69,6 +74,7 @@ namespace Resources.Scripts.ClientScripts
 			_mono.MoveTile(tileId, newLoc, ix);
 		}
 
+		// Receives game state from server and applies it.
 		public void ReceiveGameState(int requestId, CLoc[] newGameState)
 		{
 			// TODO: server needs to communicate number of tiles on other players' racks
@@ -89,6 +95,7 @@ namespace Resources.Scripts.ClientScripts
 			}
 		}
 
+		// Send a request for a move to the server. Also updates the UI for the player in the meantime.
 		public void RequestMove(int tileId, CLoc loc)
 		{
 			_pendingMove = new()
@@ -102,6 +109,7 @@ namespace Resources.Scripts.ClientScripts
 			_mono.MoveTile(tileId, loc);
 		}
 		
+		// A struct to track requested moves that haven't been confirmed by the server
 		struct PendingMove
 		{
 			public int RequestId;
