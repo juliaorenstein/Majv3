@@ -1,5 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
+using Resources.Scripts.ClientScripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -18,6 +19,8 @@ namespace Resources.ClientTests
         [Test]
         public void Start_WhenCalled_GeneratesTiles()
         {
+            GameObject.Find("Start Single Player").GetComponent<SetupMono>().StartGame();
+            
             int numTiles = GameObject.Find("Pool").transform.childCount;
 			
             Assert.AreEqual(152, numTiles);
