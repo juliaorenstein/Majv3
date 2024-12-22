@@ -28,7 +28,7 @@ namespace Resources.Scripts.ServerScripts
 			// put them on the wall
 			foreach (int tileId in shuffleTileList)
 			{
-				TileTracker.AddTileToWall(tileId);
+				TileTracker.MoveTile(tileId, SLoc.Wall);
 			}
 		}
 
@@ -39,12 +39,12 @@ namespace Resources.Scripts.ServerScripts
 			{
 				for (int i = 0; i < 13; i++)
 				{
-					TileTracker.MoveTileWallToRack(playerId);
+					TileTracker.PickupTileWallToRack(playerId);
 				}
 			}
 			
 			// 1 more tile to the dealer
-			TileTracker.MoveTileWallToRack(dealerId);
+			TileTracker.PickupTileWallToRack(dealerId);
 		}
 	}
 }

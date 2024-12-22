@@ -10,8 +10,8 @@ namespace Resources.Scripts.ServerScripts
 			{ SLoc.PrivateRack0, SLoc.PrivateRack1, SLoc.PrivateRack2, SLoc.PrivateRack3 };
 		public static List<SLoc> DisplayRacks { get; } = new()
 			{ SLoc.DisplayRack0, SLoc.DisplayRack1, SLoc.DisplayRack2, SLoc.DisplayRack3 };
-		
-		private readonly Dictionary<int, SLoc> _tileToLoc = new();
+		private readonly SLoc[] _gameState = new SLoc[152]; // location at index n is tile n's location
+		public SLoc[] GameState => (SLoc[])_gameState.Clone();
 		private readonly Dictionary<SLoc, List<int>> _locToList = new();
 
 		public TileTrackerServer(List<Tile> tiles)
@@ -34,19 +34,19 @@ namespace Resources.Scripts.ServerScripts
 			_locToList[SLoc.Wall] = new();
 		}
 		
-		public SLoc GetTileLoc(int tileId) => _tileToLoc[tileId];
-		public int GetTileIx(int tileId) => _locToList[_tileToLoc[tileId]].IndexOf(tileId);
-
+		// Get the locaiton (SLoc) of a tile
+		public SLoc GetTileLoc(int tileId) => GameState[tileId];
+		
 		// Allow external callers to see contents of list without modifying
 		public List<int> GetLocContents(SLoc loc) => new(_locToList[loc]);
 		
 		public void MoveTile(int tileId, SLoc newLoc, int ix = -1)
 		{
 			// if tile is already here, quit out
-			if (_tileToLoc[tileId] == newLoc) return;
+			if (GameState[tileId] == newLoc) return;
 			
 			// remove tile from current location, add to new location
-			SLoc currLoc = _tileToLoc[tileId];
+			SLoc currLoc = GameState[tileId];
 			_locToList[currLoc].Remove(tileId);
 			
 			// if ix is given, use it. Otherwise append to end of list
@@ -54,16 +54,12 @@ namespace Resources.Scripts.ServerScripts
 			else _locToList[newLoc].Insert(ix, tileId);
 			
 			// update tile location
-			_tileToLoc[tileId] = newLoc;
+			GameState[tileId] = newLoc;
+			
+			SendGameStateToAll();
 		}
 
-		public void AddTileToWall(int tileId)
-		{
-			_tileToLoc[tileId] = SLoc.Wall;
-			_locToList[SLoc.Wall].Add(tileId);
-		}
-
-		public void MoveTileWallToRack(int playerId)
+		public void PickupTileWallToRack(int playerId)
 		{
 			SLoc rack = PrivateRacks[playerId];
 			int tileId = GetLocContents(SLoc.Wall).Last();
@@ -78,22 +74,20 @@ namespace Resources.Scripts.ServerScripts
 			}
 		}
 
-		private Dictionary<int, CLoc> SendGameStateToPlayer(int playerId)
+		private void SendGameStateToPlayer(int playerId)
 		{
 			Dictionary<int, CLoc> playerGameState = new();
 			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerId);
 			
 			// translates each entry in tileToLoc to an entry for the client
 			// (for ex, tiles on other player's racks show as in the pool)
-			foreach (KeyValuePair<int, SLoc> kvp in _tileToLoc)
+			for (int tileId = 0; tileId < GameState.Length; tileId++)
 			{
-				int tileId = kvp.Key;
-				SLoc sLoc = kvp.Value;
+				SLoc sLoc = GameState[tileId];
 				playerGameState[tileId] = sLocToCLoc[sLoc];
 			}
 
-			// RPC_S2C_SendGameStateToPlayer(playerId);
-			return playerGameState;
+			RPC_S2C_SendGameStateToPlayer(playerId, playerGameState)
 		}
 		
 		Dictionary<SLoc, CLoc> SLocToCLoc(int playerId)
