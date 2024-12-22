@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Resources.Scripts.ServerScripts;
+using Resources;
 
 namespace Resources.ServerTests
 {

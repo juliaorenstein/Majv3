@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Resources.Scripts.ServerScripts
+namespace Resources
 {
 	public class TileTrackerServer
 	{
@@ -87,7 +87,7 @@ namespace Resources.Scripts.ServerScripts
 				playerGameState[tileId] = sLocToCLoc[sLoc];
 			}
 
-			RPC_S2C_SendGameStateToPlayer(playerId, playerGameState)
+			//RPC_S2C_SendGameStateToPlayer(playerId, playerGameState);
 		}
 		
 		Dictionary<SLoc, CLoc> SLocToCLoc(int playerId)

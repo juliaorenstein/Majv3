@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Resources.Scripts.ClientScripts;
 
 namespace Resources.ClientTests
 {

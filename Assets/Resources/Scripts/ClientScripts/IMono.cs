@@ -1,4 +1,4 @@
-namespace Resources.Scripts.ClientScripts
+namespace Resources
 {
 	public interface IMono
 	{

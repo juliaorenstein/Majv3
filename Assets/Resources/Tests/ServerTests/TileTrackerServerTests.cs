@@ -1,7 +1,5 @@
 using NUnit.Framework;
 using System.Collections.Generic;
-using Resources.Scripts.ServerScripts;
-using UnityEditor;
 
 namespace Resources.ServerTests
 {

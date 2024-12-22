@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
-namespace Resources.Scripts.ClientScripts
+namespace Resources
 {
 	public class DragHandlerMono : MonoBehaviour
 		, IBeginDragHandler, IDragHandler, IEndDragHandler

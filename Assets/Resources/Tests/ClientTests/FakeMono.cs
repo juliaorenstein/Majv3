@@ -1,4 +1,4 @@
-using Resources.Scripts.ClientScripts;
+using Resources;
 
 namespace Resources.ClientTests
 {

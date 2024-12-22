@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Resources.Scripts.ClientScripts
+namespace Resources
 {
 	public class TileTrackerClient
 	{
