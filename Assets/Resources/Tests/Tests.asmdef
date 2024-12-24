@@ -4,16 +4,17 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Scripts"
+        "Scripts",
+        "Fusion.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": true,
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
     "precompiledReferences": [
         "nunit.framework.dll"
     ],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],

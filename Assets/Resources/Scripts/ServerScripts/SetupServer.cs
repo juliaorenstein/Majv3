@@ -5,13 +5,28 @@ namespace Resources
 {
 	public class SetupServer
 	{
-		public TileTrackerServer TileTracker;
-		
-		public void StartGame(IReadOnlyList<Tile> tiles)
+		private TileTrackerServer _tileTracker;
+		private readonly FusionEventHandler _fusionEventHandler;
+
+		public SetupServer(FusionEventHandler fusionEventHandler)
 		{
-			TileTracker = new(tiles.ToList());
+			_fusionEventHandler = fusionEventHandler;
+		}
+		
+		public TileTrackerServer StartGame(RpcS2CHandler rpcS2CHandler, RpcC2SHandler rpcC2SHandler)
+		{
+			FusionManagerServer fusionManager = new();
+			rpcS2CHandler.fusionManager = fusionManager;
+			rpcC2SHandler.tileTracker = _tileTracker;
+			_fusionEventHandler.fusionManagerServer = fusionManager;
+			// this will be a duplicate for the host but is good for if/when server is separated out
+			List<Tile> tiles = new TileGenerator().GenerateTiles(); 
+			_tileTracker = new(tiles, rpcS2CHandler, fusionManager);
+
 			Shuffle();
 			Deal();
+			
+			return _tileTracker;
 		}
 
 		private void Shuffle()
@@ -28,7 +43,7 @@ namespace Resources
 			// put them on the wall
 			foreach (int tileId in shuffleTileList)
 			{
-				TileTracker.MoveTile(tileId, SLoc.Wall);
+				_tileTracker.MoveTile(tileId, SLoc.Wall);
 			}
 		}
 
@@ -39,12 +54,12 @@ namespace Resources
 			{
 				for (int i = 0; i < 13; i++)
 				{
-					TileTracker.PickupTileWallToRack(playerId);
+					_tileTracker.PickupTileWallToRack(playerId);
 				}
 			}
 			
 			// 1 more tile to the dealer
-			TileTracker.PickupTileWallToRack(dealerId);
+			_tileTracker.PickupTileWallToRack(dealerId);
 		}
 	}
 }

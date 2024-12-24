@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Fusion;
 
 namespace Resources
 {
@@ -8,13 +9,15 @@ namespace Resources
     {
         private Mono _mono;
 
-        public void StartGame()
+        public void StartGame(RpcS2CHandler rpcS2CHandler)
         {
-            _mono = GameObject.Find("GameManager").AddComponent<Mono>();
+            GameObject gameManager = GameObject.Find("GameManager");
+            _mono = gameManager.AddComponent<Mono>();
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
             TileTrackerClient tileTracker = new(_mono, tiles);
+            rpcS2CHandler.tileTracker = tileTracker;
             
             // make the game objects
             GenerateTileGameObjects(tileTracker);
@@ -25,9 +28,9 @@ namespace Resources
             // TODO: the following is for testing
             GameObject dealMe = GameObject.Find("Deal Me");
             dealMe.GetComponent<DealMeTest>().tileTracker = tileTracker;
-            
+                            
             // when done with setup, destroy the button this component
-            Destroy(gameObject);
+            Destroy(this);
         }
 
         void GenerateTileGameObjects(TileTrackerClient tileTracker)

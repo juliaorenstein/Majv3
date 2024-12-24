@@ -14,10 +14,15 @@ namespace Resources
 		public SLoc[] GameState => (SLoc[])_gameState.Clone();
 		private readonly Dictionary<SLoc, List<int>> _locToList = new();
 
-		public TileTrackerServer(List<Tile> tiles)
+		private readonly IRpcS2CHandler _rpcS2CHandler;
+		private readonly IFusionManagerServer _fusionManager;
+
+		public TileTrackerServer(List<Tile> tiles, IRpcS2CHandler rpcS2CHandler, IFusionManagerServer fusionManager)
 		{
 			InitializeLocToList();
 			AllTiles = tiles;
+			_rpcS2CHandler = rpcS2CHandler;
+			_fusionManager = fusionManager;
 		}
 
 		void InitializeLocToList()
@@ -34,7 +39,7 @@ namespace Resources
 			_locToList[SLoc.Wall] = new();
 		}
 		
-		// Get the locaiton (SLoc) of a tile
+		// Get the location (SLoc) of a tile
 		public SLoc GetTileLoc(int tileId) => GameState[tileId];
 		
 		// Allow external callers to see contents of list without modifying
@@ -46,7 +51,7 @@ namespace Resources
 			if (GameState[tileId] == newLoc) return;
 			
 			// remove tile from current location, add to new location
-			SLoc currLoc = GameState[tileId];
+			SLoc currLoc = _gameState[tileId];
 			_locToList[currLoc].Remove(tileId);
 			
 			// if ix is given, use it. Otherwise append to end of list
@@ -54,7 +59,7 @@ namespace Resources
 			else _locToList[newLoc].Insert(ix, tileId);
 			
 			// update tile location
-			GameState[tileId] = newLoc;
+			_gameState[tileId] = newLoc;
 			
 			SendGameStateToAll();
 		}
@@ -68,26 +73,26 @@ namespace Resources
 
 		private void SendGameStateToAll()
 		{
-			for (int playerId = 0; playerId < 4; playerId++)
+			for (int playerId = 0; playerId < _fusionManager.PlayerCount; playerId++)
 			{
 				SendGameStateToPlayer(playerId);
 			}
 		}
 
-		private void SendGameStateToPlayer(int playerId)
+		public void SendGameStateToPlayer(int playerId, int requestId = -1)
 		{
-			Dictionary<int, CLoc> playerGameState = new();
+			CLoc[] playerGameState = new CLoc[AllTiles.Count];
 			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerId);
 			
 			// translates each entry in tileToLoc to an entry for the client
 			// (for ex, tiles on other player's racks show as in the pool)
-			for (int tileId = 0; tileId < GameState.Length; tileId++)
+			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
 				SLoc sLoc = GameState[tileId];
 				playerGameState[tileId] = sLocToCLoc[sLoc];
 			}
 
-			//RPC_S2C_SendGameStateToPlayer(playerId, playerGameState);
+			_rpcS2CHandler.RPC_S2C_SendGameState(playerId, requestId, playerGameState);
 		}
 		
 		Dictionary<SLoc, CLoc> SLocToCLoc(int playerId)
