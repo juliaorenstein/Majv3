@@ -13,15 +13,11 @@ namespace Resources
 			_fusionEventHandler = fusionEventHandler;
 		}
 		
-		public TileTrackerServer StartGame(RpcS2CHandler rpcS2CHandler, RpcC2SHandler rpcC2SHandler)
+		public TileTrackerServer StartGame(FusionManagerServer fusionManager)
 		{
-			FusionManagerServer fusionManager = new();
-			rpcS2CHandler.fusionManager = fusionManager;
-			rpcC2SHandler.tileTracker = _tileTracker;
-			_fusionEventHandler.fusionManagerServer = fusionManager;
 			// this will be a duplicate for the host but is good for if/when server is separated out
 			List<Tile> tiles = new TileGenerator().GenerateTiles(); 
-			_tileTracker = new(tiles, rpcS2CHandler, fusionManager);
+			_tileTracker = new(tiles, fusionManager);
 
 			Shuffle();
 			Deal();

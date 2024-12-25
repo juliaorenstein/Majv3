@@ -8,7 +8,8 @@ namespace Resources
 {
 	public class FusionEventHandler : MonoBehaviour, INetworkRunnerCallbacks
 	{
-		public FusionManagerServer fusionManagerServer;
+		private FusionManagerServer _fusionManagerServer;
+		private FusionManagerClient _fusionManagerClient;
 		private RpcC2SHandler _rpcC2SHandler;
 		private RpcS2CHandler _rpcS2CHandler;
 		private TileTrackerServer _tileTrackerServer;
@@ -16,42 +17,66 @@ namespace Resources
 		// Called on server when a client joins
 		public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
 		{
-			
-			// Only the host does the following step here. Everyone else does it in OnConnectedToServer
+			Debug.Log("OnPlayerJoined");
+			// on the first connection (host player to its own server), set up the Network Object and start the game
 			if (player == runner.LocalPlayer)
 			{
 				SetupNetworkObject(runner);
-				_tileTrackerServer = new SetupServer(this).StartGame(_rpcS2CHandler, _rpcC2SHandler);
+				_tileTrackerServer = new SetupServer(this).StartGame(_fusionManagerServer);
+				
+				// set up the rest of the UI and start the game
+				SetupMono setupMono = GameObject.Find("GameManager").GetComponent<SetupMono>();
+				TileTrackerClient tileTrackerClient = setupMono.StartGame();
+			
+				// update the game state on the client side to start the game!
+				tileTrackerClient.UpdateGameState();
 			}
 			
-			// add player to Player Dictionary
-			fusionManagerServer.Players.Add(player.PlayerId, player);
-			_tileTrackerServer.SendGameStateToPlayer(player.PlayerId);
+			// every time a player joins, add it to the dictionary and send the game state to the player
+			_fusionManagerServer.Players.Add(player.PlayerId, player);
 		}
 		
 		// Called on client when connecting to server
 		public void OnConnectedToServer(NetworkRunner runner)
 		{
-			// if this is the server, executing this in OnPlayerJoined
+			Debug.Log("OnConnectedToServer");
+			// all clients besides the host set up their network object at this point
 			if (!runner.IsServer)
 			{
 				SetupNetworkObject(runner);
 			}
 			
-			// Finish UI setup
+			// set up the rest of the UI and start the game
 			SetupMono setupMono = GameObject.Find("GameManager").GetComponent<SetupMono>();
-			setupMono.StartGame(_rpcS2CHandler);
+			TileTrackerClient tileTrackerClient = setupMono.StartGame();
+			
+			// update the game state on the client side to start the game!
+			tileTrackerClient.UpdateGameState();
 		}
 
 		private void SetupNetworkObject(NetworkRunner runner)
 		{
-			// Set up new Network object
+			// find the prefab
 			GameObject fusionManagerPrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/FusionManager");
-			NetworkObject fusionManager = runner.Spawn(fusionManagerPrefab);
-			FusionManagerClient fusionManagerClient = fusionManager.GetComponent<FusionManagerClient>();
-			_rpcC2SHandler = fusionManager.GetComponent<RpcC2SHandler>();
-			_rpcS2CHandler = fusionManager.GetComponent<RpcS2CHandler>();
-			_rpcC2SHandler.fusionManagerClient = fusionManagerClient;
+			// spawn the network object, which contains all NetworkBehaviours
+			NetworkObject fusionManagerNetworkObject = runner.Spawn(fusionManagerPrefab);
+			fusionManagerNetworkObject.name = "FusionManager";
+			// create the fusionManagerServer, which is not a NetworkBehaviour but does fusion stuff for the server
+			_fusionManagerServer = fusionManagerNetworkObject.GetComponent<FusionManagerServer>();
+			// find the fusionManagerClient NetworkBehavior
+			_fusionManagerClient = fusionManagerNetworkObject.GetComponent<FusionManagerClient>();
+			// get all the NetworkedGameState components. There are 4, one for each player
+			NetworkedGameState[] networkedGameStates = fusionManagerNetworkObject.GetComponents<NetworkedGameState>();
+
+			// the server sets references to NetworkedGameState components on the fusionManagerServer
+			if (runner.IsServer)
+			{
+				Debug.Assert(networkedGameStates.Length == 4);
+				_fusionManagerServer.NetworkedGameStates = networkedGameStates;
+			}
+			
+			// The client's fusionManagerClient gets a reference to the only NetworkedGameState instance they care about.
+			_fusionManagerClient.GameState = networkedGameStates[runner.LocalPlayer.PlayerId];
 		}
 
 		// Called on server when a client leaves

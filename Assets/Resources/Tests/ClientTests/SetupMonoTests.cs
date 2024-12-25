@@ -18,7 +18,7 @@ namespace Resources.ClientTests
         [Test]
         public void Start_WhenCalled_GeneratesTiles()
         {
-            GameObject.Find("GameManager").GetComponent<SetupMono>().StartGame(new());
+            GameObject.Find("GameManager").GetComponent<SetupMono>().StartGame();
             
             int numTiles = GameObject.Find("Pool").transform.childCount;
 			

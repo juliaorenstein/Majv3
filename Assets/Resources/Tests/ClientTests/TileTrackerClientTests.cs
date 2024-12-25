@@ -15,7 +15,7 @@ namespace Resources.ClientTests
 		{
 			_mono = new FakeMono();
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
-			_tileTracker = new(_mono, tiles);
+			_tileTracker = new(_mono, tiles, new FusionManagerClient());
 		}
 		
 		[Test]
@@ -78,9 +78,9 @@ namespace Resources.ClientTests
 			newGameState[30] = CLoc.OtherDisplayRack1;
 			newGameState[40] = CLoc.Discard;
 			
-			_tileTracker.ReceiveGameState(101, newGameState);
+			_tileTracker.UpdateGameState();
 			
-			CollectionAssert.AreEqual(newGameState, _tileTracker.GameState);
+			CollectionAssert.AreEqual(newGameState, _tileTracker.GameStateFromServer);
 		}
 
 		[Test]
@@ -90,9 +90,9 @@ namespace Resources.ClientTests
 			CLoc[] newGameState = NewGameState();
 			newGameState[84] = CLoc.LocalPrivateRack;
 			
-			_tileTracker.ReceiveGameState(10, newGameState);
+			_tileTracker.UpdateGameState();
 			
-			CollectionAssert.AreEqual(newGameState, _tileTracker.GameState);
+			CollectionAssert.AreEqual(newGameState, _tileTracker.GameStateFromServer);
 		}
 		
 		[Test]
@@ -113,9 +113,9 @@ namespace Resources.ClientTests
 			_tileTracker.RequestMove(84, CLoc.LocalPrivateRack);
 			CLoc[] newGameState = NewGameState();
 			
-			_tileTracker.ReceiveGameState(101, newGameState);
+			_tileTracker.UpdateGameState();
 			
-			CollectionAssert.AreEqual(newGameState, _tileTracker.GameState);
+			CollectionAssert.AreEqual(newGameState, _tileTracker.GameStateFromServer);
 		}
 
 		CLoc[] NewGameState()

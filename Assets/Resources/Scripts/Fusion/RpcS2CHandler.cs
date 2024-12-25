@@ -21,7 +21,7 @@ namespace Resources
 		{
 			Debug.Assert(tileTracker != null);
 			Debug.WriteLine($"RPC_S2C_SendGameState(playerRef: {playerRef}, requestId: {requestId})");
-			tileTracker.ReceiveGameState(requestId, gameState);
+			tileTracker.UpdateGameState();
 		}
 	}
 	

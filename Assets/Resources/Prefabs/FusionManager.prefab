@@ -10,9 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1114352315642792547}
   - component: {fileID: 1114352315642792544}
-  - component: {fileID: 1114352315642792545}
-  - component: {fileID: 1114352315642792558}
+  - component: {fileID: -6969063905697161596}
   - component: {fileID: 6499157410709066331}
+  - component: {fileID: 3579452293410089771}
+  - component: {fileID: -1192138471553392746}
+  - component: {fileID: 2891918872320882140}
+  - component: {fileID: -7806217534120512408}
   m_Layer: 0
   m_Name: FusionManager
   m_TagString: Untagged
@@ -27,13 +30,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1114352315642792559}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1114352315642792544
 MonoBehaviour:
@@ -52,10 +55,14 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 1114352315642792545}
-  - {fileID: 1114352315642792558}
+  - {fileID: -6969063905697161596}
   - {fileID: 6499157410709066331}
---- !u!114 &1114352315642792545
+  - {fileID: 3579452293410089771}
+  - {fileID: -1192138471553392746}
+  - {fileID: 2891918872320882140}
+  - {fileID: -7806217534120512408}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &-6969063905697161596
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,20 +71,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1114352315642792559}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79302c5b6dbd4a9f9c1ffd4961691f39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fusionManagerClient: {fileID: 0}
---- !u!114 &1114352315642792558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1114352315642792559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4413e7d2f29d4a5899abc932601baf66, type: 3}
+  m_Script: {fileID: 11500000, guid: 2ad18a5c1f2342f7ac4888345e9769c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6499157410709066331
@@ -93,3 +87,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerId: 0
+  GameState: {fileID: 0}
+--- !u!114 &3579452293410089771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114352315642792559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PlayerId: 0
+--- !u!114 &-1192138471553392746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114352315642792559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PlayerId: 0
+--- !u!114 &2891918872320882140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114352315642792559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PlayerId: 0
+--- !u!114 &-7806217534120512408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114352315642792559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PlayerId: 0

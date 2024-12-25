@@ -365,7 +365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RunnerPrefab: {fileID: 641073093}
-  StartMode: 2
+  StartMode: 0
   AutoStartAs: 2
   AutoHideGUI: 1
   AutoClients: 1
@@ -875,15 +875,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 4
+    m_Right: 4
+    m_Top: 4
+    m_Bottom: 4
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 75, y: 100}
-  m_Spacing: {x: 0, y: 0}
+  m_CellSize: {x: 37.5, y: 50}
+  m_Spacing: {x: 2, y: 2}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!1 &519420028
@@ -1281,7 +1281,6 @@ GameObject:
   - component: {fileID: 641073094}
   - component: {fileID: 641073093}
   - component: {fileID: 641073097}
-  - component: {fileID: 641073098}
   m_Layer: 0
   m_Name: Runner
   m_TagString: Untagged
@@ -1329,75 +1328,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fusionManagerServer: {fileID: 0}
---- !u!114 &641073098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 641073090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -232609262, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnInput:
-    m_PersistentCalls:
-      m_Calls: []
-  OnInputMissing:
-    m_PersistentCalls:
-      m_Calls: []
-  OnConnectedToServer:
-    m_PersistentCalls:
-      m_Calls: []
-  OnDisconnectedFromServer:
-    m_PersistentCalls:
-      m_Calls: []
-  OnConnectRequest:
-    m_PersistentCalls:
-      m_Calls: []
-  OnConnectFailed:
-    m_PersistentCalls:
-      m_Calls: []
-  PlayerJoined:
-    m_PersistentCalls:
-      m_Calls: []
-  PlayerLeft:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSimulationMessage:
-    m_PersistentCalls:
-      m_Calls: []
-  OnShutdown:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSessionListUpdate:
-    m_PersistentCalls:
-      m_Calls: []
-  OnCustomAuthenticationResponse:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHostMigration:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSceneLoadDone:
-    m_PersistentCalls:
-      m_Calls: []
-  OnSceneLoadStart:
-    m_PersistentCalls:
-      m_Calls: []
-  OnReliableData:
-    m_PersistentCalls:
-      m_Calls: []
-  OnReliableProgress:
-    m_PersistentCalls:
-      m_Calls: []
-  OnObjectEnterAOI:
-    m_PersistentCalls:
-      m_Calls: []
-  OnObjectExitAOI:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1001 &902552318
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1697,6 +1627,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1308358687}
   - component: {fileID: 1308358689}
+  - component: {fileID: 1308358690}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1731,6 +1662,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74680b91d621343f68c68f196955ffa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1308358690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308358685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 607ab9e7c870457ab25fea5fc1215892, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AllTileTransforms: []
 --- !u!224 &1488260321 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 896276284601836212, guid: 647ce0751523f4662a8e699b94e94bb7, type: 3}

@@ -10,18 +10,20 @@ namespace Resources
 			{ SLoc.PrivateRack0, SLoc.PrivateRack1, SLoc.PrivateRack2, SLoc.PrivateRack3 };
 		public static List<SLoc> DisplayRacks { get; } = new()
 			{ SLoc.DisplayRack0, SLoc.DisplayRack1, SLoc.DisplayRack2, SLoc.DisplayRack3 };
-		private readonly SLoc[] _gameState = new SLoc[152]; // location at index n is tile n's location
-		public SLoc[] GameState => (SLoc[])_gameState.Clone();
 		private readonly Dictionary<SLoc, List<int>> _locToList = new();
+		
+		// Game States
+		private readonly SLoc[] _serverGameState = new SLoc[152]; // location at index n is tile n's location
+		public SLoc[] GameState => (SLoc[])_serverGameState.Clone();
 
 		private readonly IRpcS2CHandler _rpcS2CHandler;
 		private readonly IFusionManagerServer _fusionManager;
 
-		public TileTrackerServer(List<Tile> tiles, IRpcS2CHandler rpcS2CHandler, IFusionManagerServer fusionManager)
+		public TileTrackerServer(List<Tile> tiles, IFusionManagerServer fusionManager)
 		{
 			InitializeLocToList();
 			AllTiles = tiles;
-			_rpcS2CHandler = rpcS2CHandler;
+			//_rpcS2CHandler = rpcS2CHandler;
 			_fusionManager = fusionManager;
 		}
 
@@ -51,7 +53,7 @@ namespace Resources
 			if (GameState[tileId] == newLoc) return;
 			
 			// remove tile from current location, add to new location
-			SLoc currLoc = _gameState[tileId];
+			SLoc currLoc = _serverGameState[tileId];
 			_locToList[currLoc].Remove(tileId);
 			
 			// if ix is given, use it. Otherwise append to end of list
@@ -59,7 +61,7 @@ namespace Resources
 			else _locToList[newLoc].Insert(ix, tileId);
 			
 			// update tile location
-			_gameState[tileId] = newLoc;
+			_serverGameState[tileId] = newLoc;
 			
 			SendGameStateToAll();
 		}
@@ -73,7 +75,7 @@ namespace Resources
 
 		private void SendGameStateToAll()
 		{
-			for (int playerId = 0; playerId < _fusionManager.PlayerCount; playerId++)
+			for (int playerId = 0; playerId < 4; playerId++)
 			{
 				SendGameStateToPlayer(playerId);
 			}
@@ -81,37 +83,48 @@ namespace Resources
 
 		public void SendGameStateToPlayer(int playerId, int requestId = -1)
 		{
-			CLoc[] playerGameState = new CLoc[AllTiles.Count];
+			CLoc[] clientGameState = new CLoc[AllTiles.Count];
 			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerId);
-			
+
 			// translates each entry in tileToLoc to an entry for the client
 			// (for ex, tiles on other player's racks show as in the pool)
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
 				SLoc sLoc = GameState[tileId];
-				playerGameState[tileId] = sLocToCLoc[sLoc];
+				clientGameState[tileId] = sLocToCLoc[sLoc];
 			}
 
-			_rpcS2CHandler.RPC_S2C_SendGameState(playerId, requestId, playerGameState);
+			// _rpcS2CHandler.RPC_S2C_SendGameState(playerId, requestId, playerGameState);
+			NetworkedGameState networkedGameState = _fusionManager.NetworkedGameStates[playerId];
+			networkedGameState.UpdateClientGameState(clientGameState);
+
+			// update private rack counts
+			int[] privateRackCounts = new int[4];
+			for (int rackId = 0; rackId < 4; rackId++)
+			{
+				privateRackCounts[rackId] = _locToList[PrivateRacks[rackId]].Count;
+			}
+			networkedGameState.UpdatePrivateRackCounts(privateRackCounts);
 		}
-		
+
 		Dictionary<SLoc, CLoc> SLocToCLoc(int playerId)
 		{
-			Dictionary<SLoc, CLoc> ret = new();
-			
-			// private racks
-			ret[PrivateRacks[playerId]] = CLoc.LocalPrivateRack;
-			ret[PrivateRacks[(playerId + 1) % 4]] = CLoc.Pool;
-			ret[PrivateRacks[(playerId + 2) % 4]] = CLoc.Pool;
-			ret[PrivateRacks[(playerId + 3) % 4]] = CLoc.Pool;
-			// display racks
-			ret[DisplayRacks[playerId]] = CLoc.LocalDisplayRack;
-			ret[DisplayRacks[(playerId + 1) % 4]] = CLoc.OtherDisplayRack1;
-			ret[DisplayRacks[(playerId + 2) % 4]] = CLoc.OtherDisplayRack2;
-			ret[DisplayRacks[(playerId + 3) % 4]] = CLoc.OtherDisplayRack3;
-			// other
-			ret[SLoc.Discard] = CLoc.Discard;
-			ret[SLoc.Wall] = CLoc.Pool;
+			Dictionary<SLoc, CLoc> ret = new()
+			{
+				// private racks
+				[PrivateRacks[playerId]] = CLoc.LocalPrivateRack,
+				[PrivateRacks[(playerId + 1) % 4]] = CLoc.Pool,
+				[PrivateRacks[(playerId + 2) % 4]] = CLoc.Pool,
+				[PrivateRacks[(playerId + 3) % 4]] = CLoc.Pool,
+				// display racks
+				[DisplayRacks[playerId]] = CLoc.LocalDisplayRack,
+				[DisplayRacks[(playerId + 1) % 4]] = CLoc.OtherDisplayRack1,
+				[DisplayRacks[(playerId + 2) % 4]] = CLoc.OtherDisplayRack2,
+				[DisplayRacks[(playerId + 3) % 4]] = CLoc.OtherDisplayRack3,
+				// other
+				[SLoc.Discard] = CLoc.Discard,
+				[SLoc.Wall] = CLoc.Pool
+			};
 
 			return ret;
 		}

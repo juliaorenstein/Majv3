@@ -6,6 +6,7 @@ namespace Resources
 	public class FusionManagerClient : NetworkBehaviour
 	{
 		public int PlayerId;
+		public NetworkedGameState GameState;
 		
 		public override void Spawned()
 		{

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Fusion;
 
 namespace Resources
 {
@@ -9,28 +8,33 @@ namespace Resources
     {
         private Mono _mono;
 
-        public void StartGame(RpcS2CHandler rpcS2CHandler)
+        public TileTrackerClient StartGame()
         {
             GameObject gameManager = GameObject.Find("GameManager");
-            _mono = gameManager.AddComponent<Mono>();
+            _mono = gameManager.GetComponent<Mono>();
+            
+            // Set up fusion manager
+            GameObject fusionManager = GameObject.Find("FusionManager");
+            FusionManagerClient fusionManagerClient = fusionManager.GetComponent<FusionManagerClient>();
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
-            TileTrackerClient tileTracker = new(_mono, tiles);
-            rpcS2CHandler.tileTracker = tileTracker;
+            TileTrackerClient tileTracker = new(_mono, tiles, fusionManagerClient);
             
             // make the game objects
             GenerateTileGameObjects(tileTracker);
-            // TODO: next line will be conditional on this client being the host
-            // BUG: RPC to server instead of calling directly
-            // new SetupServer().StartGame(tileTracker.AllTiles);
-            // RPC_C2S_RequestRack();
             // TODO: the following is for testing
             GameObject dealMe = GameObject.Find("Deal Me");
             dealMe.GetComponent<DealMeTest>().tileTracker = tileTracker;
-                            
+                
+           
+            
+            // add tile tracker to RpcS2CHandler
+            // fusionManager.GetComponent<RpcS2CHandler>().tileTracker = tileTracker;
+            
             // when done with setup, destroy the button this component
             Destroy(this);
+            return tileTracker;
         }
 
         void GenerateTileGameObjects(TileTrackerClient tileTracker)
@@ -57,7 +61,7 @@ namespace Resources
                         1 => "Bamboo",
                         2 => "Chrys",
                         3 => "Orchid",
-                        4 => "Plump",
+                        4 => "Plumb",
                         5 => "Spring",
                         6 => "Summer",
                         _ => "Winter",
