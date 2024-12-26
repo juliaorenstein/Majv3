@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,16 +15,23 @@ namespace Resources
 		public Mono mono;
 		public TileTrackerClient TileTracker;
 		public int tileId;
+		private CLoc CurLoc => TileTracker.GetTileLoc(tileId);
+		private Image _image;
 		
 		// the position at the tile at the beginning of a drag
 		private Vector3 _startPosition;
+
+		private void Start()
+		{
+			_image = GetComponentInChildren<Image>();
+		}
 
 		public void OnBeginDrag(PointerEventData eventData)
 		{
 			// store start position
 			_startPosition = transform.position;
 			// turn off raycast target while dragging the tile
-			GetComponentInChildren<Image>().raycastTarget = false;
+			_image.raycastTarget = false;
 		}
 
 		public void OnDrag(PointerEventData eventData)
@@ -38,35 +47,71 @@ namespace Resources
 			// there should only be up to two results: a location and possibly another tile
 			Debug.Assert(candidates.Count <= 2); 
 			
-			// loop through candidates and see if we can drop
-			foreach (RaycastResult candidate in candidates)
+			// translates candidates to their CLocs. If no valid CLoc, set to pool (and fail an assertion)
+			List<CLoc> candidateLocs = candidates.Select(candidate => 
+				mono.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
+			Debug.Assert(!candidateLocs.Contains(CLoc.Pool)
+				, "OnEndDrag: RaycastResult doesn't correspond to CLoc.");
+			
+			// if this is a rack rearrange, we don't need to notify the server
+			if (IsRackRearrange())
 			{
-				// get the location this transform represents (or continue if it's a tile / something else)
-				if (!mono.TransformToLoc.TryGetValue(candidate.gameObject.transform, out CLoc newLoc)) continue;
-				
-				// if this is a rack rearrange, we don't need to notify the server
-				if (RackRearrange(newLoc))
-				{
-					// TODO: get new ix for the tile based on position and other tile in the candidates list
-					TileTracker.MoveTile(tileId, newLoc);
-					return;
-				}
-				// any other move, request it from the server
-				TileTracker.RequestMove(tileId, newLoc);
-				// TODO: notify the server of the move, tile tracker will update when it's been accepted
-				// TODO: handle case where server doesn't respond?
-				// TODO: re-enable raycast if appropriate
-				
+				DoRackRearrange();
+				return;
 			}
+			if (IsDiscard()) 
+			{
+				DoDiscard();
+				return;
+			}
+
+			if (IsExpose())
+			{
+				DoExpose();
+				return;
+			}
+
+			if (IsJokerExchange())
+			{
+				DoJokerExchange();
+				return;
+			}
+				
+				
+			
 
 			// if we reach this point, the tile wasn't dropped in a new location, so move the tile back to where it started.
 			transform.position = _startPosition;
+
+			bool IsRackRearrange() =>
+				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack); 
+
+			bool IsDiscard() => CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.Discard);
 			
-			// returns true if the proposed move is from and to the local player's rack
-			// this is the only move that doesn't require communication with the server
-			bool RackRearrange(CLoc newLoc) => 
-				TileTracker.GetTileLoc(tileId) == CLoc.LocalPrivateRack 
-				&& newLoc == CLoc.LocalPrivateRack;
+			bool IsExpose() => CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalDisplayRack);
+
+			bool IsJokerExchange() =>
+				CurLoc == CLoc.LocalPrivateRack && TileTracker.DisplayRacks.Intersect(candidateLocs).Any();
+
+			void DoRackRearrange()
+			{
+				throw new NotImplementedException();
+			}
+
+			void DoDiscard()
+			{
+				throw new NotImplementedException();
+			}
+
+			void DoExpose()
+			{
+				throw new NotImplementedException();
+			}
+
+			void DoJokerExchange()
+			{
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

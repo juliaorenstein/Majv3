@@ -17,7 +17,7 @@ namespace Resources
 		
 		private List<CLoc> PrivateRacks { get; } = new() 
 			{ CLoc.LocalPrivateRack, CLoc.OtherPrivateRack1, CLoc.OtherPrivateRack2, CLoc.OtherPrivateRack3 };
-		private List<CLoc> DisplayRacks { get; } = new()
+		public List<CLoc> DisplayRacks { get; } = new()
 			{ CLoc.LocalDisplayRack, CLoc.OtherDisplayRack1, CLoc.OtherDisplayRack2, CLoc.OtherDisplayRack3 };
 		private CLoc GetPrivateRackForPlayer(int playerId) => PrivateRacks[( 4 + playerId - _networkedGameState.PlayerId) % 4];
 		private CLoc GetDisplayRackForPlayer(int playerId) => DisplayRacks[( 4 + playerId - _networkedGameState.PlayerId) % 4];
