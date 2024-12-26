@@ -81,7 +81,7 @@ namespace Resources
 			}
 		}
 
-		public void SendGameStateToPlayer(int playerId, int requestId = -1)
+		public void SendGameStateToPlayer(int playerId)
 		{
 			CLoc[] clientGameState = new CLoc[AllTiles.Count];
 			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerId);
@@ -94,7 +94,6 @@ namespace Resources
 				clientGameState[tileId] = sLocToCLoc[sLoc];
 			}
 
-			// _rpcS2CHandler.RPC_S2C_SendGameState(playerId, requestId, playerGameState);
 			NetworkedGameState networkedGameState = _fusionManager.NetworkedGameStates[playerId];
 			networkedGameState.UpdateClientGameState(clientGameState);
 

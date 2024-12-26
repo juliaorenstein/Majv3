@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Diagnostics;
+using System.Linq;
+using Debug = System.Diagnostics.Debug;
 
 namespace Resources
 {
@@ -43,11 +46,30 @@ namespace Resources
 			MoveTile(tileTransform, locTransform, ix);
 		}
 
-		public void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
+		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
 			tileTransform.SetParent(locTransform);
 			if (ix != -1) tileTransform.SetSiblingIndex(ix);
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locTransform);
 		}
+
+		// update the number of tile backs showing on a private rack.
+		public void UpdatePrivateRackCount(CLoc privateRack, int count)
+		{
+			/* Each rack will always have 14 child tile backs. This method activates and deactivates the appropriate
+				number to match the requested count */
+			
+			// first make sure we're getting another player's private rack
+			Debug.Assert(new [] {CLoc.OtherPrivateRack1, CLoc.OtherPrivateRack2, CLoc.OtherPrivateRack3}.Contains(privateRack));
+			Transform rackTransform = _locToTransform[privateRack];
+			// activate the tiles in the rack up to count, deactivate the rest
+			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
+		}
+	}
+	
+	public interface IMono
+	{
+		public void MoveTile(int tileId, CLoc loc, int ix = -1);
+		public void UpdatePrivateRackCount(CLoc privateRack, int count);
 	}
 }

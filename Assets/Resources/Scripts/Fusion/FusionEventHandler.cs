@@ -73,6 +73,10 @@ namespace Resources
 			{
 				Debug.Assert(networkedGameStates.Length == 4);
 				_fusionManagerServer.NetworkedGameStates = networkedGameStates;
+				for (int i = 0; i < networkedGameStates.Length; ++i)
+				{
+					networkedGameStates[i].PlayerId = i;
+				}
 			}
 			
 			// The client's fusionManagerClient gets a reference to the only NetworkedGameState instance they care about.

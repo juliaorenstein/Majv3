@@ -20,8 +20,6 @@ namespace Resources
         // only used on Server to determine which client gets these updates
         // TODO: is there a non-obsolete method to do this?
         [Obsolete] protected override bool ReplicateTo(PlayerRef player) => player.PlayerId == PlayerId;
-        
-        public void AssignPlayer(int playerId) => PlayerId = playerId;
 
         // TODO: is there a better way to do these methods, like a cast to NetworkArray?
         public void UpdateClientGameState(CLoc[] clientGameState)
