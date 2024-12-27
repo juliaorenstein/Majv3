@@ -10,8 +10,6 @@ namespace Resources
 	{
 		private FusionManagerServer _fusionManagerServer;
 		private FusionManagerClient _fusionManagerClient;
-		private RpcC2SHandler _rpcC2SHandler;
-		private RpcS2CHandler _rpcS2CHandler;
 		private TileTrackerServer _tileTrackerServer;
 
 		// Called on server when a client joins

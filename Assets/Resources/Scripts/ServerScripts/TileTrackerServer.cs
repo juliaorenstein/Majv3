@@ -5,18 +5,17 @@ namespace Resources
 {
 	public class TileTrackerServer
 	{
-		public List<Tile> AllTiles { get; private set; }
-		public static List<SLoc> PrivateRacks { get; } = new() 
+		private List<Tile> AllTiles { get; }
+		private static List<SLoc> PrivateRacks { get; } = new()
 			{ SLoc.PrivateRack0, SLoc.PrivateRack1, SLoc.PrivateRack2, SLoc.PrivateRack3 };
-		public static List<SLoc> DisplayRacks { get; } = new()
+		private static List<SLoc> DisplayRacks { get; } = new()
 			{ SLoc.DisplayRack0, SLoc.DisplayRack1, SLoc.DisplayRack2, SLoc.DisplayRack3 };
 		private readonly Dictionary<SLoc, List<int>> _locToList = new();
 		
 		// Game States
 		private readonly SLoc[] _serverGameState = new SLoc[152]; // location at index n is tile n's location
 		public SLoc[] GameState => (SLoc[])_serverGameState.Clone();
-
-		private readonly IRpcS2CHandler _rpcS2CHandler;
+		
 		private readonly IFusionManagerServer _fusionManager;
 
 		public TileTrackerServer(List<Tile> tiles, IFusionManagerServer fusionManager)
