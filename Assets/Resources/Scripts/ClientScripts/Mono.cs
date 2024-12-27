@@ -48,6 +48,7 @@ namespace Resources
 
 		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
+			// set parent to new location (not the face yet)
 			tileTransform.SetParent(locTransform);
 			if (ix != -1) tileTransform.SetSiblingIndex(ix);
 			else tileTransform.SetSiblingIndex(tileTransform.parent.childCount - 1);

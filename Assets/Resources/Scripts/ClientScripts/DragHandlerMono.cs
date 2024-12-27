@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
+// TODO: extract out logic from mono and then make unit tests
 namespace Resources
 {
 	public class DragHandlerMono : MonoBehaviour
@@ -85,12 +85,17 @@ namespace Resources
 			{
 				// if none of the above, this was not a valid drag - return tile to original place and enable raycast again.
 				Debug.Log("Drag: Invalid");
-				_image.raycastTarget = true;
+				MoveBack();
 			}
 			
 			// once Tile transform has moved to its new home, send the Face transform back to it
-			transform.SetParent(_tileTransform); // TODO: LERP
-			transform.position = transform.parent.position;
+			transform.SetParent(_tileTransform, true);
+			_startX = transform.position.x;
+			_startY = transform.position.y;
+			_endX = transform.parent.position.x;
+			_endY = transform.parent.position.y;
+			_lerping = true;
+			return;
 
 			bool IsRackRearrange() =>
 				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack); 
@@ -131,20 +136,53 @@ namespace Resources
 				int dropIx = siblingIndexOfTileDroppedOn + rightOfCenter - movingRight;
 				TileTracker.MoveTile(tileId, CLoc.LocalPrivateRack, dropIx);
 			}
-
+			
 			void DoDiscard()
 			{
 				Debug.Log("Discard not implemented");
+				MoveBack();
 			}
 
 			void DoExpose()
 			{
 				Debug.Log("Expose not implemented");
+				MoveBack();
 			}
 
 			void DoJokerExchange()
 			{
 				Debug.Log("Joker Exchange not implemented");
+				MoveBack();
+			}
+
+			void MoveBack()
+			{
+				_image.raycastTarget = true;
+			}
+		}
+
+		private bool _lerping;
+		private float _startX;
+		private float _startY;
+		private float _endX;
+		private float _endY;
+		private float _t;
+		
+		private void Update()
+		{
+			if (!_lerping) return; // quit out immediately unless lerping
+			
+			// set position of the tileFace
+			transform.position = new Vector3(Mathf.Lerp(_startX, _endX, _t), Mathf.Lerp(_startY, _endY, _t), 0);
+
+			// increase the t interpolater
+			_t += 0.01f;
+
+			// check if we're done
+			if (_t >= 1.0f)
+			{
+				_t = 0;
+				_lerping = false;
 			}
 		}
 	}

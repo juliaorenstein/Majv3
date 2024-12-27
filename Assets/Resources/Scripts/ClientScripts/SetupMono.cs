@@ -23,15 +23,7 @@ namespace Resources
             
             // make the game objects
             GenerateTileGameObjects(tileTracker);
-            // TODO: the following is for testing
-            GameObject dealMe = GameObject.Find("Deal Me");
-            dealMe.GetComponent<DealMeTest>().tileTracker = tileTracker;
                 
-           
-            
-            // add tile tracker to RpcS2CHandler
-            // fusionManager.GetComponent<RpcS2CHandler>().tileTracker = tileTracker;
-            
             // when done with setup, destroy the button this component
             Destroy(this);
             return tileTracker;
