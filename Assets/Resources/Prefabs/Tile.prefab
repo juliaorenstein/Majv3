@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 828321254025056997}
   - component: {fileID: 5082096183385548446}
   - component: {fileID: 5052037981564901848}
-  - component: {fileID: 1627680118950748262}
   m_Layer: 5
   m_Name: Tile
-  m_TagString: Tile
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61,20 +60,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AspectMode: 2
   m_AspectRatio: 0.75
---- !u!114 &1627680118950748262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1001037642325796675}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b55e9cb70024fd097cd94c392613697, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mono: {fileID: 0}
-  tileId: 0
 --- !u!1 &2298725526791933297
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,9 +148,10 @@ GameObject:
   - component: {fileID: 7499654002693526508}
   - component: {fileID: 5565137307829153259}
   - component: {fileID: 5215893644611468141}
+  - component: {fileID: 1569700760264493596}
   m_Layer: 6
   m_Name: Face
-  m_TagString: Untagged
+  m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -282,3 +268,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!114 &1569700760264493596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5383958311940008865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b55e9cb70024fd097cd94c392613697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mono: {fileID: 0}
+  tileId: 0

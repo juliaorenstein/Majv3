@@ -71,9 +71,10 @@ namespace Resources
                 newTileTransform.GetComponentInChildren<Image>().sprite 
                     = UnityEngine.Resources.Load<Sprite>($"TileImages/{imageName}");
                 // set mono and tiletracker on Drag Handler
-                newTileTransform.GetComponent<DragHandlerMono>().mono = _mono;
-                newTileTransform.GetComponent<DragHandlerMono>().TileTracker = tileTracker;
-                newTileTransform.GetComponent<DragHandlerMono>().tileId = tile.Id;
+                DragHandlerMono dragHandler = newTileTransform.GetComponentInChildren<DragHandlerMono>();
+                dragHandler.mono = _mono;
+                dragHandler.TileTracker = tileTracker;
+                dragHandler.tileId = tile.Id;
                 // add this to the list of tile transforms
                 _mono.AllTileTransforms.Add(newTileTransform);
             }

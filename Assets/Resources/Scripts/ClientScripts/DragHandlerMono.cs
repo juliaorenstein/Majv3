@@ -17,17 +17,23 @@ namespace Resources
 		public int tileId;
 		private CLoc CurLoc => TileTracker.GetTileLoc(tileId);
 		private Image _image;
+		private Transform _dragTransform;
+		private Transform _tileTransform;
 		
 		// the position at the tile at the beginning of a drag
 		private Vector3 _startPosition;
 
 		private void Start()
 		{
-			_image = GetComponentInChildren<Image>();
+			_image = GetComponent<Image>();
+			_dragTransform = GameObject.Find("Dragging").transform;
+			_tileTransform = transform.parent;
 		}
 
 		public void OnBeginDrag(PointerEventData eventData)
 		{
+			// set parent to dragging GameObject so that tile remains on top of all other UI
+			_image.transform.SetParent(_dragTransform, true);
 			// store start position
 			_startPosition = transform.position;
 			// turn off raycast target while dragging the tile
@@ -47,41 +53,44 @@ namespace Resources
 			// there should only be up to two results: a location and possibly another tile
 			Debug.Assert(candidates.Count <= 2); 
 			
-			// translates candidates to their CLocs. If no valid CLoc, set to pool (and fail an assertion)
+			// translates candidates to their CLocs. If no valid CLoc, set to pool
 			List<CLoc> candidateLocs = candidates.Select(candidate => 
 				mono.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
-			Debug.Assert(!candidateLocs.Contains(CLoc.Pool)
-				, "OnEndDrag: RaycastResult doesn't correspond to CLoc.");
 			
 			// if this is a rack rearrange, we don't need to notify the server
 			if (IsRackRearrange())
 			{
+				Debug.Log("Drag: Rack Rearrange");
 				DoRackRearrange();
-				return;
 			}
-			if (IsDiscard()) 
+			else if (IsDiscard()) 
 			{
+				Debug.Log("Drag: Discard");
 				DoDiscard();
-				return;
 			}
 
-			if (IsExpose())
+			else if (IsExpose())
 			{
+				Debug.Log("Drag: Expose");
 				DoExpose();
-				return;
 			}
 
-			if (IsJokerExchange())
+			else if (IsJokerExchange())
 			{
+				Debug.Log("Drag: Joker Exchange");
 				DoJokerExchange();
-				return;
 			}
-				
-				
-			
 
-			// if we reach this point, the tile wasn't dropped in a new location, so move the tile back to where it started.
-			transform.position = _startPosition;
+			else
+			{
+				// if none of the above, this was not a valid drag - return tile to original place and enable raycast again.
+				Debug.Log("Drag: Invalid");
+				_image.raycastTarget = true;
+			}
+			
+			// once Tile transform has moved to its new home, send the Face transform back to it
+			transform.SetParent(_tileTransform); // TODO: LERP
+			transform.position = transform.parent.position;
 
 			bool IsRackRearrange() =>
 				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack); 
@@ -95,22 +104,47 @@ namespace Resources
 
 			void DoRackRearrange()
 			{
-				throw new NotImplementedException();
+				int siblingIndexOfTileDroppedOn = -1;
+				int rightOfCenter = 0; // using int instead of bool for math down below
+				int movingRight = 0; // same as above
+				foreach (RaycastResult candidate in candidates)
+				{
+					if (candidate.gameObject.CompareTag("Tile")) // actually the face has the tag, not the tile itself
+					{
+						siblingIndexOfTileDroppedOn = candidate.gameObject.transform.parent.GetSiblingIndex();
+						rightOfCenter = transform.position.x > candidate.gameObject.transform.position.x ? 1 : 0;
+						movingRight = siblingIndexOfTileDroppedOn > _tileTransform.GetSiblingIndex() ? 1 : 0;
+						break;
+					}
+				}
+				// enable raycast again
+				_image.raycastTarget = true;
+				
+				// if not dropped on another tile, send to end of rack
+				if (siblingIndexOfTileDroppedOn == -1)
+				{
+					TileTracker.MoveTile(tileId, CLoc.LocalPrivateRack);
+					return;
+				}
+				
+				// otherwise, drop on the appropriate index
+				int dropIx = siblingIndexOfTileDroppedOn + rightOfCenter - movingRight;
+				TileTracker.MoveTile(tileId, CLoc.LocalPrivateRack, dropIx);
 			}
 
 			void DoDiscard()
 			{
-				throw new NotImplementedException();
+				Debug.Log("Discard not implemented");
 			}
 
 			void DoExpose()
 			{
-				throw new NotImplementedException();
+				Debug.Log("Expose not implemented");
 			}
 
 			void DoJokerExchange()
 			{
-				throw new NotImplementedException();
+				Debug.Log("Joker Exchange not implemented");
 			}
 		}
 	}
