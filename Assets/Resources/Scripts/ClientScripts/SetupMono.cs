@@ -13,13 +13,18 @@ namespace Resources
             GameObject gameManager = GameObject.Find("GameManager");
             _mono = gameManager.GetComponent<Mono>();
             
-            // Set up fusion manager
-            GameObject fusionManager = GameObject.Find("FusionManager");
-            FusionManagerClient fusionManagerClient = fusionManager.GetComponent<FusionManagerClient>();
+            // Set up fusion manager TODO: remove this and next two lines
+            // GameObject fusionManager = GameObject.Find("FusionManager"); 
+            // FusionManagerClient fusionManagerClient = fusionManager.GetComponent<FusionManagerClient>();
+            
+            // Set up networked game state
+            GameObject fusionManager = GameObject.Find("FusionManager"); 
+            // BUG: below line is causing unit test to fail
+            INetworkedGameState networkedGameState = fusionManager.GetComponent<NetworkedGameState>();
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
-            TileTrackerClient tileTracker = new(_mono, tiles, fusionManagerClient);
+            TileTrackerClient tileTracker = new(_mono, tiles, networkedGameState);
             
             // make the game objects
             GenerateTileGameObjects(tileTracker);

@@ -11,7 +11,11 @@ namespace Resources.ClientTests
         [UnitySetUp]
         public IEnumerator Setup()
         {
+            // BUG: this test is broken
             SceneManager.LoadScene("Assets/Scenes/Scene.unity");
+            yield return null;
+            GameObject fusionManager = UnityEngine.Resources.Load<GameObject>("Prefabs/FusionManager");
+            Instantiate(fusionManager);
             yield return null;
         }
 		

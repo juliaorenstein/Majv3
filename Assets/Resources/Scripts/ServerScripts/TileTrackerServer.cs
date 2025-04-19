@@ -93,7 +93,7 @@ namespace Resources
 				clientGameState[tileId] = sLocToCLoc[sLoc];
 			}
 
-			NetworkedGameState networkedGameState = _fusionManager.NetworkedGameStates[playerId];
+			INetworkedGameState networkedGameState = _fusionManager.NetworkedGameStates[playerId];
 			networkedGameState.UpdateClientGameState(clientGameState);
 
 			// update private rack counts

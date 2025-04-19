@@ -9,7 +9,8 @@ namespace Resources
 	public class FusionEventHandler : MonoBehaviour, INetworkRunnerCallbacks
 	{
 		private FusionManagerServer _fusionManagerServer;
-		private FusionManagerClient _fusionManagerClient;
+		private NetworkedGameState[] _allNetworkedGameStates;
+		// private FusionManagerClient _fusionManagerClient; // TODO: remove
 		private TileTrackerServer _tileTrackerServer;
 
 		// Called on server when a client joins
@@ -32,6 +33,8 @@ namespace Resources
 			
 			// every time a player joins, add it to the dictionary and send the game state to the player
 			_fusionManagerServer.Players.Add(player.PlayerId, player);
+			// Allow the new player to get updates from their NetworkedGameState
+			_allNetworkedGameStates[player.PlayerId].ReplicateTo(player, true);
 		}
 		
 		// Called on client when connecting to server
@@ -62,23 +65,19 @@ namespace Resources
 			// create the fusionManagerServer, which is not a NetworkBehaviour but does fusion stuff for the server
 			_fusionManagerServer = fusionManagerNetworkObject.GetComponent<FusionManagerServer>();
 			// find the fusionManagerClient NetworkBehavior
-			_fusionManagerClient = fusionManagerNetworkObject.GetComponent<FusionManagerClient>();
+			// _fusionManagerClient = fusionManagerNetworkObject.GetComponent<FusionManagerClient>(); TODO: remove
 			// get all the NetworkedGameState components. There are 4, one for each player
-			NetworkedGameState[] networkedGameStates = fusionManagerNetworkObject.GetComponents<NetworkedGameState>();
+			_allNetworkedGameStates = fusionManagerNetworkObject.GetComponents<NetworkedGameState>();
 
 			// the server sets references to NetworkedGameState components on the fusionManagerServer
-			if (runner.IsServer)
-			{
-				Debug.Assert(networkedGameStates.Length == 4);
-				_fusionManagerServer.NetworkedGameStates = networkedGameStates;
-				for (int i = 0; i < networkedGameStates.Length; ++i)
-				{
-					networkedGameStates[i].PlayerId = i;
-				}
-			}
+			if (!runner.IsServer) return;
 			
-			// The client's fusionManagerClient gets a reference to the only NetworkedGameState instance they care about.
-			_fusionManagerClient.GameState = networkedGameStates[runner.LocalPlayer.PlayerId];
+			Debug.Assert(_allNetworkedGameStates.Length == 4);
+			_fusionManagerServer.NetworkedGameStates = _allNetworkedGameStates;
+			for (int i = 0; i < _allNetworkedGameStates.Length; ++i)
+			{
+				_allNetworkedGameStates[i].PlayerId = i;
+			}
 		}
 
 		// Called on server when a client leaves

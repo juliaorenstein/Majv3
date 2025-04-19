@@ -3,8 +3,8 @@ using Fusion;
 
 namespace Resources
 {
-    public class NetworkedGameState : NetworkBehaviour
-    {
+	public class NetworkedGameState : NetworkBehaviour, INetworkedGameState
+	{
         /* The server will have an instance of this class for each player, and will maintain the game state for each
          player via that player's instance. ReplicateTo will ensure that only the intended player will see this info.
          
@@ -16,10 +16,15 @@ namespace Resources
         [Networked, Capacity(4)] private NetworkArray<int> PrivateRackCountsNetArr => default;
         public int[] PrivateRackCounts => PrivateRackCountsNetArr.ToArray();
         private TileTrackerClient _tileTrackerClient;
-        
-        // only used on Server to determine which client gets these updates
-        // TODO: is there a non-obsolete method to do this?
-        [Obsolete] protected override bool ReplicateTo(PlayerRef player) => player.PlayerId == PlayerId;
+
+        public override void Spawned()
+        {
+	        // To start, make sure nobody is getting these updates. Will be adjusted later in OnPlayerJoined
+	        foreach (PlayerRef player in Runner.ActivePlayers)
+	        {
+		        ReplicateTo(player, false);
+	        }
+        }
 
         // TODO: is there a better way to do these methods, like a cast to NetworkArray?
         public void UpdateClientGameState(CLoc[] clientGameState)
@@ -52,4 +57,13 @@ namespace Resources
 	        }
         }
     }	
+	
+	public interface INetworkedGameState
+	{
+		int PlayerId { get; set; }
+		CLoc[] ClientGameState { get; }
+		int[] PrivateRackCounts { get; }
+		void UpdateClientGameState(CLoc[] clientGameState);
+		void UpdatePrivateRackCounts(int[] privateRackCounts);
+	}
 }

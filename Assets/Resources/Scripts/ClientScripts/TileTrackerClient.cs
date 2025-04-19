@@ -8,7 +8,7 @@ namespace Resources
 		public readonly IReadOnlyList<Tile> AllTiles;
 		
 		private readonly IMono _mono;
-		private readonly NetworkedGameState _networkedGameState;
+		private readonly INetworkedGameState _networkedGameState;
 
 		private readonly CLoc[] _currentGameState;
 		public CLoc[] GameStateFromServer => _networkedGameState.ClientGameState;
@@ -25,12 +25,12 @@ namespace Resources
 		private readonly Dictionary<CLoc, List<int>> _inverseGameState = new();
 		private int _nextRequestId;
 
-		public TileTrackerClient(IMono mono, List<Tile> allTiles, FusionManagerClient fusionManagerClient)
+		public TileTrackerClient(IMono mono, List<Tile> allTiles, INetworkedGameState networkedGameState)
 		{
 			// initialize variables
 			_mono = mono;
 			AllTiles = allTiles;
-			_networkedGameState = fusionManagerClient.GameState;
+			_networkedGameState = networkedGameState;
 			_currentGameState = new CLoc[AllTiles.Count];
 			_privateRackCounts = new int[4];
 				
