@@ -140,6 +140,7 @@ namespace Resources
 			void DoDiscard()
 			{
 				Debug.Log("Discard not implemented");
+				TileTracker.RequestDiscard(tileId);
 				MoveBack();
 			}
 

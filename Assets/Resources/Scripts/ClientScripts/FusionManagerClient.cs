@@ -7,6 +7,8 @@ namespace Resources
 	{
 		public int PlayerId;
 		public INetworkedGameState GameState;
+
+		public bool IsMyTurn => GameState.PlayerId == GameState.TurnPlayerId;
 		
 		public override void Spawned()
 		{

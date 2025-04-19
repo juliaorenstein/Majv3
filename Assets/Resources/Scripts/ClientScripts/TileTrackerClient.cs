@@ -116,6 +116,12 @@ namespace Resources
 			_mono.MoveTile(tileId, loc);
 		}
 		
+		// Request a discard
+		public void RequestDiscard(int tileId)
+		{
+			// TODO: use Fusion Input stuff to do this.
+		}
+		
 		// A struct to track requested moves that haven't been confirmed by the server
 		struct PendingMove
 		{

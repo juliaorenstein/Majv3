@@ -11,11 +11,13 @@ namespace Resources
          Each client (besides host) will get updates for just their own copy, which they'll use to track their game
          state.*/
         [Networked] public int PlayerId { get; set; }
+        [Networked] public int TurnPlayerId { get; set; }
         [Networked, Capacity(152)] private NetworkArray<CLoc> ClientGameStateNetArr => default;
         public CLoc[] ClientGameState => ClientGameStateNetArr.ToArray();
         [Networked, Capacity(4)] private NetworkArray<int> PrivateRackCountsNetArr => default;
         public int[] PrivateRackCounts => PrivateRackCountsNetArr.ToArray();
         private TileTrackerClient _tileTrackerClient;
+        
 
         public override void Spawned()
         {
@@ -61,6 +63,7 @@ namespace Resources
 	public interface INetworkedGameState
 	{
 		int PlayerId { get; set; }
+		int TurnPlayerId { get; set; }
 		CLoc[] ClientGameState { get; }
 		int[] PrivateRackCounts { get; }
 		void UpdateClientGameState(CLoc[] clientGameState);
