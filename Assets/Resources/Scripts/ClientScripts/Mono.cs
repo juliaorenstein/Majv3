@@ -48,11 +48,27 @@ namespace Resources
 
 		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
-			// set parent to new location (not the face yet)
+			// get the facts
+			_tileFace = tileTransform.GetChild(0);
+			_startX = _tileFace.position.x;
+			_startY = _tileFace.position.y;
+
+			// set parent to new location and lerp the face
 			tileTransform.SetParent(locTransform);
 			if (ix != -1) tileTransform.SetSiblingIndex(ix);
 			else tileTransform.SetSiblingIndex(tileTransform.parent.childCount - 1);
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locTransform);
+			
+			_endX = tileTransform.position.x;
+			_endY = tileTransform.position.y;
+			_lerping = true;
+			_locTransform = locTransform;
+			
+			// if loc is the private local rack, set raycast target = True
+			if (locTransform == LocToTransform[CLoc.LocalPrivateRack])
+			{
+				_tileFace.GetComponent<Image>().raycastTarget = true;
+			}
 		}
 
 		// update the number of tile backs showing on a private rack.
@@ -66,6 +82,33 @@ namespace Resources
 			Transform rackTransform = LocToTransform[privateRack];
 			// activate the tiles in the rack up to count, deactivate the rest
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
+		}
+
+		private Transform _tileFace;
+		private bool _lerping;
+		private float _startX;
+		private float _startY;
+		private float _endX;
+		private float _endY;
+		private float _t;
+		private Transform _locTransform;
+		
+		private void Update()
+		{
+			if (!_lerping) return; // quit out immediately unless lerping
+			
+			// set position of the tileFace
+			_tileFace.position = new Vector3(Mathf.Lerp(_startX, _endX, _t), Mathf.Lerp(_startY, _endY, _t), 0);
+
+			// increase the t interpolater
+			_t += 0.02f;
+
+			// check if we're done
+			if (_t < 1.0f) return;
+			_t = 0;
+			_lerping = false;
+			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)_locTransform);
+			_tileFace.position = _tileFace.parent.position;
 		}
 	}
 	

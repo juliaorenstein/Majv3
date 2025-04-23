@@ -42,8 +42,6 @@ namespace Resources
 			}
 			// every time a player joins, add it to the dictionary and send the game state to the player
 			_fusionManagerServer.Players.Add(player.PlayerId, player);
-			// Allow the new player to get updates from their GameState
-			_allNetworkedGameStates[player.PlayerId].ReplicateTo(player, true);
 			// Give the new player input authority over their network object
 			_allNetworkedGameStates[player.PlayerId].GetComponent<NetworkObject>().AssignInputAuthority(player);
 		}

@@ -24,15 +24,15 @@ namespace Resources
 
         public override void Spawned()
         {
-	        // To start, make sure nobody is getting these updates. Will be adjusted later in OnPlayerJoined
+	        bool isLocalInstance = Runner.LocalPlayer.PlayerId == PlayerId;
 	        foreach (PlayerRef player in Runner.ActivePlayers)
 	        {
-		        ReplicateTo(player, false);
+		        ReplicateTo(player, isLocalInstance);
 	        }
+	        if (!isLocalInstance) return;
 	        FindObjectsByType<SetupMono>(FindObjectsSortMode.None)[0].ConnectTileTrackerToNetworkedGameState(this);
         }
-
-        // TODO: is there a better way to do these methods, like a cast to NetworkArray?
+        // BUG: fourth player doesn't receive rack on game start
         public void UpdateClientGameState(CLoc[] clientGameState)
         {
 	        for (int i = 0; i < clientGameState.Length; i++)

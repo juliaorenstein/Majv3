@@ -48,6 +48,8 @@ namespace Resources
 
 		public void OnEndDrag(PointerEventData eventData)
 		{
+			transform.SetParent(_tileTransform, true);
+			
 			// get list of current raycast results
 			List<RaycastResult> candidates = new();
 			EventSystem.current.RaycastAll(eventData, candidates);
@@ -89,13 +91,6 @@ namespace Resources
 				MoveBack();
 			}
 			
-			// once Tile transform has moved to its new home, send the Face transform back to it
-			transform.SetParent(_tileTransform, true);
-			_startX = transform.position.x;
-			_startY = transform.position.y;
-			_endX = transform.parent.position.x;
-			_endY = transform.parent.position.y;
-			_lerping = true;
 			return;
 
 			bool IsRackRearrange() =>
@@ -141,9 +136,9 @@ namespace Resources
 			void DoDiscard()
 			{
 				InputSender.RequestDiscard(tileId);
-				mono.MoveTile(tileId, CLoc.Discard); // update UI while waiting for server
+				TileTracker.MoveTile(tileId, CLoc.Discard);
 			}
-
+			
 			void DoExpose()
 			{
 				Debug.Log("Expose not implemented");
@@ -158,32 +153,7 @@ namespace Resources
 
 			void MoveBack()
 			{
-				_image.raycastTarget = true;
-			}
-		}
-
-		private bool _lerping;
-		private float _startX;
-		private float _startY;
-		private float _endX;
-		private float _endY;
-		private float _t;
-		
-		private void Update()
-		{
-			if (!_lerping) return; // quit out immediately unless lerping
-			
-			// set position of the tileFace
-			transform.position = new Vector3(Mathf.Lerp(_startX, _endX, _t), Mathf.Lerp(_startY, _endY, _t), 0);
-
-			// increase the t interpolater
-			_t += 0.01f;
-
-			// check if we're done
-			if (_t >= 1.0f)
-			{
-				_t = 0;
-				_lerping = false;
+				mono.MoveTile(tileId, CLoc.LocalPrivateRack);
 			}
 		}
 	}

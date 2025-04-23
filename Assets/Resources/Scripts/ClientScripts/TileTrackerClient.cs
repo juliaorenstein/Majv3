@@ -64,7 +64,7 @@ namespace Resources
 		// Allow external callers to see contents of list without modifying
 		public List<int> GetLocContents(CLoc loc) => new(_inverseGameState[loc]);
 		
-		/* Moves tile on the backend. Should not be called directly from client request unless for a Rack Rearrange. All other tile moves should go through RequestMove */
+		// Moves tile on backend and calls mono for front end update
 		public void MoveTile(int tileId, CLoc newLoc, int ix = -1)
 		{
 			// remove tile from current location, add to new location
@@ -112,6 +112,7 @@ namespace Resources
 		}
 
 		// Send a request for a move to the server. Also updates the UI for the player in the meantime.
+		// TODO: remove this?
 		public void RequestMove(int tileId, CLoc loc)
 		{
 			_mono.MoveTile(tileId, loc);

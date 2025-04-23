@@ -7,7 +7,7 @@ namespace Resources
 		private readonly TileTrackerServer _tileTracker;
 		private readonly FusionManagerServer _fusionManager;
 
-		private int _turnPlayerId = 1;
+		private int _turnPlayerId = 0;
 
 		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerServer fusionManager)
 		{
