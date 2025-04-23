@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Resources
 {
@@ -11,5 +12,10 @@ namespace Resources
 			, new FakeNetworkedGameState()
 			, new FakeNetworkedGameState()
 		};
+
+		public void NextTurn()
+		{
+			Debug.Log("Next turn");
+		}
 	}
 }

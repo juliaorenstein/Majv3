@@ -14,6 +14,7 @@ namespace Resources
 		// mono and tileTracker set in SetupMono
 		public Mono mono;
 		public TileTrackerClient TileTracker;
+		public InputSender InputSender;
 		public int tileId;
 		private CLoc CurLoc => TileTracker.GetTileLoc(tileId);
 		private Image _image;
@@ -139,9 +140,8 @@ namespace Resources
 			
 			void DoDiscard()
 			{
-				Debug.Log("Discard not implemented");
-				TileTracker.RequestDiscard(tileId);
-				MoveBack();
+				InputSender.RequestDiscard(tileId);
+				mono.MoveTile(tileId, CLoc.Discard); // update UI while waiting for server
 			}
 
 			void DoExpose()

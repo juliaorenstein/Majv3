@@ -51,3 +51,5 @@ TYPES OF CLIENT-INITIATED TILE MOVES
 
 TYPES OF SERVER-INITIATED TILE MOVES
 - Deal              -   Wall                >   PrivateRack
+
+BUG: if dropping a tile perfectly between two others on the rack, it goes to end of rack.

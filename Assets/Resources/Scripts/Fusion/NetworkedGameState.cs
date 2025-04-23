@@ -1,5 +1,6 @@
 using System;
 using Fusion;
+using UnityEngine;
 
 namespace Resources
 {
@@ -10,13 +11,15 @@ namespace Resources
          
          Each client (besides host) will get updates for just their own copy, which they'll use to track their game
          state.*/
+        [Networked] public int GameStateVersion { get; set; }
+        private int _gameStateVersion = 0;
         [Networked] public int PlayerId { get; set; }
         [Networked] public int TurnPlayerId { get; set; }
         [Networked, Capacity(152)] private NetworkArray<CLoc> ClientGameStateNetArr => default;
         public CLoc[] ClientGameState => ClientGameStateNetArr.ToArray();
         [Networked, Capacity(4)] private NetworkArray<int> PrivateRackCountsNetArr => default;
         public int[] PrivateRackCounts => PrivateRackCountsNetArr.ToArray();
-        private TileTrackerClient _tileTrackerClient;
+        public TileTrackerClient TileTracker { get; set; }
         
 
         public override void Spawned()
@@ -26,6 +29,7 @@ namespace Resources
 	        {
 		        ReplicateTo(player, false);
 	        }
+	        FindObjectsByType<SetupMono>(FindObjectsSortMode.None)[0].ConnectTileTrackerToNetworkedGameState(this);
         }
 
         // TODO: is there a better way to do these methods, like a cast to NetworkArray?
@@ -47,16 +51,9 @@ namespace Resources
 
         public override void FixedUpdateNetwork()
         {
-	        ChangeDetector changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-	        ChangeDetector.Enumerable changes = changeDetector.DetectChanges(this);
-	        bool gameStateChanged = changes.Changed("ClientGameStateNetArr");
-	        bool privateRacksChanged = changes.Changed("PrivateRackCounts");
-
-	        if (gameStateChanged || privateRacksChanged)
-	        {
-		        // NEXT: Implement network inputs so that client can request changes from the server
-		        _tileTrackerClient.UpdateGameState();
-	        }
+	        if (TileTracker == null || _gameStateVersion == GameStateVersion) return;
+	        TileTracker.UpdateGameState();
+	        _gameStateVersion = GameStateVersion;
         }
     }	
 	
@@ -65,8 +62,10 @@ namespace Resources
 		int PlayerId { get; set; }
 		int TurnPlayerId { get; set; }
 		CLoc[] ClientGameState { get; }
+		int GameStateVersion { get; set; }
 		int[] PrivateRackCounts { get; }
 		void UpdateClientGameState(CLoc[] clientGameState);
 		void UpdatePrivateRackCounts(int[] privateRackCounts);
+		TileTrackerClient TileTracker { get; set; }
 	}
 }

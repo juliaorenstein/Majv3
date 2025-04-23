@@ -7,31 +7,27 @@ namespace Resources
     public class SetupMono : MonoBehaviour
     {
         private Mono _mono;
+        private InputSender _inputSender;
+        private TileTrackerClient _tileTracker;
 
-        public TileTrackerClient StartGame()
+        public void StartGame(int playerId, out InputSender inputSender)
         {
             GameObject gameManager = GameObject.Find("GameManager");
             _mono = gameManager.GetComponent<Mono>();
             
-            // Set up fusion manager TODO: remove this and next two lines
-            // GameObject fusionManager = GameObject.Find("FusionManager"); 
-            // FusionManagerClient fusionManagerClient = fusionManager.GetComponent<FusionManagerClient>();
-            
-            // Set up networked game state
-            GameObject fusionManager = GameObject.Find("FusionManager"); 
-            // BUG: below line is causing unit test to fail
-            INetworkedGameState networkedGameState = fusionManager.GetComponent<NetworkedGameState>();
+            _inputSender = new();
+            inputSender = _inputSender;
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
-            TileTrackerClient tileTracker = new(_mono, tiles, networkedGameState);
+            _tileTracker = new(_mono, tiles, inputSender);
             
             // make the game objects
-            GenerateTileGameObjects(tileTracker);
-                
-            // when done with setup, destroy the button this component
-            Destroy(this);
-            return tileTracker;
+            GenerateTileGameObjects(_tileTracker);
+            
+            // find the button handler and add input there
+            ButtonHandlerMono buttonHandler = GameObject.Find("Actions").GetComponent<ButtonHandlerMono>();
+            buttonHandler.InputSender = _inputSender;
         }
 
         void GenerateTileGameObjects(TileTrackerClient tileTracker)
@@ -72,9 +68,20 @@ namespace Resources
                 dragHandler.mono = _mono;
                 dragHandler.TileTracker = tileTracker;
                 dragHandler.tileId = tile.Id;
+                dragHandler.InputSender = _inputSender;
                 // add this to the list of tile transforms
                 _mono.AllTileTransforms.Add(newTileTransform);
             }
+        }
+
+        public void ConnectTileTrackerToNetworkedGameState(NetworkedGameState networkedGameState)
+        {
+            networkedGameState.TileTracker = _tileTracker;
+            _tileTracker.GameState = networkedGameState;
+            // update the game state on the client side to start the game!
+            _tileTracker.UpdateGameState();
+            // when done with setup, destroy the button this component
+            Destroy(this);
         }
     }
 }

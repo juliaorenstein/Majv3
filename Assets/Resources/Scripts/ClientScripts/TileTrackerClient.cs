@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Diagnostics;
+
 
 namespace Resources
 {
@@ -8,33 +8,32 @@ namespace Resources
 		public readonly IReadOnlyList<Tile> AllTiles;
 		
 		private readonly IMono _mono;
-		private readonly INetworkedGameState _networkedGameState;
+		public NetworkedGameState GameState;
+		private readonly InputSender _inputSender;
 
 		private readonly CLoc[] _currentGameState;
-		public CLoc[] GameStateFromServer => _networkedGameState.ClientGameState;
+		public CLoc[] GameStateFromServer => GameState.ClientGameState;
 		private readonly int[] _privateRackCounts;
-		private int[] PrivateRackCountsFromServer => _networkedGameState.PrivateRackCounts;
+		private int[] PrivateRackCountsFromServer => GameState.PrivateRackCounts;
 		
 		private List<CLoc> PrivateRacks { get; } = new() 
 			{ CLoc.LocalPrivateRack, CLoc.OtherPrivateRack1, CLoc.OtherPrivateRack2, CLoc.OtherPrivateRack3 };
 		public List<CLoc> DisplayRacks { get; } = new()
 			{ CLoc.LocalDisplayRack, CLoc.OtherDisplayRack1, CLoc.OtherDisplayRack2, CLoc.OtherDisplayRack3 };
-		private CLoc GetPrivateRackForPlayer(int playerId) => PrivateRacks[( 4 + playerId - _networkedGameState.PlayerId) % 4];
-		private CLoc GetDisplayRackForPlayer(int playerId) => DisplayRacks[( 4 + playerId - _networkedGameState.PlayerId) % 4];
+		private CLoc GetPrivateRackForPlayer(int playerId) => PrivateRacks[( 4 + playerId - GameState.PlayerId) % 4];
+		private CLoc GetDisplayRackForPlayer(int playerId) => DisplayRacks[( 4 + playerId - GameState.PlayerId) % 4];
 		
 		private readonly Dictionary<CLoc, List<int>> _inverseGameState = new();
-		private int _nextRequestId;
 
-		public TileTrackerClient(IMono mono, List<Tile> allTiles, INetworkedGameState networkedGameState)
+		public TileTrackerClient(IMono mono, List<Tile> allTiles, InputSender inputSender)
 		{
 			// initialize variables
 			_mono = mono;
 			AllTiles = allTiles;
-			_networkedGameState = networkedGameState;
+			_inputSender = inputSender;
 			_currentGameState = new CLoc[AllTiles.Count];
 			_privateRackCounts = new int[4];
-				
-			// TODO: set _nextRequestId to playerId to start.
+			
 			InitializeLocToList();
 			// put all the tiles in the tile pool to start
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
@@ -86,6 +85,8 @@ namespace Resources
 		public void UpdateGameState()
 		{
 			// TODO: Right now racks at start of game are being sorted by tileId because this goes through tiles by id.
+			// Clear input
+			_inputSender.ClearInput();
 			
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
@@ -99,7 +100,7 @@ namespace Resources
 			for (int playerId = 0; playerId < 4; playerId++)
 			{
 				// skip this process for local player
-				if (_networkedGameState.PlayerId == playerId) continue;
+				if (GameState.PlayerId == playerId) continue;
 				
 				CLoc privateRack = GetPrivateRackForPlayer(playerId);
 				// if count already matches, continue
@@ -114,21 +115,6 @@ namespace Resources
 		public void RequestMove(int tileId, CLoc loc)
 		{
 			_mono.MoveTile(tileId, loc);
-		}
-		
-		// Request a discard
-		public void RequestDiscard(int tileId)
-		{
-			// TODO: use Fusion Input stuff to do this.
-		}
-		
-		// A struct to track requested moves that haven't been confirmed by the server
-		struct PendingMove
-		{
-			public int RequestId;
-			public int TileId;
-			public CLoc OldLoc;
-			public CLoc NewLoc;
 		}
 	}
 }

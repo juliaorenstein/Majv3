@@ -6,23 +6,18 @@ namespace Resources
 	public class SetupServer
 	{
 		private TileTrackerServer _tileTracker;
-		private readonly FusionEventHandler _fusionEventHandler;
-
-		public SetupServer(FusionEventHandler fusionEventHandler)
-		{
-			_fusionEventHandler = fusionEventHandler;
-		}
 		
-		public TileTrackerServer StartGame(FusionManagerServer fusionManager)
+		public void StartGame(FusionManagerServer fusionManager
+			, out TileTrackerServer tileTracker, out TurnManagerServer turnManager)
 		{
 			// this will be a duplicate for the host but is good for if/when server is separated out
 			List<Tile> tiles = new TileGenerator().GenerateTiles(); 
-			_tileTracker = new(tiles, fusionManager);
+			tileTracker = new(tiles, fusionManager);
+			_tileTracker = tileTracker;
+			turnManager = new(tileTracker, fusionManager);
 
 			Shuffle();
 			Deal();
-			
-			return _tileTracker;
 		}
 
 		private void Shuffle()

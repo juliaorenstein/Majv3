@@ -11,10 +11,13 @@ namespace Resources
 		private static List<SLoc> DisplayRacks { get; } = new()
 			{ SLoc.DisplayRack0, SLoc.DisplayRack1, SLoc.DisplayRack2, SLoc.DisplayRack3 };
 		private readonly Dictionary<SLoc, List<int>> _locToList = new();
+		public SLoc GetPrivateRackForPlayer(int playerId) => PrivateRacks[playerId];
+		public SLoc GetDisplayRackForPlayer(int playerId) => DisplayRacks[playerId];
 		
 		// Game States
 		private readonly SLoc[] _serverGameState = new SLoc[152]; // location at index n is tile n's location
 		public SLoc[] GameState => (SLoc[])_serverGameState.Clone();
+		private int _gameStateVersion = 0;
 		
 		private readonly IFusionManagerServer _fusionManager;
 
@@ -72,8 +75,9 @@ namespace Resources
 			MoveTile(tileId, rack);
 		}
 
-		private void SendGameStateToAll()
+		public void SendGameStateToAll()
 		{
+			_gameStateVersion++;
 			for (int playerId = 0; playerId < 4; playerId++)
 			{
 				SendGameStateToPlayer(playerId);
@@ -84,7 +88,6 @@ namespace Resources
 		{
 			CLoc[] clientGameState = new CLoc[AllTiles.Count];
 			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerId);
-
 			// translates each entry in tileToLoc to an entry for the client
 			// (for ex, tiles on other player's racks show as in the pool)
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
@@ -94,6 +97,7 @@ namespace Resources
 			}
 
 			INetworkedGameState networkedGameState = _fusionManager.NetworkedGameStates[playerId];
+			networkedGameState.GameStateVersion = _gameStateVersion;
 			networkedGameState.UpdateClientGameState(clientGameState);
 
 			// update private rack counts

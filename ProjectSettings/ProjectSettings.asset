@@ -877,11 +877,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 
+  cloudProjectId: 8e34105a-a55b-4be0-a2d1-b32025e9a28b
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: Maj v3
+  organizationId: juliaorenstein
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
