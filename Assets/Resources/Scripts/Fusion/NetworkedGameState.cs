@@ -1,4 +1,5 @@
 using Fusion;
+using UnityEngine;
 
 namespace Resources
 {
@@ -26,6 +27,10 @@ namespace Resources
         {
 	        PlayerIx = transform.GetSiblingIndex();
 	        _fusionManagerGlobal = GetComponentInParent<FusionManagerGlobal>();
+	        // Setup UI once this is spawned
+	        if (Player != Runner.LocalPlayer) return;
+	        SetupMono setupMono = GameObject.Find("GameManager").GetComponent<SetupMono>();
+	        setupMono.StartGame(this);
         }
       
         public void UpdateClientGameState(CLoc[] clientGameState)

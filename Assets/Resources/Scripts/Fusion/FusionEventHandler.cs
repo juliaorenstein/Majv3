@@ -15,7 +15,7 @@ namespace Resources
 		private FusionManagerGlobal _fusionManagerGlobal;
 		private TurnManagerServer _turnManagerServer;
 		private TileTrackerServer _tileTrackerServer;
-		private InputSender _inputSender;
+		public InputSender InputSender;
 		
 		// Called everywhere when a client joins
 		public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -27,9 +27,9 @@ namespace Resources
 		private void AddPlayerToScene(NetworkRunner runner, PlayerRef player)
 		{
 			// get the fusion manager
-			var fusionManagers = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None);
+			/*var fusionManagers = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None);
 			if (fusionManagers.Length > 1) throw new UnityException("More than one FusionManagerGlobal found");
-			_fusionManagerGlobal = fusionManagers[0];
+			_fusionManagerGlobal = fusionManagers[0];*/
 			// add player to the dictionary and send the game state to the player
 			_fusionManagerGlobal.Players.Add(player.PlayerId, player);
 			// Give the new player input authority over their network object
@@ -52,8 +52,8 @@ namespace Resources
 		// Called on server when a client sends input
 		public void OnInput(NetworkRunner runner, NetworkInput input)
 		{
-			if (_inputSender == null) return; // quit out if inputSender isn't initialized
-			input.Set(_inputSender.Input);
+			if (InputSender == null) return; // quit out if inputSender isn't initialized
+			input.Set(InputSender.Input);
 		}
 		// Called on client when disconnecting from server
 		public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
@@ -84,26 +84,26 @@ namespace Resources
 		}
 		public void OnSceneLoadDone(NetworkRunner runner)
 		{
+			Debug.Log("OnSceneLoadDone");
 			/* Server: set up network objects and tile tracker */
-			if (runner.IsServer)
-			{
-				// spawn the network object, which contains all NetworkBehaviours
-				GameObject fusionManagerPrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/FusionManager");
-				NetworkObject fusionManagerNetworkObject = runner.Spawn(fusionManagerPrefab);
-				fusionManagerNetworkObject.name = "FusionManager";
-				_fusionManagerGlobal = fusionManagerNetworkObject.GetComponent<FusionManagerGlobal>();
+			if (!runner.IsServer) return;
+			// spawn the network object, which contains all NetworkBehaviours
+			GameObject fusionManagerPrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/FusionManager");
+			NetworkObject fusionManagerNetworkObject = runner.Spawn(fusionManagerPrefab);
+			fusionManagerNetworkObject.name = "FusionManager";
+			_fusionManagerGlobal = fusionManagerNetworkObject.GetComponent<FusionManagerGlobal>();
 				
-				// tileTracker
-				new SetupServer().StartGame(_fusionManagerGlobal, out _tileTrackerServer, out _turnManagerServer);
+			// tileTracker
+			new SetupServer().StartGame(_fusionManagerGlobal, out _tileTrackerServer, out _turnManagerServer);
 				
-				// Run the contents of OnPlayerJoined for host here, because it was logged too early
-				AddPlayerToScene(runner, runner.LocalPlayer);
-			}
+			// Run the contents of OnPlayerJoined for host here, because it was logged too early
+			AddPlayerToScene(runner, runner.LocalPlayer);
 			
-			// Everyone: Set up the rest of the UI
+			// Do mono stuff just for the server, since Networked Game State wasn't assigned yet
 			SetupMono setupMono = GameObject.Find("GameManager").GetComponent<SetupMono>();
-			int playerIx = _fusionManagerGlobal.PlayerIx(runner.LocalPlayer);
-			setupMono.StartGame(playerIx, out _inputSender);
+			NetworkedGameState myNetworkedGameState =
+				_fusionManagerGlobal.GetComponentsInChildren<NetworkedGameState>()[0];
+			setupMono.StartGame(myNetworkedGameState);
 		}
 		
 		public void OnSceneLoadStart(NetworkRunner runner)

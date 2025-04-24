@@ -11,25 +11,23 @@ namespace Resources
         private InputSender _inputSender;
         private TileTrackerClient _tileTracker;
 
-        public void StartGame(int playerIx, out InputSender inputSender)
+        public void StartGame(NetworkedGameState myNetworkedGameState)
         {
             Debug.Log("SetupMono.StartGame()");
             _mono = GetComponent<Mono>();
             
             _inputSender = new();
-            inputSender = _inputSender;
+            myNetworkedGameState.Runner.GetComponent<FusionEventHandler>().InputSender = _inputSender;
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
-            _tileTracker = new(_mono, tiles, inputSender);
+            _tileTracker = new(_mono, tiles, _inputSender);
             
             // get my networked game state and exchange tile tracker client
             var fusionManagerGlobals = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None);
             if (fusionManagerGlobals.Length > 1) throw new UnityException("There is more than one FusionManagerGlobal object.");
             FusionManagerGlobal fusionManagerGlobal = fusionManagerGlobals[0];
             
-           NetworkedGameState myNetworkedGameState = 
-               fusionManagerGlobal.transform.GetChild(playerIx).GetComponent<NetworkedGameState>();
            myNetworkedGameState.TileTracker = _tileTracker;
            _tileTracker.GameState = myNetworkedGameState;
             
