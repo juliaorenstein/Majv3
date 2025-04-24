@@ -18,6 +18,7 @@ namespace Resources.ClientTests
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
 			_fakeNetworkedGameState = new FakeNetworkedGameState();
 			_tileTracker = new(_mono, tiles, new());
+			_tileTracker.GameState = _fakeNetworkedGameState;
 		}
 		
 		[Test]

@@ -20,9 +20,9 @@ namespace Resources
 		public SLoc[] GameState => (SLoc[])_serverGameState.Clone();
 		private int _gameStateVersion = 0;
 		
-		private readonly FusionManagerGlobal _fusionManager;
+		private readonly IFusionManagerGlobal _fusionManager;
 
-		public TileTrackerServer(List<Tile> tiles, FusionManagerGlobal fusionManager)
+		public TileTrackerServer(List<Tile> tiles, IFusionManagerGlobal fusionManager)
 		{
 			InitializeLocToList();
 			AllTiles = tiles;

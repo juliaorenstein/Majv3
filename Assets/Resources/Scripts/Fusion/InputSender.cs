@@ -39,7 +39,7 @@ namespace Resources
 
 		public void ClearInput()
 		{
-			Debug.Log("InputSender: Clearing input");
+			//Debug.Log("InputSender: Clearing input");
 			Input.TileId = -1;
 			Input.Action.SetAllUp();
 		}

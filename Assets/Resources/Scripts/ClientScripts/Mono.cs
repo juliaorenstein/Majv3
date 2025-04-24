@@ -117,4 +117,6 @@ namespace Resources
 		public void MoveTile(int tileId, CLoc loc, int ix = -1);
 		public void UpdatePrivateRackCount(CLoc privateRack, int count);
 	}
+	
+	// TODO: when a player discards, other players should see the tile move from that rack
 }

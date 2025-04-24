@@ -8,7 +8,7 @@ namespace Resources
 		public readonly IReadOnlyList<Tile> AllTiles;
 		
 		private readonly IMono _mono;
-		public NetworkedGameState GameState;
+		public INetworkedGameState GameState;
 		private readonly InputSender _inputSender;
 
 		private readonly CLoc[] _currentGameState;

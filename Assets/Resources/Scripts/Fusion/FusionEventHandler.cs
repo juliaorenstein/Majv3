@@ -6,10 +6,6 @@ using UnityEngine;
 
 namespace Resources
 {
-	public class InClassName
-	{
-	}
-
 	public class FusionEventHandler : MonoBehaviour, INetworkRunnerCallbacks
 	{
 		private FusionManagerGlobal _fusionManagerGlobal;
@@ -33,8 +29,9 @@ namespace Resources
 			// add player to the dictionary and send the game state to the player
 			_fusionManagerGlobal.Players.Add(player.PlayerId, player);
 			// Give the new player input authority over their network object
-			NetworkObject thisPlayersNO = _fusionManagerGlobal.
-				NetworkedGameStates[_fusionManagerGlobal.PlayerIx(player.PlayerId)].GetComponent<NetworkObject>();
+			var tmpArr = Array.ConvertAll(
+				_fusionManagerGlobal.NetworkedGameStates, x => (NetworkedGameState)x);
+			NetworkObject thisPlayersNO = tmpArr[_fusionManagerGlobal.PlayerIx(player.PlayerId)].GetComponent<NetworkObject>();
 			thisPlayersNO.AssignInputAuthority(player);
 			runner.SetPlayerAlwaysInterested(player, thisPlayersNO, true);
 			Debug.Log("Assigning player to Networked Game State");
@@ -128,3 +125,5 @@ namespace Resources
 		}
 	}
 }
+
+// TODO: write unit tests for turn manager
