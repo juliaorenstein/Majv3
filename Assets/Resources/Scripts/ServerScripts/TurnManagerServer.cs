@@ -36,7 +36,7 @@ namespace Resources
 		private void NextTurn()
 		{
 			Debug.Log("Next turn");
-			_turnPlayerIx = (_turnPlayerIx + 1) % 4 + 1;
+			_turnPlayerIx = (_turnPlayerIx + 1) % 4;
 			_tileTracker.SendGameStateToAll();
 		}
 

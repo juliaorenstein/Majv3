@@ -8,32 +8,34 @@ namespace Resources
 	public class InputReceiver : NetworkBehaviour
 	{
 		public int playerIx; 
-		public TurnManagerServer TurnManager;
+		private TurnManagerServer _turnManager;
 		private NetworkButtons _previousTurnOptions;
 		
 
 		public override void Spawned()
 		{
 			_previousTurnOptions = default;
+			playerIx = transform.GetSiblingIndex();
 		}
 
 		public override void FixedUpdateNetwork()
 		{
+			if (!Runner.IsServer) return;
 			if (GetInput(out Input clientInput))
 			{
-				TurnManager ??= GetComponentInParent<FusionManagerGlobal>().TurnManagerServer;
+				_turnManager ??= GetComponentInParent<FusionManagerGlobal>().TurnManagerServer;
 				// DISCARD
 				if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.Discard))
 				{
 					Debug.Log("Input Receiver: Discarding");
-					TurnManager.DoDiscard(playerIx, clientInput.TileId);
+					_turnManager.DoDiscard(playerIx, clientInput.TileId);
 				}
 				
 				// PICK UP
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.PickUp))
 				{
 					Debug.Log("Input Receiver: Picking up");
-					TurnManager.DoPickUp(playerIx);
+					_turnManager.DoPickUp(playerIx);
 				}
 
 				// JOKER SWAP
