@@ -7,16 +7,15 @@ namespace Resources
 	{
 		private TileTrackerServer _tileTracker;
 		
-		public void StartGame(FusionManagerGlobal fusionManager
-			, out TileTrackerServer tileTracker, out TurnManagerServer turnManager)
+		public void StartGame(FusionManagerGlobal fusionManager)
 		{
 			// this will be a duplicate for the host but is good for if/when server is separated out
 			List<Tile> tiles = new TileGenerator().GenerateTiles(); 
-			tileTracker = new(tiles, fusionManager);
-			turnManager = new(tileTracker, fusionManager);
-			fusionManager.TileTrackerServer = tileTracker;
+			_tileTracker = new(tiles, fusionManager);
+			TurnManagerServer turnManager = new(_tileTracker, fusionManager);
+			fusionManager.TileTrackerServer = _tileTracker;
 			fusionManager.TurnManagerServer = turnManager;
-			_tileTracker = tileTracker;
+
 
 			Shuffle();
 			Deal();

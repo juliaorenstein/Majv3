@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -10,8 +9,6 @@ namespace Resources
 	public class FusionEventHandler : MonoBehaviour, INetworkRunnerCallbacks
 	{
 		private FusionManagerGlobal _fusionManagerGlobal;
-		private TurnManagerServer _turnManagerServer;
-		private TileTrackerServer _tileTrackerServer;
 		public InputSender InputSender;
 		
 		// Called everywhere when a client joins
@@ -88,7 +85,7 @@ namespace Resources
 			_fusionManagerGlobal = fusionManagerNetworkObject.GetComponent<FusionManagerGlobal>();
 				
 			// tileTracker
-			new SetupServer().StartGame(_fusionManagerGlobal, out _tileTrackerServer, out _turnManagerServer);
+			new SetupServer().StartGame(_fusionManagerGlobal);
 				
 			// Run the contents of OnPlayerJoined for host here, because it was logged too early
 			AddPlayerToScene(runner, runner.LocalPlayer);
