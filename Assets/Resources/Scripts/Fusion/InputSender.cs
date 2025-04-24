@@ -37,6 +37,12 @@ namespace Resources
 			Input.Action.SetDown(Action.PickUp);
 		}
 
+		public void RequestCall()
+		{
+			Debug.Log("InputSender: Requesting call");
+			Input.Action.SetDown(Action.Call);
+		}
+
 		public void ClearInput()
 		{
 			//Debug.Log("InputSender: Clearing input");

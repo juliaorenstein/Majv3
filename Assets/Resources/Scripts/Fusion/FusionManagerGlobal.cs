@@ -1,19 +1,18 @@
 using System;
-using System.Collections.Generic;
 using Fusion;
 using System.Linq;
-using UnityEngine;
 
 namespace Resources
 {
 	public class FusionManagerGlobal : NetworkBehaviour, IFusionManagerGlobal
 	{
 		[Networked, Capacity(4)] public NetworkArray<PlayerRef> Players { get; }
-		private int[] _playerIds => Players.Select(player => player.PlayerId).ToArray();
+		private int[] PlayerIds => Players.Select(player => player.PlayerId).ToArray();
 		[Networked] public int TurnPlayerIx { get; set; }
+		public int LocalPlayerIx => PlayerIx(Runner.LocalPlayer);
 		public bool IsMyTurn => PlayerIx(Runner.LocalPlayer) == TurnPlayerIx;
-		public int PlayerIx(int playerId) => Array.IndexOf(_playerIds, playerId);
-		public int PlayerIx(PlayerRef playerRef) => Array.IndexOf(_playerIds, playerRef.PlayerId);
+		public int PlayerIx(int playerId) => Array.IndexOf(PlayerIds, playerId);
+		public int PlayerIx(PlayerRef playerRef) => Array.IndexOf(PlayerIds, playerRef.PlayerId);
 		public INetworkedGameState[] NetworkedGameStates { get; set; }
 		public int PlayerCount => Players.Length;
 		public TileTrackerServer TileTrackerServer;
@@ -32,7 +31,8 @@ namespace Resources
 	public interface IFusionManagerGlobal
 	{
 		public NetworkArray<PlayerRef> Players { get; }
-		public int TurnPlayerIx { get; set; }
+		public int TurnPlayerIx { get; }
+		public int LocalPlayerIx { get; }
 		public bool IsMyTurn { get; }
 		int PlayerIx(int playerId);
 		int PlayerIx(PlayerRef playerRef);
