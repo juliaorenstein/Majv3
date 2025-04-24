@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1114352315642792547}
   - component: {fileID: 1114352315642792544}
   - component: {fileID: -6969063905697161596}
-  - component: {fileID: 6499157410709066331}
   m_Layer: 0
   m_Name: FusionManager
   m_TagString: Untagged
@@ -60,7 +59,6 @@ MonoBehaviour:
   - {fileID: 6394420325422512550}
   NetworkedBehaviours:
   - {fileID: -6969063905697161596}
-  - {fileID: 6499157410709066331}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-6969063905697161596
 MonoBehaviour:
@@ -74,19 +72,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ad18a5c1f2342f7ac4888345e9769c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6499157410709066331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1114352315642792559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f274a16b7d9542f0a585047e6de0abd0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GameState: {fileID: 0}
 --- !u!1 &1590049023482601950
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,7 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4966d87f971142d1ac8869178767aab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 4
+  playerIx: 0
 --- !u!114 &6394420325422512550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,7 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4966d87f971142d1ac8869178767aab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 1
+  playerIx: 0
 --- !u!114 &6387720822810819521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -306,7 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4966d87f971142d1ac8869178767aab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 2
+  playerIx: 0
 --- !u!114 &2625967659191867412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,7 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4966d87f971142d1ac8869178767aab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 3
+  playerIx: 0
 --- !u!114 &4721169282434225349
 MonoBehaviour:
   m_ObjectHideFlags: 0

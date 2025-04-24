@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Diagnostics;
 using System.Linq;
 using Debug = System.Diagnostics.Debug;
 
@@ -12,6 +11,12 @@ namespace Resources
 		public readonly Dictionary<CLoc, Transform> LocToTransform = new();
 		public readonly Dictionary<Transform, CLoc> TransformToLoc = new();
 		public List<Transform> AllTileTransforms = new();
+
+		private Button _pickUp;
+		private Button _call;
+		private Button _wait;
+		private Button _neverMind;
+		private Dictionary<Action, Button> _actionToButton;
 
 		private void Start()
 		{
@@ -37,6 +42,18 @@ namespace Resources
 			TransformToLoc[LocToTransform[CLoc.OtherDisplayRack3]] = CLoc.OtherDisplayRack3;
 			TransformToLoc[LocToTransform[CLoc.Discard]] = CLoc.Discard;
 			TransformToLoc[LocToTransform[CLoc.Pool]] = CLoc.Pool;
+			
+			_pickUp = GameObject.Find("Pick Up").GetComponent<Button>();
+			_call = GameObject.Find("Call").GetComponent<Button>();
+			_wait = GameObject.Find("Wait").GetComponent<Button>();
+			_neverMind = GameObject.Find("Never Mind").GetComponent<Button>();
+			_actionToButton = new()
+			{
+				{ Action.PickUp, _pickUp },
+				{ Action.Call, _call },
+				{ Action.Wait, _wait },
+				{ Action.NeverMind, _neverMind }
+			};
 		}
 		
 		public void MoveTile(int tileId, CLoc loc, int ix = -1)
@@ -84,6 +101,9 @@ namespace Resources
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
 		}
 
+		public void SetActionButton(Action action, bool state) =>
+			_actionToButton[action].interactable = state;
+
 		private Transform _tileFace;
 		private bool _lerping;
 		private float _startX;
@@ -116,6 +136,7 @@ namespace Resources
 	{
 		public void MoveTile(int tileId, CLoc loc, int ix = -1);
 		public void UpdatePrivateRackCount(CLoc privateRack, int count);
+		public void SetActionButton(Action action, bool state);
 	}
 	
 	// TODO: when a player discards, other players should see the tile move from that rack

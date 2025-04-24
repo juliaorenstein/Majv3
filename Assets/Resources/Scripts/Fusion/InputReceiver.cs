@@ -25,47 +25,47 @@ namespace Resources
 			{
 				_turnManager ??= GetComponentInParent<FusionManagerGlobal>().TurnManagerServer;
 				// DISCARD
-				if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.Discard))
+				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Discard))
 				{
 					Debug.Log("Input Receiver: Discarding");
 					_turnManager.DoDiscard(playerIx, clientInput.TileId);
 				}
 				
 				// PICK UP
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.PickUp))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.PickUp))
 				{
 					Debug.Log("Input Receiver: Picking up");
 					_turnManager.DoPickUp(playerIx);
 				}
 
 				// JOKER SWAP
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.JokerSwap))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.JokerSwap))
 				{
 					Debug.Log("JokerSwap not implemented");
 				}
 
 				// WAIT
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.Wait))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Wait))
 				{
 					Debug.Log("Wait not implemented");
 				}
 				
 				// PASS
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.Pass))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Pass))
 				{
 					Debug.Log("Pass not implemented");
 				}
 				
 				// CALL
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.Call))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Call))
 				{
 					Debug.Log("Call not implemented");
 				}
 				
 				// NEVER MIND
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.Nevermind))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.NeverMind))
 				{
-					Debug.Log("Nevermind not implemented");
+					Debug.Log("NeverMind not implemented");
 				}
 			}
 

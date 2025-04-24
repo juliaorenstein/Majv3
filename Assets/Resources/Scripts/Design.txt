@@ -26,9 +26,28 @@ TYPES OF CLIENT-INITIATED TILE MOVES
 - Discard           -   LocalPrivateRack    >   Discard
 - Call              -   Discard             >   LocalDisplayRack
 - Expose            -   LocalPrivateRack    >   LocalDisplayRack
+- Never Mind        -
 - Joker exchange    -   LocalPrivateRack  <->   OtherDisplayRack
 
 TYPES OF SERVER-INITIATED TILE MOVES
 - Deal              -   Wall                >   PrivateRack
 
 BUG: if dropping a tile perfectly between two others on the rack, it goes to end of rack.
+
+
+TURN MANAGER
+- Dealer and TurnPlayerId start at playerIx 1 (player after the host)
+- Action buttons start as unavailable
+- On a player's turn:
+    1. Turn player has Pick Up button enabled (EXCEPT FIRST TURN)
+    2. Turn player presses Pick Up
+        a. Pick Up button is disabled
+        b. Client requests pick up from host via input action
+        c. Host deals next wall tile to client
+    3. Turn player discards
+        a. Discard is requested
+        b. Host validates discard and performs it (All clients see the discard tile on the board)
+        c. Host increments TurnPlayerId
+    4. Return to step 1
+        
+    

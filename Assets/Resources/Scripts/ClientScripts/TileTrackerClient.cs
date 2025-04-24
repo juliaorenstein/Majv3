@@ -10,6 +10,7 @@ namespace Resources
 		private readonly IMono _mono;
 		public INetworkedGameState GameState;
 		private readonly InputSender _inputSender;
+		private readonly IFusionManagerGlobal _fusionManager;
 
 		private readonly CLoc[] _currentGameState;
 		public CLoc[] GameStateFromServer => GameState.ClientGameState;
@@ -26,7 +27,7 @@ namespace Resources
 		
 		private readonly Dictionary<CLoc, List<int>> _inverseGameState = new();
 
-		public TileTrackerClient(IMono mono, List<Tile> allTiles, InputSender inputSender)
+		public TileTrackerClient(IMono mono, List<Tile> allTiles, InputSender inputSender, IFusionManagerGlobal fusionManager)
 		{
 			// initialize variables
 			_mono = mono;
@@ -34,6 +35,7 @@ namespace Resources
 			_inputSender = inputSender;
 			_currentGameState = new CLoc[AllTiles.Count];
 			_privateRackCounts = new int[4];
+			_fusionManager = fusionManager;
 			
 			InitializeLocToList();
 			// put all the tiles in the tile pool to start
@@ -88,6 +90,15 @@ namespace Resources
 			// TODO: Right now racks at start of game are being sorted by tileId because this goes through tiles by id.
 			// Clear input
 			_inputSender.ClearInput();
+			
+			// if client's turn, enable Pick Up button
+			if (_fusionManager.IsMyTurn
+			    && GetLocContents(CLoc.LocalDisplayRack).Count + GetLocContents(CLoc.LocalPrivateRack).Count == 13)
+			{
+				_mono.SetActionButton(Action.PickUp, true);
+			}
+			else _mono.SetActionButton(Action.PickUp, false);
+				
 			
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{

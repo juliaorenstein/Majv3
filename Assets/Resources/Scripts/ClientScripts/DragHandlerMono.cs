@@ -15,6 +15,7 @@ namespace Resources
 		public Mono mono;
 		public TileTrackerClient TileTracker;
 		public InputSender InputSender;
+		private FusionManagerGlobal _fusionManager;
 		public int tileId;
 		private CLoc CurLoc => TileTracker.GetTileLoc(tileId);
 		private Image _image;
@@ -29,6 +30,7 @@ namespace Resources
 			_image = GetComponent<Image>();
 			_dragTransform = GameObject.Find("Dragging").transform;
 			_tileTransform = transform.parent;
+			_fusionManager = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None)[0];
 		}
 
 		public void OnBeginDrag(PointerEventData eventData)
@@ -94,9 +96,16 @@ namespace Resources
 			return;
 
 			bool IsRackRearrange() =>
-				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack); 
+				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack);
 
-			bool IsDiscard() => CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.Discard);
+			bool IsDiscard()
+			{
+				if (CurLoc != CLoc.LocalPrivateRack) return false;
+				if (!candidateLocs.Contains(CLoc.Discard)) return false;
+				if (!_fusionManager.IsMyTurn) return false;
+				return TileTracker.GetLocContents(CLoc.LocalDisplayRack).Count
+					+ TileTracker.GetLocContents(CLoc.LocalPrivateRack).Count == 14;
+			}
 			
 			bool IsExpose() => CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalDisplayRack);
 

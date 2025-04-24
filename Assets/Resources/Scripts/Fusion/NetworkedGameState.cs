@@ -15,13 +15,12 @@ namespace Resources
         private int _gameStateVersion;
         [Networked] public PlayerRef Player { get; set; }
         public int PlayerIx { get; private set; }
-        [Networked] public PlayerRef TurnPlayer { get; set; }
-        public int TurnPlayerIx => _fusionManagerGlobal.PlayerIx(TurnPlayer.PlayerId);
         [Networked, Capacity(152)] private NetworkArray<CLoc> ClientGameStateNetArr => default;
         public CLoc[] ClientGameState => ClientGameStateNetArr.ToArray();
         [Networked, Capacity(4)] private NetworkArray<int> PrivateRackCountsNetArr => default;
         public int[] PrivateRackCounts => PrivateRackCountsNetArr.ToArray();
         public TileTrackerClient TileTracker { get; set; }
+        
 
         public override void Spawned()
         {
@@ -60,7 +59,6 @@ namespace Resources
 	public interface INetworkedGameState
 	{
 		int PlayerIx { get; }
-		int TurnPlayerIx { get; }
 		CLoc[] ClientGameState { get; }
 		int GameStateVersion { get; set; }
 		int[] PrivateRackCounts { get; }

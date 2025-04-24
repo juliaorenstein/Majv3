@@ -38,6 +38,7 @@ namespace Resources
 			Debug.Log("Next turn");
 			_turnPlayerIx = (_turnPlayerIx + 1) % 4;
 			_tileTracker.SendGameStateToAll();
+			_fusionManager.TurnPlayerIx = _turnPlayerIx;
 		}
 
 		public void DoPickUp(int playerIx)

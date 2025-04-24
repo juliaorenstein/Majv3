@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -22,12 +23,8 @@ namespace Resources
 
 		private void AddPlayerToScene(NetworkRunner runner, PlayerRef player)
 		{
-			// get the fusion manager
-			/*var fusionManagers = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None);
-			if (fusionManagers.Length > 1) throw new UnityException("More than one FusionManagerGlobal found");
-			_fusionManagerGlobal = fusionManagers[0];*/
-			// add player to the dictionary and send the game state to the player
-			_fusionManagerGlobal.Players.Add(player.PlayerId, player);
+			// add player to the Players array in first empty position
+			_fusionManagerGlobal.Players.Set(Array.IndexOf(_fusionManagerGlobal.Players.ToArray(), default), player);
 			// Give the new player input authority over their network object
 			var tmpArr = Array.ConvertAll(
 				_fusionManagerGlobal.NetworkedGameStates, x => (NetworkedGameState)x);

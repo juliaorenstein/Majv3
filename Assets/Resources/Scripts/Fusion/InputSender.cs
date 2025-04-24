@@ -9,14 +9,14 @@ namespace Resources
 		public int TileId;
 	}
 	
-	public enum Actions
+	public enum Action
 	{
 		Discard = 0,
 		PickUp = 1,
 		Call = 2,
 		Wait = 3,
 		Pass = 4,
-		Nevermind = 5,
+		NeverMind = 5,
 		JokerSwap = 6
 	}
 	
@@ -27,14 +27,14 @@ namespace Resources
 		public void RequestDiscard(int tileId)
 		{
 			Debug.Log($"InputSender: Requesting discard for tile {tileId}");
-			Input.Action.SetDown(Actions.Discard);
+			Input.Action.SetDown(Action.Discard);
 			Input.TileId = tileId;
 		}
 
 		public void RequestPickUp()
 		{
 			Debug.Log("InputSender: Requesting pick up");
-			Input.Action.SetDown(Actions.PickUp);
+			Input.Action.SetDown(Action.PickUp);
 		}
 
 		public void ClearInput()

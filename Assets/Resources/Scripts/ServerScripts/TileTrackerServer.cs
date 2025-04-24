@@ -79,6 +79,7 @@ namespace Resources
 		public void SendGameStateToAll()
 		{
 			_gameStateVersion++;
+			
 			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
 				SendGameStateToPlayer(playerIx);
