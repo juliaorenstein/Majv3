@@ -4,8 +4,8 @@ namespace Resources
 {
 	public class FakeNetworkedGameState : INetworkedGameState
 	{
-		public int PlayerId { get; set; }
-		public int TurnPlayerId { get; set; }
+		public int PlayerIx { get; set; }
+		public int TurnPlayerIx { get; set; }
 		public CLoc[] ClientGameState { get; set; }
 		public int GameStateVersion { get; set; }
 		public int[] PrivateRackCounts { get; set; } = { 14, 13, 13, 13 };

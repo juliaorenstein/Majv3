@@ -1,12 +1,13 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Resources
 {
 	// One for each client
 	public class InputReceiver : NetworkBehaviour
 	{
-		public int playerId; 
+		public int playerIx; 
 		public TurnManagerServer TurnManager;
 		private NetworkButtons _previousTurnOptions;
 		
@@ -20,18 +21,19 @@ namespace Resources
 		{
 			if (GetInput(out Input clientInput))
 			{
+				TurnManager ??= GetComponentInParent<FusionManagerGlobal>().TurnManagerServer;
 				// DISCARD
 				if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.Discard))
 				{
 					Debug.Log("Input Receiver: Discarding");
-					TurnManager.DoDiscard(playerId, clientInput.TileId);
+					TurnManager.DoDiscard(playerIx, clientInput.TileId);
 				}
 				
 				// PICK UP
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Actions.PickUp))
 				{
 					Debug.Log("Input Receiver: Picking up");
-					TurnManager.DoPickUp(playerId);
+					TurnManager.DoPickUp(playerIx);
 				}
 
 				// JOKER SWAP

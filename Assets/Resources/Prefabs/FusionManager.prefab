@@ -32,10 +32,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4391142031165271121}
   - {fileID: 6293384010276699581}
   - {fileID: 661562237110879082}
   - {fileID: 839477378035189606}
+  - {fileID: 4391142031165271121}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1114352315642792544
@@ -54,10 +54,10 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects:
-  - {fileID: 6394420325422512550}
   - {fileID: 6387720822810819521}
   - {fileID: 2625967659191867412}
   - {fileID: 4721169282434225349}
+  - {fileID: 6394420325422512550}
   NetworkedBehaviours:
   - {fileID: -6969063905697161596}
   - {fileID: 6499157410709066331}
@@ -86,7 +86,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f274a16b7d9542f0a585047e6de0abd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerId: 0
+  GameState: {fileID: 0}
 --- !u!1 &1590049023482601950
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 6613287721917960}
   - component: {fileID: 6394420325422512550}
   m_Layer: 0
-  m_Name: Player0
+  m_Name: Player4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -133,8 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _PlayerId: 0
-  _TurnPlayerId: 0
+  _GameStateVersion: 0
 --- !u!114 &6613287721917960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,7 +146,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4966d87f971142d1ac8869178767aab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 0
+  playerId: 4
 --- !u!114 &6394420325422512550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,7 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 1071612777
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
@@ -214,8 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _PlayerId: 1
-  _TurnPlayerId: 0
+  _GameStateVersion: 0
 --- !u!114 &7780482604777789572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,7 +240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 3765187291
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
@@ -295,8 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _PlayerId: 2
-  _TurnPlayerId: 0
+  _GameStateVersion: 0
 --- !u!114 &902364770037077073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,7 +320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 2287381251
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
@@ -376,8 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8be2926e5626d4f16a64d16ed62e1247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _PlayerId: 3
-  _TurnPlayerId: 0
+  _GameStateVersion: 0
 --- !u!114 &3222305667500380568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,7 +400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 1079730544
-  ObjectInterest: 1
+  ObjectInterest: 2
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:

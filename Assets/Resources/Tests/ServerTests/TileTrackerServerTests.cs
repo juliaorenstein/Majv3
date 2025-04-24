@@ -11,7 +11,7 @@ namespace Resources.ServerTests
 		public void Setup()
 		{
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
-			_tileTracker = new(tiles, new FakeFusionManagerServer());
+			_tileTracker = new(tiles, new FusionManagerGlobal());
 			// move all the tiles to the wall. This doesn't happen in TileTrackerServer constructor
 			for (int tileId = 0; tileId < tiles.Count; tileId++)
 			{

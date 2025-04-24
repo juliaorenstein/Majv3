@@ -20,8 +20,9 @@ namespace Resources
 			{ CLoc.LocalPrivateRack, CLoc.OtherPrivateRack1, CLoc.OtherPrivateRack2, CLoc.OtherPrivateRack3 };
 		public List<CLoc> DisplayRacks { get; } = new()
 			{ CLoc.LocalDisplayRack, CLoc.OtherDisplayRack1, CLoc.OtherDisplayRack2, CLoc.OtherDisplayRack3 };
-		private CLoc GetPrivateRackForPlayer(int playerId) => PrivateRacks[( 4 + playerId - GameState.PlayerId) % 4];
-		private CLoc GetDisplayRackForPlayer(int playerId) => DisplayRacks[( 4 + playerId - GameState.PlayerId) % 4];
+		private CLoc GetPrivateRackForPlayer(int playerIx) => PrivateRacks[( 4 + playerIx - GameState.PlayerIx) % 4];
+		private CLoc GetDisplayRackForPlayer(int playerIx) => DisplayRacks[( 4 + playerIx - GameState.PlayerIx) % 4];
+			
 		
 		private readonly Dictionary<CLoc, List<int>> _inverseGameState = new();
 
@@ -97,17 +98,17 @@ namespace Resources
 			
 			// update the tiles that display as private on other players' racks
 			// start for loop at 1 to skip player's own rack
-			for (int playerId = 0; playerId < 4; playerId++)
+			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
 				// skip this process for local player
-				if (GameState.PlayerId == playerId) continue;
+				if (GameState.PlayerIx == playerIx) continue;
 				
-				CLoc privateRack = GetPrivateRackForPlayer(playerId);
+				CLoc privateRack = GetPrivateRackForPlayer(playerIx);
 				// if count already matches, continue
-				if (PrivateRackCountsFromServer[playerId] == _privateRackCounts[playerId]) continue;
+				if (PrivateRackCountsFromServer[playerIx] == _privateRackCounts[playerIx]) continue;
 				// update the count in the privateRackCounts variable and on the UI
-				_privateRackCounts[playerId] = PrivateRackCountsFromServer[playerId];
-				_mono.UpdatePrivateRackCount(privateRack, PrivateRackCountsFromServer[playerId]);
+				_privateRackCounts[playerIx] = PrivateRackCountsFromServer[playerIx];
+				_mono.UpdatePrivateRackCount(privateRack, PrivateRackCountsFromServer[playerIx]);
 			}
 		}
 

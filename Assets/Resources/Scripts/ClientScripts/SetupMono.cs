@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,10 +11,10 @@ namespace Resources
         private InputSender _inputSender;
         private TileTrackerClient _tileTracker;
 
-        public void StartGame(int playerId, out InputSender inputSender)
+        public void StartGame(int playerIx, out InputSender inputSender)
         {
-            GameObject gameManager = GameObject.Find("GameManager");
-            _mono = gameManager.GetComponent<Mono>();
+            Debug.Log("SetupMono.StartGame()");
+            _mono = GetComponent<Mono>();
             
             _inputSender = new();
             inputSender = _inputSender;
@@ -22,12 +23,24 @@ namespace Resources
             List<Tile> tiles = new TileGenerator().GenerateTiles();
             _tileTracker = new(_mono, tiles, inputSender);
             
+            // get my networked game state and exchange tile tracker client
+            var fusionManagerGlobals = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None);
+            if (fusionManagerGlobals.Length > 1) throw new UnityException("There is more than one FusionManagerGlobal object.");
+            FusionManagerGlobal fusionManagerGlobal = fusionManagerGlobals[0];
+            
+           NetworkedGameState myNetworkedGameState = 
+               fusionManagerGlobal.transform.GetChild(playerIx).GetComponent<NetworkedGameState>();
+           myNetworkedGameState.TileTracker = _tileTracker;
+           _tileTracker.GameState = myNetworkedGameState;
+            
             // make the game objects
             GenerateTileGameObjects(_tileTracker);
             
             // find the button handler and add input there
             ButtonHandlerMono buttonHandler = GameObject.Find("Actions").GetComponent<ButtonHandlerMono>();
             buttonHandler.InputSender = _inputSender;
+            
+            Destroy(this);
         }
 
         void GenerateTileGameObjects(TileTrackerClient tileTracker)
@@ -63,7 +76,7 @@ namespace Resources
                 else imageName = newTileTransform.name;
                 newTileTransform.GetComponentInChildren<Image>().sprite 
                     = UnityEngine.Resources.Load<Sprite>($"TileImages/{imageName}");
-                // set mono and tiletracker on Drag Handler
+                // set mono and tileTracker on Drag Handler
                 DragHandlerMono dragHandler = newTileTransform.GetComponentInChildren<DragHandlerMono>();
                 dragHandler.mono = _mono;
                 dragHandler.TileTracker = tileTracker;
@@ -72,16 +85,6 @@ namespace Resources
                 // add this to the list of tile transforms
                 _mono.AllTileTransforms.Add(newTileTransform);
             }
-        }
-
-        public void ConnectTileTrackerToNetworkedGameState(NetworkedGameState networkedGameState)
-        {
-            networkedGameState.TileTracker = _tileTracker;
-            _tileTracker.GameState = networkedGameState;
-            // update the game state on the client side to start the game!
-            _tileTracker.UpdateGameState();
-            // when done with setup, destroy the button this component
-            Destroy(this);
         }
     }
 }

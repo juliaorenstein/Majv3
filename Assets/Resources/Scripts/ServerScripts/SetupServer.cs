@@ -7,14 +7,16 @@ namespace Resources
 	{
 		private TileTrackerServer _tileTracker;
 		
-		public void StartGame(FusionManagerServer fusionManager
+		public void StartGame(FusionManagerGlobal fusionManager
 			, out TileTrackerServer tileTracker, out TurnManagerServer turnManager)
 		{
 			// this will be a duplicate for the host but is good for if/when server is separated out
 			List<Tile> tiles = new TileGenerator().GenerateTiles(); 
 			tileTracker = new(tiles, fusionManager);
-			_tileTracker = tileTracker;
 			turnManager = new(tileTracker, fusionManager);
+			fusionManager.TileTrackerServer = tileTracker;
+			fusionManager.TurnManagerServer = turnManager;
+			_tileTracker = tileTracker;
 
 			Shuffle();
 			Deal();
@@ -38,14 +40,14 @@ namespace Resources
 			}
 		}
 
-		private void Deal(int dealerId = 0)
+		private void Deal(int dealerId = 1)
 		{
 			// 13 tiles to each player
-			for (int playerId = 0; playerId < 4; playerId++)
+			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
 				for (int i = 0; i < 13; i++)
 				{
-					_tileTracker.PickupTileWallToRack(playerId);
+					_tileTracker.PickupTileWallToRack(playerIx);
 				}
 			}
 			

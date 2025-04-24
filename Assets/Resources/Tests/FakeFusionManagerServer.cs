@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Resources
 {
-	public class FakeFusionManagerServer : IFusionManagerServer
+	public class FakeFusionManagerServer
 	{
 		public int PlayerCount { get; set; }
 		public INetworkedGameState[] NetworkedGameStates { get; set; } = { 

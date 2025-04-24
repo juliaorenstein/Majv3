@@ -5,17 +5,17 @@ namespace Resources
 	public class TurnManagerServer
 	{
 		private readonly TileTrackerServer _tileTracker;
-		private readonly FusionManagerServer _fusionManager;
+		private readonly FusionManagerGlobal _fusionManager;
 
-		private int _turnPlayerId = 0;
+		private int _turnPlayerIx = 1;
 
-		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerServer fusionManager)
+		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerGlobal fusionManager)
 		{
 			_tileTracker = tileTracker;
 			_fusionManager = fusionManager;
 		}
 		
-		public void DoDiscard(int playerId, int tileId)
+		public void DoDiscard(int playerIx, int tileId)
 		{
 			if (ValidateDiscard()) // validate that this discard is legit
 			{
@@ -28,32 +28,32 @@ namespace Resources
 			Debug.Log("Turn Manager server: Discard is NOT valid");
 			_tileTracker.SendGameStateToAll(); // if not valid, have their discard move back
 
-			bool ValidateDiscard() => _turnPlayerId == playerId && 
-			                          _tileTracker.GetTileLoc(tileId) == _tileTracker.GetPrivateRackForPlayer(playerId);
+			bool ValidateDiscard() => _turnPlayerIx == playerIx && 
+			                          _tileTracker.GetTileLoc(tileId) == _tileTracker.GetPrivateRackForPlayer(playerIx);
 			
 		}
 		
 		private void NextTurn()
 		{
 			Debug.Log("Next turn");
-			_turnPlayerId = (_turnPlayerId + 1) % 4;
+			_turnPlayerIx = (_turnPlayerIx + 1) % 4 + 1;
 			_tileTracker.SendGameStateToAll();
 		}
 
-		public void DoPickUp(int playerId)
+		public void DoPickUp(int playerIx)
 		{
 			if (ValidatePickUp())
 			{
 				Debug.Log("Turn Manager server: Pick up is valid - picking up");
-				_tileTracker.PickupTileWallToRack(playerId);
+				_tileTracker.PickupTileWallToRack(playerIx);
 				return;
 			}
 			
 			Debug.Log("Turn Manager server: Pick up is NOT valid");
-			_tileTracker.SendGameStateToPlayer(playerId); // if not valid, have their discard move back
-			bool ValidatePickUp() => _turnPlayerId == playerId &&
-			                         _tileTracker.GetLocContents(_tileTracker.GetPrivateRackForPlayer(playerId)).Count +
-			                         _tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(playerId)).Count
+			_tileTracker.SendGameStateToPlayer(playerIx); // if not valid, have their discard move back
+			bool ValidatePickUp() => _turnPlayerIx == playerIx &&
+			                         _tileTracker.GetLocContents(_tileTracker.GetPrivateRackForPlayer(playerIx)).Count +
+			                         _tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(playerIx)).Count
 			                         == 13;
 		}
 	}

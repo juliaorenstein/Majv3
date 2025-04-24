@@ -1,6 +1,4 @@
-using System;
 using Fusion;
-using UnityEngine;
 
 namespace Resources
 {
@@ -11,28 +9,25 @@ namespace Resources
          
          Each client (besides host) will get updates for just their own copy, which they'll use to track their game
          state.*/
+        private FusionManagerGlobal _fusionManagerGlobal;
         [Networked] public int GameStateVersion { get; set; }
-        private int _gameStateVersion = 0;
-        [Networked] public int PlayerId { get; set; }
-        [Networked] public int TurnPlayerId { get; set; }
+        private int _gameStateVersion;
+        [Networked] public PlayerRef Player { get; set; }
+        public int PlayerIx { get; private set; }
+        [Networked] public PlayerRef TurnPlayer { get; set; }
+        public int TurnPlayerIx => _fusionManagerGlobal.PlayerIx(TurnPlayer.PlayerId);
         [Networked, Capacity(152)] private NetworkArray<CLoc> ClientGameStateNetArr => default;
         public CLoc[] ClientGameState => ClientGameStateNetArr.ToArray();
         [Networked, Capacity(4)] private NetworkArray<int> PrivateRackCountsNetArr => default;
         public int[] PrivateRackCounts => PrivateRackCountsNetArr.ToArray();
         public TileTrackerClient TileTracker { get; set; }
-        
 
         public override void Spawned()
         {
-	        bool isLocalInstance = Runner.LocalPlayer.PlayerId == PlayerId;
-	        foreach (PlayerRef player in Runner.ActivePlayers)
-	        {
-		        ReplicateTo(player, isLocalInstance);
-	        }
-	        if (!isLocalInstance) return;
-	        FindObjectsByType<SetupMono>(FindObjectsSortMode.None)[0].ConnectTileTrackerToNetworkedGameState(this);
+	        PlayerIx = transform.GetSiblingIndex();
+	        _fusionManagerGlobal = GetComponentInParent<FusionManagerGlobal>();
         }
-        // BUG: fourth player doesn't receive rack on game start
+      
         public void UpdateClientGameState(CLoc[] clientGameState)
         {
 	        for (int i = 0; i < clientGameState.Length; i++)
@@ -59,8 +54,8 @@ namespace Resources
 	
 	public interface INetworkedGameState
 	{
-		int PlayerId { get; set; }
-		int TurnPlayerId { get; set; }
+		int PlayerIx { get; }
+		int TurnPlayerIx { get; }
 		CLoc[] ClientGameState { get; }
 		int GameStateVersion { get; set; }
 		int[] PrivateRackCounts { get; }

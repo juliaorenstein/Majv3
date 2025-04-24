@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Resources
 {
@@ -11,17 +12,17 @@ namespace Resources
 		private static List<SLoc> DisplayRacks { get; } = new()
 			{ SLoc.DisplayRack0, SLoc.DisplayRack1, SLoc.DisplayRack2, SLoc.DisplayRack3 };
 		private readonly Dictionary<SLoc, List<int>> _locToList = new();
-		public SLoc GetPrivateRackForPlayer(int playerId) => PrivateRacks[playerId];
-		public SLoc GetDisplayRackForPlayer(int playerId) => DisplayRacks[playerId];
+		public SLoc GetPrivateRackForPlayer(int playerIx) => PrivateRacks[playerIx];
+		public SLoc GetDisplayRackForPlayer(int playerIx) => DisplayRacks[playerIx];
 		
 		// Game States
 		private readonly SLoc[] _serverGameState = new SLoc[152]; // location at index n is tile n's location
 		public SLoc[] GameState => (SLoc[])_serverGameState.Clone();
 		private int _gameStateVersion = 0;
 		
-		private readonly IFusionManagerServer _fusionManager;
+		private readonly FusionManagerGlobal _fusionManager;
 
-		public TileTrackerServer(List<Tile> tiles, IFusionManagerServer fusionManager)
+		public TileTrackerServer(List<Tile> tiles, FusionManagerGlobal fusionManager)
 		{
 			InitializeLocToList();
 			AllTiles = tiles;
@@ -68,9 +69,9 @@ namespace Resources
 			SendGameStateToAll();
 		}
 
-		public void PickupTileWallToRack(int playerId)
+		public void PickupTileWallToRack(int playerIx)
 		{
-			SLoc rack = PrivateRacks[playerId];
+			SLoc rack = PrivateRacks[playerIx];
 			int tileId = GetLocContents(SLoc.Wall).Last();
 			MoveTile(tileId, rack);
 		}
@@ -78,16 +79,16 @@ namespace Resources
 		public void SendGameStateToAll()
 		{
 			_gameStateVersion++;
-			for (int playerId = 0; playerId < 4; playerId++)
+			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
-				SendGameStateToPlayer(playerId);
+				SendGameStateToPlayer(playerIx);
 			}
 		}
 
-		public void SendGameStateToPlayer(int playerId)
+		public void SendGameStateToPlayer(int playerIx)
 		{
 			CLoc[] clientGameState = new CLoc[AllTiles.Count];
-			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerId);
+			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerIx);
 			// translates each entry in tileToLoc to an entry for the client
 			// (for ex, tiles on other player's racks show as in the pool)
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
@@ -96,7 +97,7 @@ namespace Resources
 				clientGameState[tileId] = sLocToCLoc[sLoc];
 			}
 
-			INetworkedGameState networkedGameState = _fusionManager.NetworkedGameStates[playerId];
+			INetworkedGameState networkedGameState = _fusionManager.NetworkedGameStates[playerIx];
 			networkedGameState.GameStateVersion = _gameStateVersion;
 			networkedGameState.UpdateClientGameState(clientGameState);
 
@@ -109,20 +110,20 @@ namespace Resources
 			networkedGameState.UpdatePrivateRackCounts(privateRackCounts);
 		}
 
-		Dictionary<SLoc, CLoc> SLocToCLoc(int playerId)
+		Dictionary<SLoc, CLoc> SLocToCLoc(int playerIx)
 		{
 			Dictionary<SLoc, CLoc> ret = new()
 			{
 				// private racks
-				[PrivateRacks[playerId]] = CLoc.LocalPrivateRack,
-				[PrivateRacks[(playerId + 1) % 4]] = CLoc.Pool,
-				[PrivateRacks[(playerId + 2) % 4]] = CLoc.Pool,
-				[PrivateRacks[(playerId + 3) % 4]] = CLoc.Pool,
+				[PrivateRacks[playerIx]] = CLoc.LocalPrivateRack,
+				[PrivateRacks[(playerIx + 1) % 4]] = CLoc.Pool,
+				[PrivateRacks[(playerIx + 2) % 4]] = CLoc.Pool,
+				[PrivateRacks[(playerIx + 3) % 4]] = CLoc.Pool,
 				// display racks
-				[DisplayRacks[playerId]] = CLoc.LocalDisplayRack,
-				[DisplayRacks[(playerId + 1) % 4]] = CLoc.OtherDisplayRack1,
-				[DisplayRacks[(playerId + 2) % 4]] = CLoc.OtherDisplayRack2,
-				[DisplayRacks[(playerId + 3) % 4]] = CLoc.OtherDisplayRack3,
+				[DisplayRacks[playerIx]] = CLoc.LocalDisplayRack,
+				[DisplayRacks[(playerIx + 1) % 4]] = CLoc.OtherDisplayRack1,
+				[DisplayRacks[(playerIx + 2) % 4]] = CLoc.OtherDisplayRack2,
+				[DisplayRacks[(playerIx + 3) % 4]] = CLoc.OtherDisplayRack3,
 				// other
 				[SLoc.Discard] = CLoc.Discard,
 				[SLoc.Wall] = CLoc.Pool
