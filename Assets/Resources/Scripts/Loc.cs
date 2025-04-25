@@ -16,6 +16,7 @@ namespace Resources
 
 	public enum CLoc
 	{
+		Pool,
 		LocalPrivateRack,
 		LocalDisplayRack,
 		OtherPrivateRack1,
@@ -25,6 +26,5 @@ namespace Resources
 		OtherPrivateRack3,
 		OtherDisplayRack3,
 		Discard,
-		Pool
 	}
 }

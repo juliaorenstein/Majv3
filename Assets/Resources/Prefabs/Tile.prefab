@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5052037981564901848}
   m_Layer: 5
   m_Name: Tile
-  m_TagString: Tile
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32,7 +32,6 @@ RectTransform:
   m_Children:
   - {fileID: 6858557103166507500}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -92,7 +91,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6858557103166507500}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -150,9 +148,10 @@ GameObject:
   - component: {fileID: 7499654002693526508}
   - component: {fileID: 5565137307829153259}
   - component: {fileID: 5215893644611468141}
+  - component: {fileID: 1569700760264493596}
   m_Layer: 6
   m_Name: Face
-  m_TagString: Untagged
+  m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -171,7 +170,6 @@ RectTransform:
   m_Children:
   - {fileID: 3508427087922899866}
   m_Father: {fileID: 828321254025056997}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -201,7 +199,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: b913caeb959954d6ea7c98dbe0176b7c, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: -1, y: -1, z: -1, w: -1}
+  m_RaycastPadding: {x: -2, y: -2, z: -2, w: -2}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -270,3 +268,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!114 &1569700760264493596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5383958311940008865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b55e9cb70024fd097cd94c392613697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mono: {fileID: 0}
+  tileId: 0
