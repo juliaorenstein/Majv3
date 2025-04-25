@@ -1,3 +1,4 @@
+using System.Linq;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,6 +11,7 @@ namespace Resources
 		public int playerIx; 
 		private TurnManagerServer _turnManager;
 		private NetworkButtons _previousTurnOptions;
+		private CallHandler _callHandler;
 		
 
 		public override void Spawned()
@@ -24,6 +26,8 @@ namespace Resources
 			if (GetInput(out Input clientInput))
 			{
 				_turnManager ??= GetComponentInParent<FusionManagerGlobal>().TurnManagerServer;
+				_callHandler ??= GetComponentInParent<CallHandler>();
+				
 				// DISCARD
 				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Discard))
 				{
@@ -43,23 +47,36 @@ namespace Resources
 				{
 					Debug.Log("JokerSwap not implemented");
 				}
+				
+				// CALL
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Call))
+				{
+					_callHandler.PlayersThinking.Remove(playerIx);
+					_callHandler.PlayersPassing.Remove(playerIx);
+					_callHandler.PlayersCalling.Add(playerIx);
+				}
 
 				// WAIT
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Wait))
 				{
-					Debug.Log("Wait not implemented");
+					_callHandler.PlayersCalling.Remove(playerIx);
+					_callHandler.PlayersPassing.Remove(playerIx);
+					_callHandler.PlayersThinking.Add(playerIx);
 				}
 				
 				// PASS
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Pass))
 				{
-					Debug.Log("Pass not implemented");
+					_callHandler.PlayersThinking.Remove(playerIx);
+					_callHandler.PlayersCalling.Remove(playerIx);
+					_callHandler.PlayersPassing.Add(playerIx);
 				}
 				
-				// CALL
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Call))
+				// EXPOSE
+				else if (clientInput.Action.WasReleased(_previousTurnOptions, Action.Expose))
 				{
-					Debug.Log("Call not implemented");
+					Debug.Log("Input Receiver: Exposed");
+					_turnManager.DoExpose(playerIx, clientInput.TileId);
 				}
 				
 				// NEVER MIND

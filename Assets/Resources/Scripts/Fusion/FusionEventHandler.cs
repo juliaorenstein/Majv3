@@ -83,9 +83,10 @@ namespace Resources
 			NetworkObject fusionManagerNetworkObject = runner.Spawn(fusionManagerPrefab);
 			fusionManagerNetworkObject.name = "FusionManager";
 			_fusionManagerGlobal = fusionManagerNetworkObject.GetComponent<FusionManagerGlobal>();
+			CallHandler callHandler = fusionManagerNetworkObject.GetComponent<CallHandler>();
 				
 			// tileTracker
-			new SetupServer().StartGame(_fusionManagerGlobal);
+			new SetupServer().StartGame(_fusionManagerGlobal, callHandler);
 				
 			// Run the contents of OnPlayerJoined for host here, because it was logged too early
 			AddPlayerToScene(runner, runner.LocalPlayer);

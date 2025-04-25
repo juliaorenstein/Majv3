@@ -114,16 +114,17 @@ namespace Resources
 				_mono.UpdatePrivateRackCount(privateRack, PrivateRackCountsFromServer[playerIx]);
 			}
 
+			return;
+
 			void UpdateButtons()
 			{
 				// Pick Up - enable if it's my turn and i haven't picked up yet
-				_mono.SetActionButton(Action.PickUp, _fusionManager.IsMyTurn
-					                                     && GetLocContents(CLoc.LocalDisplayRack).Count 
-					                                     + GetLocContents(CLoc.LocalPrivateRack).Count == 13);
+				_mono.SetActionButton(Action.PickUp, _fusionManager.CurrentTurnStage == TurnStage.PickUp 
+				                                     && _fusionManager.IsMyTurn);
 				
-				// Call - enable if it's not the next player's turn - i.e. I didn't just discard
-				_mono.SetActionButton(Action.Call,
-					(_fusionManager.LocalPlayerIx + 1) % 4 != _fusionManager.TurnPlayerIx);
+				// Call - enable if it's not my turn
+				_mono.SetActionButton(Action.Call, _fusionManager.CurrentTurnStage == TurnStage.Call 
+				                                   && !_fusionManager.IsMyTurn);
 			}
 		}
 

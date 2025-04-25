@@ -98,16 +98,17 @@ namespace Resources
 			bool IsRackRearrange() =>
 				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack);
 
-			bool IsDiscard()
-			{
-				if (CurLoc != CLoc.LocalPrivateRack) return false;
-				if (!candidateLocs.Contains(CLoc.Discard)) return false;
-				if (!_fusionManager.IsMyTurn) return false;
-				return TileTracker.GetLocContents(CLoc.LocalDisplayRack).Count
-					+ TileTracker.GetLocContents(CLoc.LocalPrivateRack).Count == 14;
-			}
-			
-			bool IsExpose() => CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalDisplayRack);
+			bool IsDiscard() => _fusionManager.CurrentTurnStage == TurnStage.Discard
+			                    && _fusionManager.IsMyTurn
+			                    && CurLoc == CLoc.LocalPrivateRack
+			                    && candidateLocs.Contains(CLoc.Discard);
+
+
+			bool IsExpose() => _fusionManager.CurrentTurnStage == TurnStage.Expose
+			                   && _fusionManager.IsMyExpose
+			                   && CurLoc == CLoc.LocalPrivateRack
+			                   && candidateLocs.Contains(CLoc.LocalPrivateRack);
+								// TODO: add tile validation
 
 			bool IsJokerExchange() =>
 				CurLoc == CLoc.LocalPrivateRack && TileTracker.DisplayRacks.Intersect(candidateLocs).Any();
@@ -150,8 +151,8 @@ namespace Resources
 			
 			void DoExpose()
 			{
-				Debug.Log("Expose not implemented");
-				MoveBack();
+				InputSender.RequestExpose(tileId);
+				TileTracker.MoveTile(tileId, CLoc.LocalDisplayRack);
 			}
 
 			void DoJokerExchange()

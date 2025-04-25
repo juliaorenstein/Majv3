@@ -6,8 +6,11 @@ namespace Resources
 	{
 		private readonly TileTrackerServer _tileTracker;
 		private readonly FusionManagerGlobal _fusionManager;
+		public CallHandler CallHandler;
 
 		private int _turnPlayerIx = 1;
+		private int _exposingPlayerIx = -1;
+		private int _discardTileId;
 
 		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerGlobal fusionManager)
 		{
@@ -20,8 +23,10 @@ namespace Resources
 			if (ValidateDiscard()) // validate that this discard is legit
 			{
 				Debug.Log("Turn Manager server: Discard is valid - discarding");
+				_discardTileId = tileId;
 				_tileTracker.MoveTile(tileId, SLoc.Discard); // move the tile
-				NextTurn(); // increment the turn
+				CallHandler.StartCalling(); // TODO: don't do this for jokers
+				_fusionManager.CurrentTurnStage = TurnStage.Call;
 				return;
 			}
 			
@@ -30,15 +35,36 @@ namespace Resources
 
 			bool ValidateDiscard() => _turnPlayerIx == playerIx && 
 			                          _tileTracker.GetTileLoc(tileId) == _tileTracker.GetPrivateRackForPlayer(playerIx);
+		}
+		
+		public void StartNextTurn()
+		{
+			Debug.Log("Next turn");
+			
+			_turnPlayerIx = (_turnPlayerIx + 1) % 4;
+			_fusionManager.TurnPlayerIx = _turnPlayerIx;
+			_exposingPlayerIx = -1;
+			_fusionManager.ExposingPlayerIx = -1;
+			_fusionManager.CurrentTurnStage = TurnStage.PickUp;
+			_tileTracker.SendGameStateToAll();
 			
 		}
 		
-		private void NextTurn()
+		public void StartExposeTurn(int exposePlayerIx)
 		{
-			Debug.Log("Next turn");
-			_turnPlayerIx = (_turnPlayerIx + 1) % 4;
+			Debug.Log($"Player {exposePlayerIx} called tile {_discardTileId}");
+			_exposingPlayerIx = exposePlayerIx;
+			_fusionManager.ExposingPlayerIx = exposePlayerIx;
+			_fusionManager.CurrentTurnStage = TurnStage.Expose;
+			DoExpose(exposePlayerIx, _discardTileId);
+		}
+
+		public void DoExpose(int playerIx, int tileId)
+		{
+			Debug.Log($"Player {playerIx} exposed tile {_exposingPlayerIx}");
+			Debug.Assert(playerIx == _exposingPlayerIx);
+			_tileTracker.MoveTile(tileId, _tileTracker.GetDisplayRackForPlayer(playerIx));
 			_tileTracker.SendGameStateToAll();
-			_fusionManager.TurnPlayerIx = _turnPlayerIx;
 		}
 
 		public void DoPickUp(int playerIx)
@@ -46,6 +72,7 @@ namespace Resources
 			if (ValidatePickUp())
 			{
 				Debug.Log("Turn Manager server: Pick up is valid - picking up");
+				_fusionManager.CurrentTurnStage = TurnStage.Discard;
 				_tileTracker.PickupTileWallToRack(playerIx);
 				return;
 			}

@@ -16,8 +16,9 @@ namespace Resources
 		Call = 2,
 		Wait = 3,
 		Pass = 4,
-		NeverMind = 5,
-		JokerSwap = 6
+		Expose = 5,
+		NeverMind = 6,
+		JokerSwap = 7
 	}
 	
 	public class InputSender
@@ -43,11 +44,18 @@ namespace Resources
 			Input.Action.SetDown(Action.Call);
 		}
 
+		public void RequestExpose(int tileId)
+		{
+			Debug.Log("InputSender: Requesting expose");
+			Input.Action.SetDown(Action.Expose);
+			Input.TileId = tileId;
+		}
+
 		public void ClearInput()
 		{
 			//Debug.Log("InputSender: Clearing input");
-			Input.TileId = -1;
 			Input.Action.SetAllUp();
+			Input.TileId = -1;
 		}
 	}
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1114352315642792547}
   - component: {fileID: 1114352315642792544}
   - component: {fileID: -6969063905697161596}
+  - component: {fileID: 6496284287248700223}
   m_Layer: 0
   m_Name: FusionManager
   m_TagString: Untagged
@@ -59,6 +60,7 @@ MonoBehaviour:
   - {fileID: 6394420325422512550}
   NetworkedBehaviours:
   - {fileID: -6969063905697161596}
+  - {fileID: 6496284287248700223}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-6969063905697161596
 MonoBehaviour:
@@ -72,6 +74,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ad18a5c1f2342f7ac4888345e9769c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Players: []
+  _TurnPlayerIx: 0
+  _ExposingPlayerIx: 0
+  _CurrentTurnStage: 0
+--- !u!114 &6496284287248700223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114352315642792559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95e1aede1f314c2c80dec71a03a45885, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayersCalling: 
+  PlayersThinking: 
+  PlayersPassing: 
 --- !u!1 &1590049023482601950
 GameObject:
   m_ObjectHideFlags: 0
