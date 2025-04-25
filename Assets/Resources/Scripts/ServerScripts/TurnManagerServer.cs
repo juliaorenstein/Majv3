@@ -53,8 +53,9 @@ namespace Resources
 			_fusionManager.ExposingPlayerIx = -1;
 			_fusionManager.CurrentTurnStage = TurnStage.PickUp;
 			_tileTracker.SendGameStateToAll();
-
 		}
+		
+		// TODO: do nevermind later
 
 		public void StartExposeTurn(int exposePlayerIx)
 		{

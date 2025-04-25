@@ -106,9 +106,15 @@ namespace Resources
 			                   && candidateLocs.Contains(CLoc.LocalDisplayRack)
 			                   && Tile.AreSame(tileId, _fusionManager.DiscardTileId);
 
-			bool IsJokerExchange() => _fusionManager.CurrentTurnStage is TurnStage.Discard 
-			                          && CurLoc is CLoc.LocalPrivateRack 
-			                          && TileTracker.DisplayRacks.Intersect(candidateLocs).Any();
+			bool IsJokerExchange()
+			{
+				bool res = _fusionManager.CurrentTurnStage is TurnStage.Discard
+				           && CurLoc is CLoc.LocalPrivateRack;
+				CLoc displayRack = TileTracker.DisplayRacks.Intersect(candidateLocs).FirstOrDefault();
+				if (displayRack == default) return false;
+				return TileTracker.GetLocContents(displayRack).Any(Tile.IsJoker);
+				// TODO: this will take more validation to make sure it matches the group
+			}
 
 			void DoRackRearrange()
 			{
