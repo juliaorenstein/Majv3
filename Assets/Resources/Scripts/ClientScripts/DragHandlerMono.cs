@@ -98,20 +98,22 @@ namespace Resources
 			bool IsRackRearrange() =>
 				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack);
 
-			bool IsDiscard() => _fusionManager.CurrentTurnStage == TurnStage.Discard
-			                    && _fusionManager.IsMyTurn
-			                    && CurLoc == CLoc.LocalPrivateRack
+			bool IsDiscard() => ((_fusionManager.CurrentTurnStage is TurnStage.Discard && _fusionManager.IsMyTurn)
+			                    || (_fusionManager.CurrentTurnStage is TurnStage.Expose && _fusionManager.IsMyExpose))
+			                    && CurLoc is CLoc.LocalPrivateRack
 			                    && candidateLocs.Contains(CLoc.Discard);
+								// TODO: add expose validation
 
 
-			bool IsExpose() => _fusionManager.CurrentTurnStage == TurnStage.Expose
+			bool IsExpose() => _fusionManager.CurrentTurnStage is TurnStage.Expose
 			                   && _fusionManager.IsMyExpose
-			                   && CurLoc == CLoc.LocalPrivateRack
-			                   && candidateLocs.Contains(CLoc.LocalPrivateRack);
+			                   && CurLoc is CLoc.LocalPrivateRack
+			                   && candidateLocs.Contains(CLoc.LocalDisplayRack);
 								// TODO: add tile validation
 
-			bool IsJokerExchange() =>
-				CurLoc == CLoc.LocalPrivateRack && TileTracker.DisplayRacks.Intersect(candidateLocs).Any();
+			bool IsJokerExchange() => _fusionManager.CurrentTurnStage is TurnStage.Discard 
+			                          && CurLoc is CLoc.LocalPrivateRack 
+			                          && TileTracker.DisplayRacks.Intersect(candidateLocs).Any();
 
 			void DoRackRearrange()
 			{

@@ -3834,10 +3834,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0db2e324c5984533b51ae6aa0660687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickUpButton: {fileID: 0}
-  callButton: {fileID: 0}
-  waitButton: {fileID: 0}
-  neverMindButton: {fileID: 0}
+  pickUpButton: {fileID: 222246635}
+  callButton: {fileID: 2073511701}
+  waitButton: {fileID: 1766968460}
+  passButton: {fileID: 744881467}
+  neverMindButton: {fileID: 1715751671}
 --- !u!1001 &939201523
 PrefabInstance:
   m_ObjectHideFlags: 0

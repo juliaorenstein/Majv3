@@ -73,7 +73,7 @@ namespace Resources
 				}
 				
 				// EXPOSE
-				else if (clientInput.Action.WasReleased(_previousTurnOptions, Action.Expose))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Expose))
 				{
 					Debug.Log("Input Receiver: Exposed");
 					_turnManager.DoExpose(playerIx, clientInput.TileId);

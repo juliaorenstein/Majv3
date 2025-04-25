@@ -16,12 +16,6 @@ namespace Resources
 		public List<int> PlayersThinking; // players who have pressed the wait button
 		public List<int> PlayersPassing; // players who have pressed the pass button
 
-		public override void Spawned()
-		{
-			TurnManager = GetComponent<FusionManagerGlobal>().TurnManagerServer;
-			TurnManager.CallHandler = this;
-		}
-		
 		public void StartCalling() => _isCallingPeriod = true;
 		
 		public override void FixedUpdateNetwork()
