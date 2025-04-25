@@ -10,7 +10,7 @@ namespace Resources
 
 		private int TurnPlayerIx => _fusionManager.TurnPlayerIx;
 		private int ExposingPlayerIx => _fusionManager.ExposingPlayerIx;
-		private int _discardTileId;
+		public int DiscardTileId => _fusionManager.DiscardTileId;
 
 		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerGlobal fusionManager)
 		{
@@ -23,9 +23,10 @@ namespace Resources
 			if (ValidateDiscard()) // validate that this discard is legit
 			{
 				Debug.Log("Turn Manager server: Discard is valid - discarding");
-				_discardTileId = tileId;
+				_fusionManager.DiscardTileId = tileId;
 				_tileTracker.MoveTile(tileId, SLoc.Discard); // move the tile
-				CallHandler.StartCalling(); // TODO: don't do this for jokers
+				if (Tile.IsJoker(tileId)) CallHandler.WaitForJoker();
+				else CallHandler.StartCalling(); // TODO: don't do this for jokers
 				_fusionManager.CurrentTurnStage = TurnStage.Call;
 				// in case we came here from expose
 				_fusionManager.ExposingPlayerIx = -1;
@@ -57,10 +58,10 @@ namespace Resources
 
 		public void StartExposeTurn(int exposePlayerIx)
 		{
-			Debug.Log($"Player {exposePlayerIx} called tile {_discardTileId}");
+			Debug.Log($"Player {exposePlayerIx} called tile {DiscardTileId}");
 			_fusionManager.ExposingPlayerIx = exposePlayerIx;
 			_fusionManager.CurrentTurnStage = TurnStage.Expose;
-			DoExpose(exposePlayerIx, _discardTileId);
+			DoExpose(exposePlayerIx, DiscardTileId);
 		}
 
 		public void DoExpose(int playerIx, int tileId)
@@ -80,7 +81,7 @@ namespace Resources
 
 			bool ValidateExpose() => _fusionManager.CurrentTurnStage == TurnStage.Expose
 			                         && _fusionManager.ExposingPlayerIx == playerIx 
-			                         && (tileId == _discardTileId 
+			                         && ((tileId == DiscardTileId && !Tile.IsJoker(tileId))
 			                             || _tileTracker.GetTileLoc(tileId) 
 			                             == _tileTracker.GetPrivateRackForPlayer(playerIx));
 }

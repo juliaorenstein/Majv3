@@ -9,6 +9,7 @@ namespace Resources
 		[Networked, Capacity(4)] public NetworkArray<PlayerRef> Players { get; }
 		[Networked] public int TurnPlayerIx { get; set; }
 		[Networked] public int ExposingPlayerIx { get; set; }
+		[Networked] public int DiscardTileId { get; set; }
 		[Networked] public TurnStage CurrentTurnStage { get; set; }
 		
 		private int[] PlayerIds => Players.Select(player => player.PlayerId).ToArray();
@@ -45,7 +46,9 @@ namespace Resources
 		public NetworkArray<PlayerRef> Players { get; }
 		public int TurnPlayerIx { get; }
 		public int LocalPlayerIx { get; }
+		public int DiscardTileId { get; }
 		public bool IsMyTurn { get; }
+		public bool IsMyExpose { get; }
 		int PlayerIx(int playerId);
 		int PlayerIx(PlayerRef playerRef);
 		INetworkedGameState[] NetworkedGameStates { get; set; }

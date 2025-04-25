@@ -89,7 +89,7 @@ namespace Resources.ClientTests
         {
             Tile tile = new(Kind.Joker);
 
-            bool result = tile.IsJoker;
+            bool result = tile.IsJoker();
             
             Assert.IsTrue(result);
         }
@@ -99,7 +99,7 @@ namespace Resources.ClientTests
         {
             Tile tile = new(Kind.FlowerWind, wind: Wind.North);
             
-            bool result = tile.IsJoker;
+            bool result = tile.IsJoker();
             
             Assert.IsFalse(result);
         }

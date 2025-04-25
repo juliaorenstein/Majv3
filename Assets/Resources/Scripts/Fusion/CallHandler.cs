@@ -9,6 +9,7 @@ namespace Resources
 		public TurnManagerServer TurnManager;
 		
 		private bool _isCallingPeriod;
+		private bool _waitingForJoker;
 		private TickTimer _tickTimer;
 		private int discardPlayerIx;
 
@@ -17,21 +18,25 @@ namespace Resources
 		public List<int> PlayersPassing; // players who have pressed the pass button
 
 		public void StartCalling() => _isCallingPeriod = true;
+		public void WaitForJoker() => _waitingForJoker = true;
 		
 		public override void FixedUpdateNetwork()
 		{
-			if (!_isCallingPeriod) return; // quit out if not calling right now
-			if (_tickTimer.Expired(Runner)) // if timer just expired, move to next turn unless anybody is thinking
+			if (!(_isCallingPeriod || _waitingForJoker)) return; // quit out if not calling right now
+			if (_tickTimer.Expired(Runner)) 
 			{
 				if (PlayersThinking.Count == 0) ProcessCalls();
 				return;
 			}
+			if (_waitingForJoker && _tickTimer.IsRunning) return;
+			// if timer just expired, move to next turn unless anybody is thinking
+			// this works for both calling and joker wait
 			if (_tickTimer.IsRunning) // if the timer is running, continue, unless players have all made up mind
 			{
 				if (PlayersPassing.Count + PlayersCalling.Count == 4) ProcessCalls();
 				return;
 			}
-			// if we made it here, we just started the calling period. Set up timer.
+			// if we made it here, we just started the calling or joker period. Set up timer.
 			_tickTimer = TickTimer.CreateFromSeconds(Runner, 2);
 		}
 		
@@ -39,6 +44,7 @@ namespace Resources
 		{
 			// reset fields
 			_isCallingPeriod = false;
+			_waitingForJoker = false;
 			_tickTimer = TickTimer.None;
 			
 			// if there are no callers, go to next turn

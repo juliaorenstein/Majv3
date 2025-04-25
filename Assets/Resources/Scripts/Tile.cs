@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Resources
 {
 	public class Tile
 	{
+		public static List<Tile> AllTiles = new();
+		
 		// properties
 		public int Id { get; private set; }
 		public Kind Kind { get; private set; }
@@ -40,9 +43,11 @@ namespace Resources
 			Suit = suit;
 			Wind = wind;
 			Id = id;
+			AllTiles.Add(this);
 		}
 		
-		public bool IsJoker => Kind == Kind.Joker;
+		public bool IsJoker() => Kind == Kind.Joker;
+		public static bool IsJoker(int tileId) => AllTiles[tileId].IsJoker();
 
 		public override string ToString() => Kind switch
 		{
