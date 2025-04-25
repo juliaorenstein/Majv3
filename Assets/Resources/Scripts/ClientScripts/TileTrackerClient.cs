@@ -122,9 +122,13 @@ namespace Resources
 				_mono.SetActionButton(Action.PickUp, _fusionManager.CurrentTurnStage == TurnStage.PickUp 
 				                                     && _fusionManager.IsMyTurn);
 				
-				// Call - enable if it's not my turn
-				_mono.SetActionButton(Action.Call, _fusionManager.CurrentTurnStage == TurnStage.Call 
-				                                   && !_fusionManager.IsMyTurn);
+				// Call, Wait, Pass - enable if somebody discarded
+				bool state = _fusionManager.CurrentTurnStage == TurnStage.Call && !_fusionManager.IsMyTurn;
+				_mono.SetActionButton(Action.Call, state);
+				_mono.SetActionButton(Action.Wait, state);
+				_mono.SetActionButton(Action.Pass, state);
+				
+				// NeverMind
 			}
 		}
 

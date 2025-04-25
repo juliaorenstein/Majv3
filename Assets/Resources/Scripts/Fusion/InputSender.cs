@@ -44,6 +44,24 @@ namespace Resources
 			Input.Action.SetDown(Action.Call);
 		}
 
+		public void RequestWait()
+		{
+			Debug.Log("InputSender: Requesting wait");
+			Input.Action.SetDown(Action.Wait);
+		}
+
+		public void RequestPass()
+		{
+			Debug.Log("InputSender: Requesting pass");
+			Input.Action.SetDown(Action.Pass);
+		}
+
+		public void RequestNeverMind()
+		{
+			Debug.Log("InputSender: Requesting never mind");
+			Input.Action.SetDown(Action.NeverMind);
+		}
+		
 		public void RequestExpose(int tileId)
 		{
 			Debug.Log("InputSender: Requesting expose");

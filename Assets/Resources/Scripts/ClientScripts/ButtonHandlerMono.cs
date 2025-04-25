@@ -23,21 +23,30 @@ namespace Resources
 		{
 			InputSender.RequestCall();
 			callButton.interactable = false;
+			waitButton.interactable = true;
+			passButton.interactable = true;
 		}
 
 		public void RequestWait()
 		{
-			
+			InputSender.RequestWait();
+			waitButton.interactable = false;
+			callButton.interactable = true;
+			passButton.interactable = true;
 		}
 
 		public void RequestPass()
 		{
-			
+			InputSender.RequestPass();
+			passButton.interactable = false;
+			callButton.interactable = true;
+			waitButton.interactable = true;
 		}
 
 		public void RequestNeverMind()
 		{
-			
+			InputSender.RequestNeverMind();
+			neverMindButton.interactable = false;
 		}
 	}
 }
