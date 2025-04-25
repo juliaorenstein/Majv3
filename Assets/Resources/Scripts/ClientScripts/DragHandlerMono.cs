@@ -21,9 +21,6 @@ namespace Resources
 		private Image _image;
 		private Transform _dragTransform;
 		private Transform _tileTransform;
-		
-		// the position at the tile at the beginning of a drag
-		private Vector3 _startPosition;
 
 		private void Start()
 		{
@@ -37,8 +34,6 @@ namespace Resources
 		{
 			// set parent to dragging GameObject so that tile remains on top of all other UI
 			_image.transform.SetParent(_dragTransform, true);
-			// store start position
-			_startPosition = transform.position;
 			// turn off raycast target while dragging the tile
 			_image.raycastTarget = false;
 		}
@@ -108,8 +103,8 @@ namespace Resources
 			bool IsExpose() => _fusionManager.CurrentTurnStage is TurnStage.Expose
 			                   && _fusionManager.IsMyExpose
 			                   && CurLoc is CLoc.LocalPrivateRack
-			                   && candidateLocs.Contains(CLoc.LocalDisplayRack);
-								// TODO: add tile validation
+			                   && candidateLocs.Contains(CLoc.LocalDisplayRack)
+			                   && Tile.AreSame(tileId, _fusionManager.DiscardTileId);
 
 			bool IsJokerExchange() => _fusionManager.CurrentTurnStage is TurnStage.Discard 
 			                          && CurLoc is CLoc.LocalPrivateRack 
@@ -120,15 +115,13 @@ namespace Resources
 				int siblingIndexOfTileDroppedOn = -1;
 				int rightOfCenter = 0; // using int instead of bool for math down below
 				int movingRight = 0; // same as above
-				foreach (RaycastResult candidate in candidates)
+				foreach (var candidate in candidates.Where(
+					         candidate => candidate.gameObject.CompareTag("Tile")))
 				{
-					if (candidate.gameObject.CompareTag("Tile")) // actually the face has the tag, not the tile itself
-					{
-						siblingIndexOfTileDroppedOn = candidate.gameObject.transform.parent.GetSiblingIndex();
-						rightOfCenter = transform.position.x > candidate.gameObject.transform.position.x ? 1 : 0;
-						movingRight = siblingIndexOfTileDroppedOn > _tileTransform.GetSiblingIndex() ? 1 : 0;
-						break;
-					}
+					siblingIndexOfTileDroppedOn = candidate.gameObject.transform.parent.GetSiblingIndex();
+					rightOfCenter = transform.position.x > candidate.gameObject.transform.position.x ? 1 : 0;
+					movingRight = siblingIndexOfTileDroppedOn > _tileTransform.GetSiblingIndex() ? 1 : 0;
+					break;
 				}
 				// enable raycast again
 				_image.raycastTarget = true;

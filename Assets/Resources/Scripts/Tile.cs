@@ -49,6 +49,17 @@ namespace Resources
 		public bool IsJoker() => Kind == Kind.Joker;
 		public static bool IsJoker(int tileId) => AllTiles[tileId].IsJoker();
 
+		public static bool AreSame(int tileId1, int tileId2, bool jokerValid = true)
+		{
+			Tile tile1 = AllTiles[tileId1];
+			Tile tile2 = AllTiles[tileId2];
+			if (jokerValid && (tile1.IsJoker() || tile2.IsJoker())) return true;
+			return tile1.Kind == tile2.Kind 
+			       && tile1.Number == tile2.Number
+			       && tile1.Suit == tile2.Suit
+			       && tile1.Wind == tile2.Wind;
+		}
+
 		public override string ToString() => Kind switch
 		{
 			Kind.Dragon => DragonToString,
