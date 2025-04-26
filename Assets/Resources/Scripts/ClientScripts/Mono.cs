@@ -87,11 +87,8 @@ namespace Resources
 			_lerping = true;
 			_locTransform = locTransform;
 			
-			// if loc is the private local rack, set raycast target = True
-			if (locTransform == LocToTransform[CLoc.LocalPrivateRack])
-			{
-				_tileFace.GetComponent<Image>().raycastTarget = true;
-			}
+			// if loc is the private local rack, set raycast target = True. Otherwise, false
+			_tileFace.GetComponent<Image>().raycastTarget = locTransform == LocToTransform[CLoc.LocalPrivateRack];
 		}
 
 		// update the number of tile backs showing on a private rack.
