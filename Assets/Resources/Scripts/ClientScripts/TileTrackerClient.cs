@@ -17,6 +17,8 @@ namespace Resources
 		private readonly int[] _privateRackCounts;
 		private int[] PrivateRackCountsFromServer => GameState.PrivateRackCounts;
 		
+		// TODO: the reason the spaces on the display rack aren't showing is because all we get from server is tile locations, not the location lists themselves
+		
 		private List<CLoc> PrivateRacks { get; } = new() 
 			{ CLoc.LocalPrivateRack, CLoc.OtherPrivateRack1, CLoc.OtherPrivateRack2, CLoc.OtherPrivateRack3 };
 		public List<CLoc> DisplayRacks { get; } = new()
@@ -95,7 +97,15 @@ namespace Resources
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
 				// if tile is already here, quit out
-				if (GameStateFromServer[tileId] == _currentGameState[tileId]) continue;
+				CLoc locFromServer = GameStateFromServer[tileId];
+				if (locFromServer == _currentGameState[tileId]) continue;
+				// special handling for display rack
+				if (DisplayRacks.Contains(locFromServer) 
+				    && tileId == _fusionManager.DiscardTileId
+				    && GetLocContents(locFromServer).Count > 0)
+				{
+					_mono.AddSpaceToDisplayRack(locFromServer);
+				}
 				MoveTile(tileId, GameStateFromServer[tileId]);
 			}
 			

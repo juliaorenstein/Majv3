@@ -50,6 +50,7 @@ namespace Resources
 		// Allow external callers to see contents of list without modifying
 		public List<int> GetLocContents(SLoc loc) => new(_locToList[loc]);
 		
+		// GENERIC MOVE TILE
 		public void MoveTile(int tileId, SLoc newLoc, int ix = -1)
 		{
 			// if tile is already here, quit out
@@ -69,6 +70,7 @@ namespace Resources
 			SendGameStateToAll();
 		}
 
+		// SPECIALTY METHODS
 		public void PickupTileWallToRack(int playerIx)
 		{
 			SLoc rack = PrivateRacks[playerIx];
@@ -76,6 +78,7 @@ namespace Resources
 			MoveTile(tileId, rack);
 		}
 
+		// CLIENT COMMUNICATION
 		public void SendGameStateToAll()
 		{
 			_gameStateVersion++;
@@ -111,6 +114,7 @@ namespace Resources
 			networkedGameState.UpdatePrivateRackCounts(privateRackCounts);
 		}
 
+		// UTILITY
 		Dictionary<SLoc, CLoc> SLocToCLoc(int playerIx)
 		{
 			Dictionary<SLoc, CLoc> ret = new()

@@ -28,7 +28,6 @@ namespace Resources
 				if (Tile.IsJoker(tileId)) CallHandler.WaitForJoker();
 				else CallHandler.StartCalling(); // TODO: don't do this for jokers
 				_fusionManager.CurrentTurnStage = TurnStage.Call;
-				// in case we came here from expose
 				_fusionManager.ExposingPlayerIx = -1;
 				_fusionManager.TurnPlayerIx = playerIx;
 				return;
@@ -85,7 +84,7 @@ namespace Resources
 			                         && ((tileId == DiscardTileId && !Tile.IsJoker(tileId))
 			                             || _tileTracker.GetTileLoc(tileId) 
 			                             == _tileTracker.GetPrivateRackForPlayer(playerIx));
-}
+		}
 
 		public void DoPickUp(int playerIx)
 		{

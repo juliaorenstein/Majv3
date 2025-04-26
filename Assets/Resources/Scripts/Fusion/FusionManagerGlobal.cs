@@ -30,6 +30,7 @@ namespace Resources
 			NetworkedGameStates = transform.GetComponentsInChildren<NetworkedGameState>().ToArray();
 			CurrentTurnStage = TurnStage.Discard;
 			TurnPlayerIx = 1;
+			ExposingPlayerIx = -1;
 		}
 	}
 

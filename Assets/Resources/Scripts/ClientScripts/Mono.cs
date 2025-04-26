@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
-using Debug = System.Diagnostics.Debug;
 
 namespace Resources
 {
@@ -18,6 +17,8 @@ namespace Resources
 		private Button _pass;
 		private Button _neverMind;
 		private Dictionary<Action, Button> _actionToButton;
+
+		private GameObject _displayRackSpace;
 
 		private void Start()
 		{
@@ -57,6 +58,8 @@ namespace Resources
 				{ Action.Pass, _pass },
 				{ Action.NeverMind, _neverMind }
 			};
+			
+			_displayRackSpace = UnityEngine.Resources.Load<GameObject>("Prefabs/Space");
 		}
 		
 		public void MoveTile(int tileId, CLoc loc, int ix = -1)
@@ -104,6 +107,11 @@ namespace Resources
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
 		}
 
+		public void AddSpaceToDisplayRack(CLoc displayRack)
+		{
+			Instantiate(_displayRackSpace, LocToTransform[displayRack]);
+		}
+
 		public void SetActionButton(Action action, bool state) =>
 			_actionToButton[action].interactable = state;
 
@@ -140,6 +148,7 @@ namespace Resources
 		public void MoveTile(int tileId, CLoc loc, int ix = -1);
 		public void UpdatePrivateRackCount(CLoc privateRack, int count);
 		public void SetActionButton(Action action, bool state);
+		public void AddSpaceToDisplayRack(CLoc loc);
 	}
 	
 	// TODO: when a player discards, other players should see the tile move from that rack
