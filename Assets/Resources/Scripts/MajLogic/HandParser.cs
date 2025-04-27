@@ -8,8 +8,19 @@ using UnityEngine;
 
 namespace Resources 
 {
-	public class CardParser
+	public class HandParser
 	{
+		public List<Hand> GetFullList(Hand baseHand)
+		{
+			List<Hand> allPermutations = new();
+			List<Hand> numberPermutations = PermutateNum(baseHand);
+			foreach (Hand hand in numberPermutations)
+			{
+				allPermutations.AddRange(PermutateSuit(hand));
+			}
+			return allPermutations;
+		}
+		
 		public List<Hand> PermutateNum(Hand baseHand)
 		{
 			List<Hand> hands = new() { baseHand };

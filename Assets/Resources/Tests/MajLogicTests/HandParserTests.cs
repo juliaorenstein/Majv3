@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Resources.MajLogicTests
 {
-	public class CardParserTests
+	public class HandParserTests
 	{
 		[Test]
 		public void Hand_IsSameAs_True()
@@ -151,7 +151,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("FFF 8888g FFF 9999r consec")
 			};
 
-			List<Hand> actualResults = new CardParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -174,7 +174,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("DDDDDb NNNN 99999b consec")
 			};
 
-			List<Hand> actualResults = new CardParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -186,7 +186,7 @@ namespace Resources.MajLogicTests
 
 			List<Hand> expectedResults = new() { testBaseHand };
 
-			List<Hand> actualResults = new CardParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -205,7 +205,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("9999g NN E W SS 9999r odd")
 			};
 
-			List<Hand> actualResults = new CardParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		} 
@@ -225,7 +225,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("FFF 1111r FFF 2222g consec")
 			};
 
-			List<Hand> actualResults = new CardParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -244,7 +244,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("DDDDDb NNNN 11111b consec"),
 			};
 
-			List<Hand> actualResults = new CardParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -264,7 +264,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("FF GGGG 2b 0 2b 2b RRRR")
 			};
 
-			List<Hand> actualResults = new CardParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -284,10 +284,19 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("1111r NN E W SS 1111g odd")
 			};
 
-			List<Hand> actualResults = new CardParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		} 
 
+		[Test]
+		public void PermutateAll_BasicConsec()
+		{
+			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r consec");
+
+			List<Hand> results = new HandParser().GetFullList(testBaseHand);
+			
+			Assert.AreEqual(48, results.Count);
+		}
 	}
 }
