@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Resources
@@ -112,6 +113,14 @@ namespace Resources
 				privateRackCounts[rackId] = _locToList[PrivateRacks[rackId]].Count;
 			}
 			networkedGameState.UpdatePrivateRackCounts(privateRackCounts);
+			/*
+			StringBuilder privateRackString = new();
+			for (int rackId = 0; rackId < 4; rackId++)
+			{
+				privateRackCounts.Append(pri)
+			}
+			Debug.Log($"Private rack counts: {privateRackCountString}");
+			*/
 		}
 
 		// UTILITY

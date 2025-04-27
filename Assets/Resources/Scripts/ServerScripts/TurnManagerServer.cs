@@ -4,18 +4,27 @@ namespace Resources
 {
 	public class TurnManagerServer
 	{
+		// TODO: make start game button wait for all players
 		private readonly TileTrackerServer _tileTracker;
 		private readonly FusionManagerGlobal _fusionManager;
+		private readonly ComputerTurn _computerTurn;
 		public CallHandler CallHandler;
+
 
 		private int TurnPlayerIx => _fusionManager.TurnPlayerIx;
 		private int ExposingPlayerIx => _fusionManager.ExposingPlayerIx;
-		public int DiscardTileId => _fusionManager.DiscardTileId;
+		private int DiscardTileId => _fusionManager.DiscardTileId;
 
 		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerGlobal fusionManager)
 		{
 			_tileTracker = tileTracker;
 			_fusionManager = fusionManager;
+			_computerTurn = new(this, tileTracker);
+		}
+
+		public void StartGame()
+		{
+			if (_fusionManager.TurnPlayerIx >= _fusionManager.PlayerCount) _computerTurn.FirstTurn(_fusionManager.TurnPlayerIx);
 		}
 
 		public void DoDiscard(int playerIx, int tileId)
@@ -52,6 +61,13 @@ namespace Resources
 			_fusionManager.ExposingPlayerIx = -1;
 			_fusionManager.CurrentTurnStage = TurnStage.PickUp;
 			_tileTracker.SendGameStateToAll();
+			
+			// check if next player is computer, do computer turn if yes
+			Debug.Log($"Player count: {_fusionManager.PlayerCount}");
+			if (_fusionManager.TurnPlayerIx >= _fusionManager.PlayerCount)
+			{
+				_computerTurn.TakeTurn(_fusionManager.TurnPlayerIx);	
+			}
 		}
 		
 		// TODO: do nevermind later
@@ -98,6 +114,7 @@ namespace Resources
 			
 			Debug.Log("Turn Manager server: Pick up is NOT valid");
 			_tileTracker.SendGameStateToPlayer(playerIx); // if not valid, have their discard move back
+			return;
 
 			bool ValidatePickUp() => _fusionManager.CurrentTurnStage == TurnStage.PickUp &&
 			                         _fusionManager.TurnPlayerIx == playerIx;

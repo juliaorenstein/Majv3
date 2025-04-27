@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Resources
 {
 	public class SetupServer
 	{
 		private TileTrackerServer _tileTracker;
+		private FusionManagerGlobal _fusionManager;
 		
-		public void StartGame(FusionManagerGlobal fusionManager, CallHandler callHandler)
+		public void SetUp(FusionManagerGlobal fusionManager, CallHandler callHandler)
 		{
-			// this will be a duplicate for the host but is good for if/when server is separated out
+			_fusionManager = fusionManager;
 			List<Tile> tiles = new TileGenerator().GenerateTiles(); 
 			_tileTracker = new(tiles, fusionManager);
 			TurnManagerServer turnManager = new(_tileTracker, fusionManager);

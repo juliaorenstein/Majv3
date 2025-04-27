@@ -29,7 +29,7 @@ namespace Resources
 	        // Setup UI once this is spawned
 	        if (Player != Runner.LocalPlayer) return;
 	        SetupMono setupMono = GameObject.Find("GameManager").GetComponent<SetupMono>();
-	        setupMono.StartGame(this);
+	        setupMono.SetUp(this);
         }
       
         public void UpdateClientGameState(CLoc[] clientGameState)

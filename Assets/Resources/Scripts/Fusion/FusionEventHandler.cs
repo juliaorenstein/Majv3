@@ -86,7 +86,11 @@ namespace Resources
 			CallHandler callHandler = fusionManagerNetworkObject.GetComponent<CallHandler>();
 				
 			// tileTracker
-			new SetupServer().StartGame(_fusionManagerGlobal, callHandler);
+			SetupServer setupServer = new();
+			setupServer.SetUp(_fusionManagerGlobal, callHandler);
+			// Connect Button Handler for game start
+			ButtonHandlerMono buttonHandlerMono = GameObject.Find("Actions").GetComponent<ButtonHandlerMono>();
+			buttonHandlerMono.TurnManagerServer = _fusionManagerGlobal.TurnManagerServer;
 				
 			// Run the contents of OnPlayerJoined for host here, because it was logged too early
 			AddPlayerToScene(runner, runner.LocalPlayer);
@@ -95,7 +99,7 @@ namespace Resources
 			SetupMono setupMono = GameObject.Find("GameManager").GetComponent<SetupMono>();
 			NetworkedGameState myNetworkedGameState =
 				_fusionManagerGlobal.GetComponentsInChildren<NetworkedGameState>()[0];
-			setupMono.StartGame(myNetworkedGameState);
+			setupMono.SetUp(myNetworkedGameState);
 		}
 		
 		public void OnSceneLoadStart(NetworkRunner runner)

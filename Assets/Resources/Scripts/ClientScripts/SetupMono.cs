@@ -12,9 +12,9 @@ namespace Resources
         private TileTrackerClient _tileTracker;
         private NetworkedGameState _myGameState;
 
-        public void StartGame(NetworkedGameState myNetworkedGameState)
+        public void SetUp(NetworkedGameState myNetworkedGameState)
         {
-            Debug.Log("SetupMono.StartGame()");
+            Debug.Log("SetupMono.SetUp()");
             _mono = GetComponent<Mono>();
             
             _inputSender = new();
@@ -43,7 +43,7 @@ namespace Resources
             Destroy(this);
         }
 
-        void GenerateTileGameObjects()
+        private void GenerateTileGameObjects()
         {
             int flowerCounter = 0;
             GameObject tilePrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/Tile");
