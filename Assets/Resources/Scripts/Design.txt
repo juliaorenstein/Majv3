@@ -41,13 +41,23 @@ TURN MANAGER
 - On a player's turn:
     1. Turn player has Pick Up button enabled (EXCEPT FIRST TURN)
     2. Turn player presses Pick Up
-        a. Pick Up button is disabled
+        a.Pick Up button is disabled
         b. Client requests pick up from host via input action
         c. Host deals next wall tile to client
     3. Turn player discards
         a. Discard is requested
         b. Host validates discard and performs it (All clients see the discard tile on the board)
-        c. Host increments TurnPlayerId
-    4. Return to step 1
+    3. Calling period starts
+        a. For 2 seconds, all players can submit preliminary calls
+        b. If no players have called: turn player id increments, next player can pick up
+        c. If 1 or more players have called:
+            i.  Visual indication to all players that those players called
+            ii. Each call player has option to confirm or cancel. If a player did a preliminary call but does not 
+                    have at least 2 matching or joker tiles in their hand, then they do not have the option to confirm.
+            iii.Once all players confirmed or canceled, tile goes to the next player in the round, expose player ix 
+                    is set to that player
+            iv. Exposing player puts up at least two matching or joker tiles
+            v.  Exposing player discards
+            vi. Expose player ix set to -1, turn player ix set to next player in round
         
     

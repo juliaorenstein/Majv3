@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace Resources
@@ -26,7 +27,7 @@ namespace Resources
 				_fusionManager.DiscardTileId = tileId;
 				_tileTracker.MoveTile(tileId, SLoc.Discard); // move the tile
 				if (Tile.IsJoker(tileId)) CallHandler.WaitForJoker();
-				else CallHandler.StartCalling(); // TODO: don't do this for jokers
+				else CallHandler.StartCalling();
 				_fusionManager.CurrentTurnStage = TurnStage.Call;
 				_fusionManager.ExposingPlayerIx = -1;
 				_fusionManager.TurnPlayerIx = playerIx;
@@ -34,7 +35,7 @@ namespace Resources
 			}
 
 			Debug.Log("Turn Manager server: Discard is NOT valid");
-			_tileTracker.SendGameStateToAll(); // if not valid, have their discard move back
+			_tileTracker.SendGameStateToPlayer(playerIx, true); // if not valid, have their discard move back
 			return;
 
 			bool ValidateDiscard() => ((_fusionManager.CurrentTurnStage is TurnStage.Discard &&
@@ -43,27 +44,7 @@ namespace Resources
 			                            _fusionManager.ExposingPlayerIx == playerIx)) &&
 			                          _tileTracker.GetTileLoc(tileId) == _tileTracker.GetPrivateRackForPlayer(playerIx);
 		}
-
-		public void StartNextTurn()
-		{
-			Debug.Log("Next turn");
-
-			_fusionManager.TurnPlayerIx = (TurnPlayerIx + 1) % 4;
-			_fusionManager.ExposingPlayerIx = -1;
-			_fusionManager.CurrentTurnStage = TurnStage.PickUp;
-			_tileTracker.SendGameStateToAll();
-		}
 		
-		// TODO: do nevermind later
-
-		public void StartExposeTurn(int exposePlayerIx)
-		{
-			Debug.Log($"Player {exposePlayerIx} called tile {DiscardTileId}");
-			_fusionManager.ExposingPlayerIx = exposePlayerIx;
-			_fusionManager.CurrentTurnStage = TurnStage.Expose;
-			DoExpose(exposePlayerIx, DiscardTileId);
-		}
-
 		public void DoExpose(int playerIx, int tileId)
 		{
 			if (ValidateExpose())
@@ -76,7 +57,7 @@ namespace Resources
 			}
 			
 			Debug.Log("Turn Manager server: Expose is NOT valid");
-			_tileTracker.SendGameStateToAll();
+			_tileTracker.SendGameStateToPlayer(playerIx, true);
 			return;
 
 			bool ValidateExpose() => _fusionManager.CurrentTurnStage == TurnStage.Expose
@@ -97,10 +78,56 @@ namespace Resources
 			}
 			
 			Debug.Log("Turn Manager server: Pick up is NOT valid");
-			_tileTracker.SendGameStateToPlayer(playerIx); // if not valid, have their discard move back
+			_tileTracker.SendGameStateToPlayer(playerIx, true); // if not valid, have their discard move back
+			return;
 
-			bool ValidatePickUp() => _fusionManager.CurrentTurnStage == TurnStage.PickUp &&
+			bool ValidatePickUp() => _fusionManager.CurrentTurnStage is TurnStage.PickUp &&
 			                         _fusionManager.TurnPlayerIx == playerIx;
+		}
+
+		public void DoNeverMind(int playerIx)
+		{
+			if (ValidateNeverMind())
+			{
+				Debug.Log("Turn Manager server: Never Mind is valid - returning tile to discard");
+				// TODO: make visual indication that never mind is happening
+				_tileTracker.MoveTile(DiscardTileId, SLoc.Discard);
+				CallHandler.StartCalling();
+				_fusionManager.CurrentTurnStage = TurnStage.Call;
+				_tileTracker.SendGameStateToAll();
+			}
+			Debug.Log("Turn Manager server: Never Mind is NOT valid");
+			_tileTracker.SendGameStateToPlayer(playerIx, true);
+			return;
+				
+			bool ValidateNeverMind()
+			{
+				// checks that the only tile exposed so far is the discard tile
+				return _fusionManager.CurrentTurnStage is TurnStage.Expose
+				       && playerIx == ExposingPlayerIx
+				       && _tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(ExposingPlayerIx)).Last()
+				       == DiscardTileId;
+			}
+		}
+
+		public void StartNextTurn()
+		{
+			Debug.Log("Next turn");
+
+			_fusionManager.TurnPlayerIx = (TurnPlayerIx + 1) % 4;
+			_fusionManager.ExposingPlayerIx = -1;
+			_fusionManager.CurrentTurnStage = TurnStage.PickUp;
+			_tileTracker.SendGameStateToAll();
+		}
+		
+		// TODO: do nevermind later
+
+		public void StartExposeTurn(int exposePlayerIx)
+		{
+			Debug.Log($"Player {exposePlayerIx} called tile {DiscardTileId}");
+			_fusionManager.ExposingPlayerIx = exposePlayerIx;
+			_fusionManager.CurrentTurnStage = TurnStage.Expose;
+			DoExpose(exposePlayerIx, DiscardTileId);
 		}
 	}
 }

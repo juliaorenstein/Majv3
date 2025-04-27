@@ -51,25 +51,20 @@ namespace Resources
 				// CALL
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Call))
 				{
-					_callHandler.PlayersThinking.Remove(playerIx);
-					_callHandler.PlayersPassing.Remove(playerIx);
 					_callHandler.PlayersCalling.Add(playerIx);
 				}
 
 				// WAIT
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Wait))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Confirm))
 				{
 					_callHandler.PlayersCalling.Remove(playerIx);
-					_callHandler.PlayersPassing.Remove(playerIx);
-					_callHandler.PlayersThinking.Add(playerIx);
+					_callHandler.PlayersConfirmed.Add(playerIx);
 				}
 				
 				// PASS
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Pass))
+				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Cancel))
 				{
-					_callHandler.PlayersThinking.Remove(playerIx);
 					_callHandler.PlayersCalling.Remove(playerIx);
-					_callHandler.PlayersPassing.Add(playerIx);
 				}
 				
 				// EXPOSE
@@ -82,7 +77,8 @@ namespace Resources
 				// NEVER MIND
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.NeverMind))
 				{
-					Debug.Log("NeverMind not implemented");
+					Debug.Log("Input Receiver: Never Mind");
+					_turnManager.DoNeverMind(playerIx);
 				}
 			}
 

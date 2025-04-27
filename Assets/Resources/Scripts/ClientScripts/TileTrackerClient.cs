@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Resources
@@ -92,7 +93,6 @@ namespace Resources
 			// TODO: Right now racks at start of game are being sorted by tileId because this goes through tiles by id.
 			// Clear input
 			_inputSender.ClearInput();
-			UpdateButtons();
 			
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
@@ -123,6 +123,8 @@ namespace Resources
 				_privateRackCounts[playerIx] = PrivateRackCountsFromServer[playerIx];
 				_mono.UpdatePrivateRackCount(privateRack, PrivateRackCountsFromServer[playerIx]);
 			}
+			
+			UpdateButtons();
 
 			return;
 
@@ -141,12 +143,6 @@ namespace Resources
 				_mono.SetActionButton(Action.Call, state);
 				_mono.SetActionButton(Action.Wait, state);
 				_mono.SetActionButton(Action.Pass, state);
-				
-				// NeverMind - enable if I called expose but haven't put out any subsequent tiles
-				_mono.SetActionButton(Action.NeverMind
-					, _fusionManager.CurrentTurnStage == TurnStage.Expose 
-					  && _fusionManager.IsMyExpose
-					  && GetTileLoc(_fusionManager.DiscardTileId) is CLoc.LocalDisplayRack);
 			}
 		}
 

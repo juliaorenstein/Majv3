@@ -14,11 +14,10 @@ namespace Resources
 		Discard = 0,
 		PickUp = 1,
 		Call = 2,
-		Wait = 3,
-		Pass = 4,
+		Confirm = 3,
+		Cancel = 4,
 		Expose = 5,
-		NeverMind = 6,
-		JokerSwap = 7
+		JokerSwap = 6
 	}
 	
 	public class InputSender
@@ -44,22 +43,16 @@ namespace Resources
 			Input.Action.SetDown(Action.Call);
 		}
 
-		public void RequestWait()
+		public void RequestConfirm()
 		{
-			Debug.Log("InputSender: Requesting wait");
-			Input.Action.SetDown(Action.Wait);
+			Debug.Log("InputSender: Requesting confirm");
+			Input.Action.SetDown(Action.Confirm);
 		}
 
 		public void RequestPass()
 		{
 			Debug.Log("InputSender: Requesting pass");
-			Input.Action.SetDown(Action.Pass);
-		}
-
-		public void RequestNeverMind()
-		{
-			Debug.Log("InputSender: Requesting never mind");
-			Input.Action.SetDown(Action.NeverMind);
+			Input.Action.SetDown(Action.Cancel);
 		}
 		
 		public void RequestExpose(int tileId)

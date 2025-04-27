@@ -10,7 +10,6 @@ namespace Resources
          
          Each client (besides host) will get updates for just their own copy, which they'll use to track their game
          state.*/
-        private FusionManagerGlobal _fusionManagerGlobal;
         [Networked] public int GameStateVersion { get; set; }
         private int _gameStateVersion;
         [Networked] public PlayerRef Player { get; set; }
@@ -25,7 +24,6 @@ namespace Resources
         public override void Spawned()
         {
 	        PlayerIx = transform.GetSiblingIndex();
-	        _fusionManagerGlobal = GetComponentInParent<FusionManagerGlobal>();
 	        // Setup UI once this is spawned
 	        if (Player != Runner.LocalPlayer) return;
 	        SetupMono setupMono = GameObject.Find("GameManager").GetComponent<SetupMono>();
@@ -46,6 +44,13 @@ namespace Resources
 	        {
 		       PrivateRackCountsNetArr.Set(i, privateRackCounts[i]);
 	        }
+        }
+
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsServer)]
+        public void RpcInvalidMoveNotification(PlayerRef player)
+        {
+	        Debug.Log("You did something wrong or there was a connection issue.");
+	        // TODO: Make a pop-up for this
         }
 
         public override void FixedUpdateNetwork()

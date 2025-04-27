@@ -3128,7 +3128,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 935995765}
         m_TargetAssemblyTypeName: Resources.ButtonHandlerMono, Scripts
-        m_MethodName: RequestPass
+        m_MethodName: RequestCancel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6451,7 +6451,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 935995765}
         m_TargetAssemblyTypeName: Resources.ButtonHandlerMono, Scripts
-        m_MethodName: RequestWait
+        m_MethodName: RequestConfirm
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

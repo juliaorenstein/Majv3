@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 namespace Resources
 {
+	// buttons are also updated in TileTrackerClient (should probably be here but more setup work)
 	public class ButtonHandlerMono : MonoBehaviour
 	{
 		public InputSender InputSender;
 		public Button pickUpButton;
 		public Button callButton;
-		public Button waitButton;
-		public Button passButton;
-		public Button neverMindButton;
+		public Button confirmButton;
+		public Button cancelButton;
 
 		public void RequestPickUp()
 		{
@@ -23,30 +23,20 @@ namespace Resources
 		{
 			InputSender.RequestCall();
 			callButton.interactable = false;
-			waitButton.interactable = true;
-			passButton.interactable = true;
 		}
 
-		public void RequestWait()
+		public void RequestConfirm()
 		{
-			InputSender.RequestWait();
-			waitButton.interactable = false;
-			callButton.interactable = true;
-			passButton.interactable = true;
+			InputSender.RequestConfirm();
+			confirmButton.interactable = false;
+			cancelButton.interactable = false;
 		}
 
-		public void RequestPass()
+		public void RequestCancel()
 		{
 			InputSender.RequestPass();
-			passButton.interactable = false;
-			callButton.interactable = true;
-			waitButton.interactable = true;
-		}
-
-		public void RequestNeverMind()
-		{
-			InputSender.RequestNeverMind();
-			neverMindButton.interactable = false;
+			confirmButton.interactable = false;
+			cancelButton.interactable = false;
 		}
 	}
 }

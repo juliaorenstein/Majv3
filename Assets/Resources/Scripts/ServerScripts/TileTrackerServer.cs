@@ -89,7 +89,7 @@ namespace Resources
 			}
 		}
 
-		public void SendGameStateToPlayer(int playerIx)
+		public void SendGameStateToPlayer(int playerIx, bool invalidNotif = false)
 		{
 			CLoc[] clientGameState = new CLoc[AllTiles.Count];
 			Dictionary<SLoc, CLoc> sLocToCLoc = SLocToCLoc(playerIx);
