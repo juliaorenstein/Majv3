@@ -88,19 +88,19 @@ namespace Resources
 
 	public enum Suit
 	{
+		None,
 		Bam,
 		Crak,
-		Dot,
-		None
+		Dot
 	}
 
 	public enum Wind
 	{
+		None,
 		North,
 		South,
 		East,
 		West,
-		Flower,
-		None
+		Flower
 	}
 }
