@@ -1,14 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Resources 
 {
 	public class CardParser
 	{
-		// TODO: handle evens and odds
 		public Hand GetBaseHand(string handStr)
 		{
 			string[] groupStrings = handStr.Split(" ");
@@ -105,9 +106,13 @@ namespace Resources
 		public List<Hand> PermutateNum(Hand baseHand)
 		{
 			List<Hand> hands = new() { baseHand };
+			if (!baseHand.PermutateNum) return hands;
+			
 			int max = baseHand.Groups.Where(gr => gr.Kind == Kind.Number).Max(gr => gr.Number);
+			int initial = baseHand.EvenOdd ? 2 : 1;
 			int increment = baseHand.EvenOdd ? 2 : 1;
-			for (int i = 1; i + max <= 10; i += increment)
+			
+			for (int i = initial; i + max < 10; i += increment)
 			{
 				Hand newHand = new(baseHand) { Groups = new() };
 				foreach (Group baseGroup in baseHand.Groups)
@@ -255,11 +260,12 @@ namespace Resources
 			Groups = new();
 		}
 
-		public Hand(List<Group> groups, bool permutateNum, bool permutateSuit)
+		public Hand(List<Group> groups, bool permutateNum, bool permutateSuit, bool evenOdd = false)
 		{
 			Groups = groups;
 			PermutateNum = permutateNum;
 			PermutateSuit = permutateSuit;
+			EvenOdd = evenOdd;
 		}
 
 		public Hand(Hand hand)
@@ -267,6 +273,7 @@ namespace Resources
 			Groups = new(hand.Groups);
 			PermutateNum = hand.PermutateNum;
 			PermutateSuit = hand.PermutateSuit;
+			EvenOdd = hand.EvenOdd;
 		}
 
 		public bool IsSameAs(Hand hand) // use instead of equals to compare hand contents
@@ -277,7 +284,9 @@ namespace Resources
 			{
 				if (!Groups[i].Equals(hand.Groups[i])) return false;
 			}
-			return PermutateNum == hand.PermutateNum & PermutateSuit == hand.PermutateSuit;
+			return PermutateNum == hand.PermutateNum
+				&& PermutateSuit == hand.PermutateSuit
+				&& EvenOdd == hand.EvenOdd;
 		}
 		
 		public override string ToString()
@@ -291,6 +300,18 @@ namespace Resources
 			str.Append("\nPermutateSuit: " + PermutateSuit);
 			str.Append("\nEvenOdd: " + EvenOdd);
 			return str.ToString();
+		}
+	}
+	
+	public class HandComparer : IComparer
+	{
+		public int Compare(object x, object y)
+		{
+			if (x is Hand hand1 && y is Hand hand2)
+			{
+				return hand1.IsSameAs(hand2) ? 0 : -1;
+			}
+			throw new AssertionException("Objects being compared are not of type 'Hand'.");
 		}
 	}
 }
