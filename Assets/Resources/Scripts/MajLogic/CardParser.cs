@@ -10,99 +10,6 @@ namespace Resources
 {
 	public class CardParser
 	{
-		public Hand GetBaseHand(string handStr)
-		{
-			string[] groupStrings = handStr.Split(" ");
-			Hand baseHand = new();
-
-			foreach (string str in groupStrings)
-			{
-				switch (str)
-				{
-					case "consec":
-						baseHand.PermutateNum = true;
-						continue;
-					case "even" or "odd":
-						baseHand.PermutateNum = true;
-						baseHand.EvenOdd = true;
-						continue;
-				}
-				
-				Group group = new();
-				char firstChar = str.First();
-				char lastChar = str.Last();
-				
-				group.Count = char.IsLower(lastChar) ? str.Length - 1 : str.Length;
-				
-				group.Kind = firstChar switch
-				{
-					'F' => Kind.FlowerWind,
-					'N' => Kind.FlowerWind,
-					'E' => Kind.FlowerWind,
-					'W' => Kind.FlowerWind,
-					'S' => Kind.FlowerWind,
-					'D' => Kind.Dragon,
-					'0' => Kind.Dragon,
-					'G' => Kind.Dragon,
-					'R' => Kind.Dragon,
-					_ => Kind.Number
-				};
-				
-				// FLOWER WIND
-				if (group.Kind == Kind.FlowerWind)
-				{
-					group.Wind = firstChar switch
-					{
-						'F' => Wind.Flower,
-						'N' => Wind.North,
-						'E' => Wind.East,
-						'W' => Wind.West,
-						'S' => Wind.South,
-						_ => throw new UnityException("Invalid wind")
-					};
-				}
-				
-				// DRAGON
-				else if (group.Kind == Kind.Dragon)
-				{
-					baseHand.PermutateSuit = true;
-					group.Suit = firstChar switch
-					{
-						'G' => Suit.Bam,
-						'R' => Suit.Crak,
-						'0' => Suit.Dot,
-						_ => Suit.None
-					};
-
-					// if suit is assigned, this is a non-flexible dragon
-					group.NonFlexDragon = group.Suit != Suit.None;
-
-					group.Suit = group.Suit == Suit.None ? lastChar switch
-					{
-						'g' => Suit.Bam,
-						'r' => Suit.Crak,
-						_ => Suit.Dot
-					} : group.Suit;
-				}
-
-				// NUMBER
-				else
-				{
-					baseHand.PermutateSuit = true;
-					int.TryParse(firstChar.ToString(), out group.Number);
-					if (group.Number == default) throw new UnityException("Invalid number");
-					group.Suit = lastChar switch
-					{
-						'g' => Suit.Bam,
-						'r' => Suit.Crak,
-						_ => Suit.Dot
-					};
-				}
-				baseHand.Groups.Add(group);
-			}
-			return baseHand;
-		}
-
 		public List<Hand> PermutateNum(Hand baseHand)
 		{
 			List<Hand> hands = new() { baseHand };
@@ -274,6 +181,99 @@ namespace Resources
 			PermutateNum = hand.PermutateNum;
 			PermutateSuit = hand.PermutateSuit;
 			EvenOdd = hand.EvenOdd;
+		}
+		
+		public static Hand GetBaseHand(string handStr)
+		{
+			string[] groupStrings = handStr.Split(" ");
+			Hand baseHand = new();
+
+			foreach (string str in groupStrings)
+			{
+				switch (str)
+				{
+					case "consec":
+						baseHand.PermutateNum = true;
+						continue;
+					case "even" or "odd":
+						baseHand.PermutateNum = true;
+						baseHand.EvenOdd = true;
+						continue;
+				}
+				
+				Group group = new();
+				char firstChar = str.First();
+				char lastChar = str.Last();
+				
+				group.Count = char.IsLower(lastChar) ? str.Length - 1 : str.Length;
+				
+				group.Kind = firstChar switch
+				{
+					'F' => Kind.FlowerWind,
+					'N' => Kind.FlowerWind,
+					'E' => Kind.FlowerWind,
+					'W' => Kind.FlowerWind,
+					'S' => Kind.FlowerWind,
+					'D' => Kind.Dragon,
+					'0' => Kind.Dragon,
+					'G' => Kind.Dragon,
+					'R' => Kind.Dragon,
+					_ => Kind.Number
+				};
+				
+				// FLOWER WIND
+				if (group.Kind == Kind.FlowerWind)
+				{
+					group.Wind = firstChar switch
+					{
+						'F' => Wind.Flower,
+						'N' => Wind.North,
+						'E' => Wind.East,
+						'W' => Wind.West,
+						'S' => Wind.South,
+						_ => throw new UnityException("Invalid wind")
+					};
+				}
+				
+				// DRAGON
+				else if (group.Kind == Kind.Dragon)
+				{
+					baseHand.PermutateSuit = true;
+					group.Suit = firstChar switch
+					{
+						'G' => Suit.Bam,
+						'R' => Suit.Crak,
+						'0' => Suit.Dot,
+						_ => Suit.None
+					};
+
+					// if suit is assigned, this is a non-flexible dragon
+					group.NonFlexDragon = group.Suit != Suit.None;
+
+					group.Suit = group.Suit == Suit.None ? lastChar switch
+					{
+						'g' => Suit.Bam,
+						'r' => Suit.Crak,
+						_ => Suit.Dot
+					} : group.Suit;
+				}
+
+				// NUMBER
+				else
+				{
+					baseHand.PermutateSuit = true;
+					int.TryParse(firstChar.ToString(), out group.Number);
+					if (group.Number == default) throw new UnityException("Invalid number");
+					group.Suit = lastChar switch
+					{
+						'g' => Suit.Bam,
+						'r' => Suit.Crak,
+						_ => Suit.Dot
+					};
+				}
+				baseHand.Groups.Add(group);
+			}
+			return baseHand;
 		}
 
 		public bool IsSameAs(Hand hand) // use instead of equals to compare hand contents
