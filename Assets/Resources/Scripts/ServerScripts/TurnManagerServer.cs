@@ -12,7 +12,7 @@ namespace Resources
 
 		private int TurnPlayerIx => _fusionManager.TurnPlayerIx;
 		private int ExposingPlayerIx => _fusionManager.ExposingPlayerIx;
-		public int DiscardTileId => _fusionManager.DiscardTileId;
+		private int DiscardTileId => _fusionManager.DiscardTileId;
 
 		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerGlobal fusionManager)
 		{
@@ -47,13 +47,17 @@ namespace Resources
 			_tileTracker.SendGameStateToPlayer(playerIx, true); // if not valid, have their discard move back
 			return;
 
-			bool ValidateDiscard() => ((_fusionManager.CurrentTurnStage is TurnStage.Discard &&
-			                            _fusionManager.TurnPlayerIx == playerIx) ||
-			                           (_fusionManager.CurrentTurnStage is TurnStage.Expose &&
-			                            _fusionManager.ExposingPlayerIx == playerIx)) &&
-			                          _tileTracker.GetTileLoc(tileId) == _tileTracker.GetPrivateRackForPlayer(playerIx);
+			bool ValidateDiscard()
+			{
+				if (_tileTracker.GetTileLoc(tileId) != _tileTracker.GetPrivateRackForPlayer(playerIx)) return false;
+				if (_fusionManager.CurrentTurnStage is TurnStage.Discard
+				    && _fusionManager.TurnPlayerIx == playerIx) return true;
+				return _fusionManager.CurrentTurnStage is TurnStage.Expose
+				       && _fusionManager.ExposingPlayerIx == playerIx
+				       && _fusionManager.numTilesExposedThisTurn > 2;
+			}
 		}
-		
+
 		public void DoExpose(int playerIx, int tileId)
 		{
 			if (ValidateExpose())
