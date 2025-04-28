@@ -131,18 +131,15 @@ namespace Resources
 			void UpdateButtons()
 			{
 				// Pick Up - enable if it's my turn and I haven't picked up yet
-				_mono.SetActionButton(Action.PickUp
-					, _fusionManager.CurrentTurnStage == TurnStage.PickUp 
-					  && _fusionManager.IsMyTurn);
+				bool state = _fusionManager.CurrentTurnStage == TurnStage.PickUp && _fusionManager.IsMyTurn;
+				_mono.SetActionButton(Action.PickUp, state);
 				
-				// Call, Wait, Pass - enable if somebody discarded
-				bool state = _fusionManager.CurrentTurnStage == TurnStage.Call 
-				             && !_fusionManager.IsMyTurn
-				             && !Tile.IsJoker(_fusionManager.DiscardTileId)
-				             && _fusionManager.CurrentTurnStage != TurnStage.PickUp;
+				// Call - enable if somebody discarded
+				state = _fusionManager.CurrentTurnStage == TurnStage.Call 
+				        && !_fusionManager.IsMyTurn
+				        && !Tile.IsJoker(_fusionManager.DiscardTileId)
+				        && _fusionManager.CurrentTurnStage != TurnStage.PickUp;
 				_mono.SetActionButton(Action.Call, state);
-				_mono.SetActionButton(Action.Wait, state);
-				_mono.SetActionButton(Action.Pass, state);
 			}
 		}
 

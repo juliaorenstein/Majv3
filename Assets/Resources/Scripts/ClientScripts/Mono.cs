@@ -13,9 +13,8 @@ namespace Resources
 
 		private Button _pickUp;
 		private Button _call;
-		private Button _wait;
-		private Button _pass;
-		private Button _neverMind;
+		private Button _confirm;
+		private Button _cancel;
 		private Dictionary<Action, Button> _actionToButton;
 
 		private GameObject _displayRackSpace;
@@ -47,16 +46,14 @@ namespace Resources
 			
 			_pickUp = GameObject.Find("Pick Up").GetComponent<Button>();
 			_call = GameObject.Find("Call").GetComponent<Button>();
-			_wait = GameObject.Find("Wait").GetComponent<Button>();
-			_pass = GameObject.Find("Pass").GetComponent<Button>();
-			_neverMind = GameObject.Find("Never Mind").GetComponent<Button>();
+			_confirm = GameObject.Find("Confirm").GetComponent<Button>();
+			_cancel = GameObject.Find("Cancel").GetComponent<Button>();
 			_actionToButton = new()
 			{
 				{ Action.PickUp, _pickUp },
 				{ Action.Call, _call },
-				{ Action.Wait, _wait },
-				{ Action.Pass, _pass },
-				{ Action.NeverMind, _neverMind }
+				{ Action.Confirm, _confirm },
+				{ Action.Cancel, _cancel }
 			};
 			
 			_displayRackSpace = UnityEngine.Resources.Load<GameObject>("Prefabs/Space");

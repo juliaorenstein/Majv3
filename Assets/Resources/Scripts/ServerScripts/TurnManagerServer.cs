@@ -7,6 +7,7 @@ namespace Resources
 	{
 		private readonly TileTrackerServer _tileTracker;
 		private readonly FusionManagerGlobal _fusionManager;
+		private readonly ComputerTurn _computerTurn;
 		public CallHandler CallHandler;
 
 		private int TurnPlayerIx => _fusionManager.TurnPlayerIx;
@@ -17,13 +18,20 @@ namespace Resources
 		{
 			_tileTracker = tileTracker;
 			_fusionManager = fusionManager;
+			_computerTurn = new(this, tileTracker);
+		}
+
+		public void StartGame()
+		{
+			Debug.Log("Starting game");
+			_computerTurn.FirstTurn(TurnPlayerIx);
 		}
 
 		public void DoDiscard(int playerIx, int tileId)
 		{
 			if (ValidateDiscard()) // validate that this discard is legit
 			{
-				Debug.Log("Turn Manager server: Discard is valid - discarding");
+				Debug.Log($"Turn Manager server: Discard is valid - discarding tile {tileId}");
 				_fusionManager.DiscardTileId = tileId;
 				_tileTracker.MoveTile(tileId, SLoc.Discard); // move the tile
 				if (Tile.IsJoker(tileId)) CallHandler.WaitForJoker();
@@ -85,39 +93,17 @@ namespace Resources
 			                         _fusionManager.TurnPlayerIx == playerIx;
 		}
 
-		public void DoNeverMind(int playerIx)
-		{
-			if (ValidateNeverMind())
-			{
-				Debug.Log("Turn Manager server: Never Mind is valid - returning tile to discard");
-				// TODO: make visual indication that never mind is happening
-				_tileTracker.MoveTile(DiscardTileId, SLoc.Discard);
-				CallHandler.StartCalling();
-				_fusionManager.CurrentTurnStage = TurnStage.Call;
-				_tileTracker.SendGameStateToAll();
-			}
-			Debug.Log("Turn Manager server: Never Mind is NOT valid");
-			_tileTracker.SendGameStateToPlayer(playerIx, true);
-			return;
-				
-			bool ValidateNeverMind()
-			{
-				// checks that the only tile exposed so far is the discard tile
-				return _fusionManager.CurrentTurnStage is TurnStage.Expose
-				       && playerIx == ExposingPlayerIx
-				       && _tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(ExposingPlayerIx)).Last()
-				       == DiscardTileId;
-			}
-		}
-
 		public void StartNextTurn()
 		{
+			// TODO: maybe make pickup button available but allow calling / don't increment turn until player picks up
 			Debug.Log("Next turn");
 
 			_fusionManager.TurnPlayerIx = (TurnPlayerIx + 1) % 4;
 			_fusionManager.ExposingPlayerIx = -1;
 			_fusionManager.CurrentTurnStage = TurnStage.PickUp;
 			_tileTracker.SendGameStateToAll();
+			
+			if (TurnPlayerIx >= _fusionManager.PlayerCount) _computerTurn.TakeTurn(TurnPlayerIx);
 		}
 		
 		// TODO: do nevermind later

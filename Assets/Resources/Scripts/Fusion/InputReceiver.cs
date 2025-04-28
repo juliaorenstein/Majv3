@@ -54,14 +54,14 @@ namespace Resources
 					_callHandler.PlayersCalling.Add(playerIx);
 				}
 
-				// WAIT
+				// CONFIRM
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Confirm))
 				{
 					_callHandler.PlayersCalling.Remove(playerIx);
 					_callHandler.PlayersConfirmed.Add(playerIx);
 				}
 				
-				// PASS
+				// CANCEL
 				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Cancel))
 				{
 					_callHandler.PlayersCalling.Remove(playerIx);
@@ -72,13 +72,6 @@ namespace Resources
 				{
 					Debug.Log("Input Receiver: Exposed");
 					_turnManager.DoExpose(playerIx, clientInput.TileId);
-				}
-				
-				// NEVER MIND
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.NeverMind))
-				{
-					Debug.Log("Input Receiver: Never Mind");
-					_turnManager.DoNeverMind(playerIx);
 				}
 			}
 

@@ -8,11 +8,20 @@ namespace Resources
 	public class ButtonHandlerMono : MonoBehaviour
 	{
 		public InputSender InputSender;
+		public TurnManagerServer TurnManager;
+		
+		public Button startGame;
 		public Button pickUpButton;
 		public Button callButton;
 		public Button confirmButton;
 		public Button cancelButton;
 
+		public void StartGame()
+		{
+			TurnManager.StartGame();
+			startGame.gameObject.SetActive(false);
+		}
+		
 		public void RequestPickUp()
 		{
 			InputSender.RequestPickUp();
@@ -23,6 +32,8 @@ namespace Resources
 		{
 			InputSender.RequestCall();
 			callButton.interactable = false;
+			confirmButton.interactable = true;
+			cancelButton.interactable = true;
 		}
 
 		public void RequestConfirm()
@@ -34,7 +45,7 @@ namespace Resources
 
 		public void RequestCancel()
 		{
-			InputSender.RequestPass();
+			InputSender.RequestCancel();
 			confirmButton.interactable = false;
 			cancelButton.interactable = false;
 		}

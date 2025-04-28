@@ -90,7 +90,7 @@ namespace Resources
 			setupServer.SetUp(_fusionManagerGlobal, callHandler);
 			// Connect Button Handler for game start
 			ButtonHandlerMono buttonHandlerMono = GameObject.Find("Actions").GetComponent<ButtonHandlerMono>();
-			buttonHandlerMono.TurnManagerServer = _fusionManagerGlobal.TurnManagerServer;
+			buttonHandlerMono.TurnManager = _fusionManagerGlobal.TurnManagerServer;
 				
 			// Run the contents of OnPlayerJoined for host here, because it was logged too early
 			AddPlayerToScene(runner, runner.LocalPlayer);

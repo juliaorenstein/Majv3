@@ -39,6 +39,7 @@ namespace Resources
 		PickUp,
 		Discard,
 		Call,
+		Confirm,
 		Expose
 	}
 	

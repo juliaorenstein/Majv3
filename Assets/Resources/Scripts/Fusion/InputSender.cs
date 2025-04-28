@@ -49,9 +49,9 @@ namespace Resources
 			Input.Action.SetDown(Action.Confirm);
 		}
 
-		public void RequestPass()
+		public void RequestCancel()
 		{
-			Debug.Log("InputSender: Requesting pass");
+			Debug.Log("InputSender: Requesting cancel");
 			Input.Action.SetDown(Action.Cancel);
 		}
 		
