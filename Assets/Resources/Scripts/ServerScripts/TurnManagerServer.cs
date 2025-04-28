@@ -39,6 +39,7 @@ namespace Resources
 				_fusionManager.CurrentTurnStage = TurnStage.Call;
 				_fusionManager.ExposingPlayerIx = -1;
 				_fusionManager.TurnPlayerIx = playerIx;
+				_fusionManager.numTilesExposedThisTurn = 0;
 				return;
 			}
 
@@ -59,6 +60,7 @@ namespace Resources
 			{
 				Debug.Log($"Player {playerIx} exposed tile {tileId}");
 				Debug.Assert(playerIx == ExposingPlayerIx);
+				_fusionManager.numTilesExposedThisTurn += 1;
 				_tileTracker.MoveTile(tileId, _tileTracker.GetDisplayRackForPlayer(playerIx));
 				_tileTracker.SendGameStateToAll();
 				return;
@@ -82,6 +84,8 @@ namespace Resources
 				Debug.Log("Turn Manager server: Pick up is valid - picking up");
 				_fusionManager.CurrentTurnStage = TurnStage.Discard;
 				_tileTracker.PickupTileWallToRack(playerIx);
+				// TODO: do we have a Mah Jongg?
+				
 				return;
 			}
 			

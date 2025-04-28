@@ -45,6 +45,8 @@ namespace Resources
 
 		public void OnEndDrag(PointerEventData eventData)
 		{
+			// TODO: potential refactor. Check chatGPT "Drag Validation Workflow Design" chat for details
+			
 			transform.SetParent(_tileTransform, true);
 			
 			// get list of current raycast results
@@ -75,10 +77,10 @@ namespace Resources
 				DoExpose();
 			}
 
-			else if (IsJokerExchange())
+			else if (IsJokerExchange(out CLoc displayRack, out int exchangeIx))
 			{
 				Debug.Log("Drag: Joker Exchange");
-				DoJokerExchange();
+				DoJokerExchange(displayRack, exchangeIx);
 			}
 
 			else
@@ -93,12 +95,16 @@ namespace Resources
 			bool IsRackRearrange() =>
 				CurLoc == CLoc.LocalPrivateRack && candidateLocs.Contains(CLoc.LocalPrivateRack);
 
-			bool IsDiscard() => ((_fusionManager.CurrentTurnStage is TurnStage.Discard && _fusionManager.IsMyTurn)
-			                    || (_fusionManager.CurrentTurnStage is TurnStage.Expose && _fusionManager.IsMyExpose))
-			                    && CurLoc is CLoc.LocalPrivateRack
-			                    && candidateLocs.Contains(CLoc.Discard);
-								// TODO: add expose validation
-
+			bool IsDiscard()
+			{
+				if (CurLoc is not CLoc.LocalPrivateRack) return false;
+				if (!candidateLocs.Contains(CLoc.Discard)) return false;
+				if (_fusionManager.CurrentTurnStage is TurnStage.Discard && _fusionManager.IsMyTurn) return true;
+				if (_fusionManager.CurrentTurnStage is TurnStage.Expose
+				    && _fusionManager.IsMyExpose
+				    && _fusionManager.numTilesExposedThisTurn > 2) return true;
+				return false;
+			}
 
 			bool IsExpose() => _fusionManager.CurrentTurnStage is TurnStage.Expose
 			                   && _fusionManager.IsMyExpose
@@ -106,14 +112,30 @@ namespace Resources
 			                   && candidateLocs.Contains(CLoc.LocalDisplayRack)
 			                   && Tile.AreSame(tileId, _fusionManager.DiscardTileId);
 
-			bool IsJokerExchange()
-			{
-				bool res = _fusionManager.CurrentTurnStage is TurnStage.Discard
-				           && CurLoc is CLoc.LocalPrivateRack;
-				CLoc displayRack = TileTracker.DisplayRacks.Intersect(candidateLocs).FirstOrDefault();
-				if (displayRack == default) return false;
-				return TileTracker.GetLocContents(displayRack).Any(Tile.IsJoker);
-				// TODO: this will take more validation to make sure it matches the group
+			bool IsJokerExchange(out CLoc displayRack, out int exchangeIx)
+			{ // TODO: need to test this
+				displayRack = default;
+				exchangeIx = -1;
+				if (CurLoc is not CLoc.LocalPrivateRack) return false;
+				if (_fusionManager.CurrentTurnStage is TurnStage.Discard && _fusionManager.IsMyTurn
+				    || _fusionManager.CurrentTurnStage is TurnStage.Expose && _fusionManager.IsMyExpose)
+				{
+					displayRack = TileTracker.DisplayRacks.Intersect(candidateLocs).FirstOrDefault();
+					if (displayRack == default) return false;
+					List<int> displayRackContents = TileTracker.GetLocContents(displayRack);
+					List<int> jokerLocs = displayRackContents.FindAll(Tile.IsJoker);
+					if (jokerLocs.Count == 0) return false;
+
+					// the rack has jokers on it. Now make sure that the tile being offered is valid
+					// this means that at least one joker will have the tile to the left of it be the tile we want
+					// nobody exposes full joker segments, can't happen in the game
+					foreach (int jokerLoc in jokerLocs)
+					{
+						int leftOfJoker = displayRackContents[jokerLoc - 1];
+						if (Tile.AreSame(tileId, leftOfJoker, false)) return true;
+					}
+				}
+				return false;
 			}
 
 			void DoRackRearrange()
@@ -156,9 +178,9 @@ namespace Resources
 				TileTracker.MoveTile(tileId, CLoc.LocalDisplayRack);
 			}
 
-			void DoJokerExchange()
+			void DoJokerExchange(CLoc displayRack, int exchangeIx)
 			{
-				Debug.Log("Joker Exchange not implemented");
+				Debug.Log("Joker Exchange not implmeneted");
 				MoveBack();
 			}
 
