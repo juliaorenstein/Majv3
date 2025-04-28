@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 
 namespace Resources.MajLogicTests
 {
@@ -13,8 +14,8 @@ namespace Resources.MajLogicTests
 				new Group { Count = 3, Kind = Kind.FlowerWind, Wind = Wind.North },
 				new Group { Count = 4, Kind = Kind.Dragon, Suit = Suit.Bam }
 			};
-			Hand hand1 = new Hand(groups, true, false);
-			Hand hand2 = new Hand(new(groups), true, false);
+			Hand hand1 = new Hand(groups, true, false, false, true);
+			Hand hand2 = new Hand(new(groups), true, false, false, true);
 
 			Assert.True(hand1.IsSameAs(hand2));
 		}
@@ -32,8 +33,8 @@ namespace Resources.MajLogicTests
 				new Group { Count = 4, Kind = Kind.Dragon, Suit = Suit.Bam },
 				new Group { Count = 3, Kind = Kind.FlowerWind, Wind = Wind.North }
 			};
-			Hand hand1 = new Hand(groups1, true, false);
-			Hand hand2 = new Hand(groups2, true, false);
+			Hand hand1 = new Hand(groups1, true, false, true, false);
+			Hand hand2 = new Hand(groups2, true, false, true, false);
 
 			Assert.False(hand1.IsSameAs(hand2));
 		}
@@ -151,7 +152,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("FFF 8888g FFF 9999r consec")
 			};
 
-			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -174,7 +175,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("DDDDDb NNNN 99999b consec")
 			};
 
-			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -186,7 +187,7 @@ namespace Resources.MajLogicTests
 
 			List<Hand> expectedResults = new() { testBaseHand };
 
-			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -205,7 +206,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("9999g NN E W SS 9999r odd")
 			};
 
-			List<Hand> actualResults = new HandParser().PermutateNum(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateNum(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		} 
@@ -225,10 +226,11 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("FFF 1111r FFF 2222g consec")
 			};
 
-			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
+		
 		[Test]
 		public void PermutateSuit_Quints()
 		{
@@ -244,7 +246,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("DDDDDb NNNN 11111b consec"),
 			};
 
-			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -264,7 +266,7 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("FF GGGG 2b 0 2b 2b RRRR")
 			};
 
-			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
 		}
@@ -284,17 +286,47 @@ namespace Resources.MajLogicTests
 				Hand.GetBaseHand("1111r NN E W SS 1111g odd")
 			};
 
-			List<Hand> actualResults = new HandParser().PermutateSuit(testBaseHand);
+			List<Hand> actualResults = HandParser.PermutateSuit(testBaseHand);
 
 			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
-		} 
+		}
+
+		[Test]
+		public void PermutateWind_Quints_4Results()
+		{
+			Hand testBaseHand = Hand.GetBaseHand("DDDDDb NNNN 11111b consec anyWind");
+
+			List<Hand> expectedResults = new()
+			{
+				testBaseHand,
+				Hand.GetBaseHand("DDDDDb EEEE 11111b consec anyWind"),
+				Hand.GetBaseHand("DDDDDb WWWW 11111b consec anyWind"),
+				Hand.GetBaseHand("DDDDDb SSSS 11111b consec anyWind"),
+			};
+			
+			List<Hand> actualResults = HandParser.PermutateWind(testBaseHand);
+
+			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
+		}
+		
+		[Test]
+		public void PermutateWind_BasicConsec_1Result()
+		{
+			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r consec");
+
+			List<Hand> expectedResults = new() { testBaseHand, };
+
+			List<Hand> actualResults = HandParser.PermutateWind(testBaseHand);
+
+			CollectionAssert.AreEqual(expectedResults, actualResults, new HandComparer());
+		}
 
 		[Test]
 		public void PermutateAll_BasicConsec()
 		{
 			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r consec");
 
-			List<Hand> results = new HandParser().GetFullList(testBaseHand);
+			List<Hand> results = HandParser.GetAllPermutations(testBaseHand);
 			
 			Assert.AreEqual(48, results.Count);
 		}

@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Resources
 {
-	public class Tile
+	public class Tile : IComparable<Tile>, IComparable
 	{
-		public static List<Tile> AllTiles = new();
+		private static readonly List<Tile> AllTiles = new();
 		
 		// properties
 		public int Id { get; private set; }
@@ -36,7 +36,7 @@ namespace Resources
 			Wind.Flower
 		};
 
-		public Tile(Kind kind, int id = -1, int num = -1, Suit suit = Suit.None, Wind wind = Wind.None)
+		public Tile(Kind kind, int id = -1, int num = 0, Suit suit = Suit.None, Wind wind = Wind.None)
 		{
 			Kind = kind;
 			Number = num;
@@ -76,12 +76,36 @@ namespace Resources
 			Suit.Dot => "Soap",
 			_ => throw new Exception($"Unknown suit")
 		};
+
+		public int CompareTo(Tile other)
+		{
+			if (ReferenceEquals(this, other)) return 0;
+			if (other is null) return 1;
+			// compare by id in real gameplay
+			var idComparison = Id.CompareTo(other.Id);
+			// in unit tests this will do the same (hopefully!)
+			if (idComparison != 0) return idComparison;
+			var kindComparison = Kind.CompareTo(other.Kind);
+			if (kindComparison != 0) return kindComparison;
+			var suitComparison = Suit.CompareTo(other.Suit);
+			if (suitComparison != 0) return suitComparison;
+			var numberComparison = Number.CompareTo(other.Number);
+			if (numberComparison != 0) return numberComparison;
+			return Wind.CompareTo(other.Wind);
+		}
+
+		public int CompareTo(object obj)
+		{
+			if (obj is null) return 1;
+			if (ReferenceEquals(this, obj)) return 0;
+			return obj is Tile other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(Tile)}");
+		}
 	}
 
 	public enum Kind
 	{
-		Number,
 		Dragon,
+		Number,
 		FlowerWind,
 		Joker
 	}

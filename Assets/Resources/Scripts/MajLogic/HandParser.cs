@@ -8,20 +8,31 @@ using UnityEngine;
 
 namespace Resources 
 {
-	public class HandParser
+	public static class HandParser
 	{
-		public List<Hand> GetFullList(Hand baseHand)
+		public static List<Hand> GetAllPermutations(string handStr)
 		{
-			List<Hand> allPermutations = new();
+			Hand baseHand = Hand.GetBaseHand(handStr);
+			return GetAllPermutations(baseHand);
+		}
+		
+		public static List<Hand> GetAllPermutations(Hand baseHand)
+		{
 			List<Hand> numberPermutations = PermutateNum(baseHand);
+			List<Hand> suitPermutations = new();
 			foreach (Hand hand in numberPermutations)
 			{
-				allPermutations.AddRange(PermutateSuit(hand));
+				suitPermutations.AddRange(PermutateSuit(hand));
+			}
+			List<Hand> allPermutations = new();
+			foreach (Hand hand in suitPermutations)
+			{
+				allPermutations.AddRange(PermutateWind(hand));
 			}
 			return allPermutations;
 		}
 		
-		public List<Hand> PermutateNum(Hand baseHand)
+		public static List<Hand> PermutateNum(Hand baseHand)
 		{
 			List<Hand> hands = new() { baseHand };
 			if (!baseHand.PermutateNum) return hands;
@@ -47,10 +58,11 @@ namespace Resources
 			return hands;
 		}
 
-		public List<Hand> PermutateSuit(Hand baseHand)
+		public static List<Hand> PermutateSuit(Hand baseHand)
 		{
 			// TODO: for 1-suit hands this will created duplicates
 			List<Hand> hands = new() { baseHand };
+			if (!baseHand.PermutateSuit) return hands;
 
 			List<Dictionary<Suit, Suit>> suitPermutator = new()
 			{
@@ -91,6 +103,30 @@ namespace Resources
 					{
 						newHand.Groups.Add(new() { Count = baseGroup.Count, Kind = baseGroup.Kind
 							, Number = baseGroup.Number, Suit = suitPermutator[i][baseGroup.Suit] });
+					}
+					else newHand.Groups.Add(baseGroup);
+				}
+				hands.Add(newHand);
+			}
+			return hands;
+		}
+		
+		public static List<Hand> PermutateWind(Hand baseHand)
+		{
+			// assume it starts on North and that this will only happen when 1 wind is in the hand
+			List<Hand> hands = new() { baseHand };
+			if (!baseHand.PermutateWind) return hands;
+
+			List<Wind> windPermutator = new() { Wind.East, Wind.West, Wind.South };
+
+			foreach (Wind wind in windPermutator)
+			{
+				Hand newHand = new(baseHand) { Groups = new() };
+				foreach (Group baseGroup in baseHand.Groups)
+				{
+					if (baseGroup.Kind is Kind.FlowerWind && baseGroup.Wind is not Wind.Flower)
+					{
+						newHand.Groups.Add(new() { Count = baseGroup.Count, Kind = baseGroup.Kind, Wind = wind });
 					}
 					else newHand.Groups.Add(baseGroup);
 				}
@@ -171,6 +207,7 @@ namespace Resources
 		public List<Group> Groups;
 		public bool PermutateNum;
 		public bool PermutateSuit;
+		public bool PermutateWind;
 		public bool EvenOdd;
 
 		public Hand()
@@ -178,11 +215,13 @@ namespace Resources
 			Groups = new();
 		}
 
-		public Hand(List<Group> groups, bool permutateNum, bool permutateSuit, bool evenOdd = false)
+		public Hand(List<Group> groups, bool permutateNum, bool permutateSuit
+			, bool permutateWind, bool evenOdd = false)
 		{
 			Groups = groups;
 			PermutateNum = permutateNum;
 			PermutateSuit = permutateSuit;
+			PermutateWind = permutateWind;
 			EvenOdd = evenOdd;
 		}
 
@@ -191,6 +230,7 @@ namespace Resources
 			Groups = new(hand.Groups);
 			PermutateNum = hand.PermutateNum;
 			PermutateSuit = hand.PermutateSuit;
+			PermutateWind = hand.PermutateWind;
 			EvenOdd = hand.EvenOdd;
 		}
 		
@@ -209,6 +249,9 @@ namespace Resources
 					case "even" or "odd":
 						baseHand.PermutateNum = true;
 						baseHand.EvenOdd = true;
+						continue;
+					case "anyWind":
+						baseHand.PermutateWind = true;
 						continue;
 				}
 				
