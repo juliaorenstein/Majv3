@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Resources 
@@ -365,7 +364,7 @@ namespace Resources
 			{
 				return hand1.IsSameAs(hand2) ? 0 : -1;
 			}
-			throw new AssertionException("Objects being compared are not of type 'Hand'.");
+			throw new UnityException("Objects being compared are not of type 'Hand'.");
 		}
 	}
 }
