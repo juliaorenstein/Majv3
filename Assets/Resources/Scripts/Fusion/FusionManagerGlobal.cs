@@ -20,7 +20,7 @@ namespace Resources
 		public int PlayerIx(int playerId) => Array.IndexOf(PlayerIds, playerId);
 		public int PlayerIx(PlayerRef playerRef) => Array.IndexOf(PlayerIds, playerRef.PlayerId);
 		public INetworkedGameState[] NetworkedGameStates { get; set; }
-		public int PlayerCount => Players.Length;
+		public int PlayerCount => Players.ToArray().Count(player => player != PlayerRef.None);
 		public TurnManagerServer TurnManagerServer;
 		
 

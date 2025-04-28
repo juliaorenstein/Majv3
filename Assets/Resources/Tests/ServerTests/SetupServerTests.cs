@@ -13,7 +13,7 @@ namespace Resources.ServerTests
 		{
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
 			SetupServer setupServer = new();
-			setupServer.StartGame(tiles);
+			setupServer.SetUp(tiles);
 			List<Tile> allTilesInTileTracker = setupServer.tileTracker.AllTiles;
 
 			CollectionAssert.AreEqual(tiles, allTilesInTileTracker);
@@ -24,7 +24,7 @@ namespace Resources.ServerTests
 		{
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
 			SetupServer setupServer = new();
-			setupServer.StartGame(tiles);
+			setupServer.SetUp(tiles);
 			TileTrackerServer tileTracker = setupServer.TileTracker;
 
 			int rack0Count = tileTracker.GetLocContents(SLoc.PrivateRack0).Count;
