@@ -32,6 +32,9 @@ namespace Resources
 			LocToTransform[CLoc.OtherDisplayRack3] = GameObject.Find("Other Rack 3").transform.GetChild(0);
 			LocToTransform[CLoc.Discard] = GameObject.Find("Discard").transform;
 			LocToTransform[CLoc.Pool] = GameObject.Find("Pool").transform;
+			LocToTransform[CLoc.CharlestonSpot1] = GameObject.Find("Charleston").transform.GetChild(0);
+			LocToTransform[CLoc.CharlestonSpot2] = GameObject.Find("Charleston").transform.GetChild(1);
+			LocToTransform[CLoc.CharlestonSpot3] = GameObject.Find("Charleston").transform.GetChild(2);
 			
 			TransformToLoc[LocToTransform[CLoc.LocalPrivateRack]] = CLoc.LocalPrivateRack;
 			TransformToLoc[LocToTransform[CLoc.LocalDisplayRack]] = CLoc.LocalDisplayRack;
@@ -43,6 +46,9 @@ namespace Resources
 			TransformToLoc[LocToTransform[CLoc.OtherDisplayRack3]] = CLoc.OtherDisplayRack3;
 			TransformToLoc[LocToTransform[CLoc.Discard]] = CLoc.Discard;
 			TransformToLoc[LocToTransform[CLoc.Pool]] = CLoc.Pool;
+			TransformToLoc[LocToTransform[CLoc.CharlestonSpot1]] = CLoc.CharlestonSpot1;
+			TransformToLoc[LocToTransform[CLoc.CharlestonSpot2]] = CLoc.CharlestonSpot2;
+			TransformToLoc[LocToTransform[CLoc.CharlestonSpot3]] = CLoc.CharlestonSpot3;
 			
 			_pickUp = GameObject.Find("Pick Up").GetComponent<Button>();
 			_call = GameObject.Find("Call").GetComponent<Button>();
@@ -84,7 +90,7 @@ namespace Resources
 			_lerping = true;
 			_locTransform = locTransform;
 			
-			// if loc is the private local rack, set raycast target = True. Otherwise, false
+			// if loc is the private local rack or charleston, set raycast target = True. Otherwise, false
 			_tileFace.GetComponent<Image>().raycastTarget = locTransform == LocToTransform[CLoc.LocalPrivateRack];
 		}
 
@@ -99,6 +105,28 @@ namespace Resources
 			Transform rackTransform = LocToTransform[privateRack];
 			// activate the tiles in the rack up to count, deactivate the rest
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
+		}
+
+		public void MoveTileCharleston(int tileId, CLoc spot)
+		{
+			Transform tileTransform = AllTileTransforms[tileId];
+			Transform spotTransform = LocToTransform[spot];
+			
+			// get the facts
+			_tileFace = tileTransform.GetChild(0);
+			_startX = _tileFace.position.x;
+			_startY = _tileFace.position.y;
+
+			// set parent to new location and lerp the face
+			tileTransform.SetParent(spotTransform);
+			tileTransform.position = spotTransform.position;
+			
+			_endX = tileTransform.position.x;
+			_endY = tileTransform.position.y;
+			_lerping = true;
+			_locTransform = spotTransform;
+
+			_tileFace.GetComponent<Image>().raycastTarget = true;
 		}
 
 		public void AddSpaceToDisplayRack(CLoc displayRack)

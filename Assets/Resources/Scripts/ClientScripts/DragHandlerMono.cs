@@ -16,11 +16,18 @@ namespace Resources
 		public TileTrackerClient TileTracker;
 		public InputSender InputSender;
 		private FusionManagerGlobal _fusionManager;
+		
 		public int tileId;
 		private CLoc CurLoc => TileTracker.GetTileLoc(tileId);
 		private Image _image;
 		private Transform _dragTransform;
 		private Transform _tileTransform;
+		
+		// charleston spots
+		private Transform _charlestonTransform;
+		private CharlestonPassArray _charlestonPassArr;
+		private readonly List<CLoc> _charlestonSpots = new() 
+			{ CLoc.CharlestonSpot1, CLoc.CharlestonSpot2, CLoc.CharlestonSpot3 };
 
 		private void Start()
 		{
@@ -28,6 +35,8 @@ namespace Resources
 			_dragTransform = GameObject.Find("Dragging").transform;
 			_tileTransform = transform.parent;
 			_fusionManager = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None)[0];
+			_charlestonTransform = GameObject.Find("Charleston").transform;
+			_charlestonPassArr = _charlestonTransform.GetComponent<CharlestonPassArray>();
 		}
 
 		public void OnBeginDrag(PointerEventData eventData)
@@ -81,6 +90,12 @@ namespace Resources
 			{
 				Debug.Log("Drag: Joker Exchange");
 				DoJokerExchange(displayRack, exchangeIx);
+			}
+			
+			else if (IsRackToCharleston())
+			{
+				Debug.Log("Drag: Rack to Charleston");
+				DoRackToCharleston();
 			}
 
 			else
@@ -137,6 +152,10 @@ namespace Resources
 				}
 				return false;
 			}
+			
+			bool IsRackToCharleston() => _fusionManager.CurrentTurnStage == TurnStage.Charleston 
+			                       && CurLoc is CLoc.LocalPrivateRack
+			                       && candidateLocs.Intersect(_charlestonSpots).Any();
 
 			void DoRackRearrange()
 			{
@@ -149,6 +168,8 @@ namespace Resources
 					siblingIndexOfTileDroppedOn = candidate.gameObject.transform.parent.GetSiblingIndex();
 					rightOfCenter = transform.position.x > candidate.gameObject.transform.position.x ? 1 : 0;
 					movingRight = siblingIndexOfTileDroppedOn > _tileTransform.GetSiblingIndex() ? 1 : 0;
+					// charleston band aid
+					if (_tileTransform.parent.parent == _charlestonTransform) movingRight = 0;
 					break;
 				}
 				// enable raycast again
@@ -180,8 +201,21 @@ namespace Resources
 
 			void DoJokerExchange(CLoc displayRack, int exchangeIx)
 			{
-				Debug.Log("Joker Exchange not implmeneted");
+				Debug.Log("Joker Exchange not implemeneted");
 				MoveBack();
+			}
+
+			void DoRackToCharleston()
+			{
+				CLoc spot = candidateLocs.Intersect(_charlestonSpots).First();
+				int arrayIx = _charlestonSpots.IndexOf(spot);
+				int tileCurrentlyInSpot = _charlestonPassArr.TilesToPass[arrayIx];
+				if (tileCurrentlyInSpot > -1)
+				{
+					mono.MoveTile(tileCurrentlyInSpot, CLoc.LocalPrivateRack);
+				}
+				mono.MoveTileCharleston(tileId, spot);
+				_charlestonPassArr.TilesToPass[arrayIx] = tileId;
 			}
 
 			void MoveBack()

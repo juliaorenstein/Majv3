@@ -40,6 +40,9 @@ namespace Resources
             ButtonHandlerMono buttonHandler = GameObject.Find("Actions").GetComponent<ButtonHandlerMono>();
             buttonHandler.InputSender = _inputSender;
             
+            // set up charleston stuff
+            GameObject.Find("Charleston");
+            
             Destroy(this);
         }
 

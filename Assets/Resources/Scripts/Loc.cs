@@ -11,7 +11,8 @@ namespace Resources
 		PrivateRack3,
 		DisplayRack3,
 		Discard,
-		Wall
+		Wall,
+		Charleston
 	}
 
 	public enum CLoc
@@ -26,5 +27,8 @@ namespace Resources
 		OtherPrivateRack3,
 		OtherDisplayRack3,
 		Discard,
+		CharlestonSpot1,
+		CharlestonSpot2,
+		CharlestonSpot3
 	}
 }

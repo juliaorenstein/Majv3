@@ -7,6 +7,8 @@ namespace Resources
 	{
 		public NetworkButtons Action;
 		public int TileId;
+		public int TileId2;
+		public int TileId3;
 	}
 	
 	public enum Action
@@ -17,7 +19,8 @@ namespace Resources
 		Confirm = 3,
 		Cancel = 4,
 		Expose = 5,
-		JokerSwap = 6
+		JokerSwap = 6,
+		CharlestonPass = 7
 	}
 	
 	public class InputSender
@@ -29,6 +32,15 @@ namespace Resources
 			Debug.Log($"InputSender: Requesting discard for tile {tileId}");
 			Input.Action.SetDown(Action.Discard);
 			Input.TileId = tileId;
+		}
+
+		public void RequestCharlestonPass(int[] tileIds)
+		{
+			Debug.Log($"InputSender: Requesting charleston pass for tiles {tileIds[0]}, {tileIds[1]}, {tileIds[2]}");
+			Input.Action.SetDown(Action.CharlestonPass);
+			Input.TileId = tileIds[0];
+			Input.TileId2 = tileIds[1];
+			Input.TileId3 = tileIds[2];
 		}
 
 		public void RequestPickUp()

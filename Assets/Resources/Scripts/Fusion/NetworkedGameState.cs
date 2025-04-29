@@ -18,8 +18,9 @@ namespace Resources
         public CLoc[] ClientGameState => ClientGameStateNetArr.ToArray();
         [Networked, Capacity(4)] private NetworkArray<int> PrivateRackCountsNetArr => default;
         public int[] PrivateRackCounts => PrivateRackCountsNetArr.ToArray();
-        public TileTrackerClient TileTracker { get; set; }
         
+        public TileTrackerClient TileTracker { get; set; }
+
 
         public override void Spawned()
         {

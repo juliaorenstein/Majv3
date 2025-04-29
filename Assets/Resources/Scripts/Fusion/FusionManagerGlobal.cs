@@ -30,7 +30,7 @@ namespace Resources
 		{
 			// initialize NetworkedGameState
 			NetworkedGameStates = transform.GetComponentsInChildren<NetworkedGameState>().ToArray();
-			CurrentTurnStage = TurnStage.Discard;
+			CurrentTurnStage = TurnStage.Charleston;
 			TurnPlayerIx = 1;
 			ExposingPlayerIx = -1;
 			numTilesExposedThisTurn = 0;
@@ -39,10 +39,10 @@ namespace Resources
 
 	public enum TurnStage
 	{
+		Charleston,
 		PickUp,
 		Discard,
 		Call,
-		Confirm,
 		Expose
 	}
 	

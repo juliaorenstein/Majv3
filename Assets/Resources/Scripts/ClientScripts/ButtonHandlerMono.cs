@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,11 +14,20 @@ namespace Resources
 		public Button callButton;
 		public Button confirmButton;
 		public Button cancelButton;
-
+		public Button charlestonPass;
+		private CharlestonPassArray charlestonPassArray;
+		
 		public void StartGame()
 		{
 			TurnManager.StartGame();
 			startGame.gameObject.SetActive(false);
+			charlestonPassArray = charlestonPass.GetComponent<CharlestonPassArray>();
+		}
+
+		public void RequestCharlestonPass()
+		{
+			InputSender.RequestCharlestonPass(charlestonPassArray.TilesToPass);
+			charlestonPass.interactable = false;
 		}
 		
 		public void RequestPickUp()
