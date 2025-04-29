@@ -35,7 +35,10 @@ namespace Resources
 		// Called on client when connecting to server
 		public void OnConnectedToServer(NetworkRunner runner)
 		{
+			Debug.Log("OnConnectedToServer");
+			GameObject.Find("Start Game").SetActive(false);
 		}
+		
 		// Called on server when a client leaves
 		public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
 		{

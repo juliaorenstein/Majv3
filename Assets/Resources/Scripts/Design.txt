@@ -59,5 +59,19 @@ TURN MANAGER
             iv. Exposing player puts up at least two matching or joker tiles
             v.  Exposing player discards
             vi. Expose player ix set to -1, turn player ix set to next player in round
+            
+Notes from call with Mom:
+            
+BAD CALL
+- If a player calls, they need to confirm or cancel
+- If they confirm and the hand is dead for ANY reason (pair, or invalid hand), then the computer exposes the single tile
+    and marks the hand dead, everything else stay private, and gameplay continues
+    
+    
+- call period needs to be longer
+- allow calling for everybody until next player picks up
+- pick up should be renamed "pick"
+ 
+// TODO: 2024 card allows for some groups of nonmatching tiles in consecutives
         
     
