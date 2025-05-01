@@ -2,6 +2,7 @@ namespace Resources
 {
 	public enum SLoc
 	{
+		Wall,
 		PrivateRack0,
 		DisplayRack0,
 		PrivateRack1,
@@ -10,9 +11,7 @@ namespace Resources
 		DisplayRack2,
 		PrivateRack3,
 		DisplayRack3,
-		Discard,
-		Wall,
-		Charleston
+		Discard
 	}
 
 	public enum CLoc

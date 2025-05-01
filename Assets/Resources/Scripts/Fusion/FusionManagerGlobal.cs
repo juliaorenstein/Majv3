@@ -24,6 +24,7 @@ namespace Resources
 		
 		public INetworkedGameState[] NetworkedGameStates { get; set; }
 		public TurnManagerServer TurnManagerServer;
+		public CharlestonHandler CharlestonHandler;
 		
 
 		public override void Spawned()

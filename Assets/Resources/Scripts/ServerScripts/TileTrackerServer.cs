@@ -1,7 +1,7 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UnityEngine;
 
 namespace Resources
 {
@@ -51,11 +51,31 @@ namespace Resources
 		// Allow external callers to see contents of list without modifying
 		public List<int> GetLocContents(SLoc loc) => new(_locToList[loc]);
 		
+		public List<int> GetPrivateRackContentsForPlayer(int playerIx) => 
+			GetLocContents(GetPrivateRackForPlayer(playerIx));
+		public List<int> GetDisplayRackContentsForPlayer(int playerIx) => 
+			GetLocContents(GetDisplayRackForPlayer(playerIx));
+
+		public bool PlayerPrivateRackContains(int playerIx, int tileId) =>
+			GetPrivateRackContentsForPlayer(playerIx).Contains(tileId);
+		public bool PlayerDisplayRackContains(int playerIx, int tileId) => 
+			GetDisplayRackContentsForPlayer(playerIx).Contains(tileId);
+		
+		public void PopulateWall(List<int> tileIds)
+		{
+			foreach (int tileId in tileIds)
+			{
+				_locToList[SLoc.Wall].Add(tileId);
+				_serverGameState[tileId] = SLoc.Wall; // already true by default but just in case
+			}
+			SendGameStateToAll();
+		}
+		
 		// GENERIC MOVE TILE
-		public void MoveTile(int tileId, SLoc newLoc, int ix = -1)
+		public void MoveTile(int tileId, SLoc newLoc, int ix = -1, bool sendToAll = true)
 		{
 			// if tile is already here, quit out
-			if (GameState[tileId] == newLoc) return;
+			if (_serverGameState[tileId] == newLoc) return;
 			
 			// remove tile from current location, add to new location
 			SLoc currLoc = _serverGameState[tileId];
@@ -68,7 +88,9 @@ namespace Resources
 			// update tile location
 			_serverGameState[tileId] = newLoc;
 			
-			SendGameStateToAll();
+			// option not to send to all if batch updating (like dealing and charleston moves)
+			// TODO: batch update for dealing
+			if (sendToAll) SendGameStateToAll();
 		}
 
 		// SPECIALTY METHODS
@@ -90,6 +112,7 @@ namespace Resources
 			}
 		}
 
+		// TODO: implement invalidNotif - tell players if this game state indicates a request was rejected
 		public void SendGameStateToPlayer(int playerIx, bool invalidNotif = false)
 		{
 			CLoc[] clientGameState = new CLoc[AllTiles.Count];
@@ -113,14 +136,6 @@ namespace Resources
 				privateRackCounts[rackId] = _locToList[PrivateRacks[rackId]].Count;
 			}
 			networkedGameState.UpdatePrivateRackCounts(privateRackCounts);
-			/*
-			StringBuilder privateRackString = new();
-			for (int rackId = 0; rackId < 4; rackId++)
-			{
-				privateRackCounts.Append(pri)
-			}
-			Debug.Log($"Private rack counts: {privateRackCountString}");
-			*/
 		}
 
 		// UTILITY

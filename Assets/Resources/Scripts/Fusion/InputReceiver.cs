@@ -10,9 +10,9 @@ namespace Resources
 	{
 		public int playerIx; 
 		private TurnManagerServer _turnManager;
+		private CharlestonHandler _charlestonHandler;
 		private NetworkButtons _previousTurnOptions;
 		private CallHandler _callHandler;
-		
 
 		public override void Spawned()
 		{
@@ -20,13 +20,25 @@ namespace Resources
 			playerIx = transform.GetSiblingIndex();
 		}
 
+		public void Initialize(TurnManagerServer turnManagerServer, CallHandler callHandler, CharlestonHandler charlestonHandler)
+		{
+			_turnManager = turnManagerServer;
+			_callHandler = callHandler;
+			_charlestonHandler = charlestonHandler;
+		}
+
 		public override void FixedUpdateNetwork()
 		{
 			if (!Runner.IsServer) return;
 			if (GetInput(out Input clientInput))
 			{
-				_turnManager ??= GetComponentInParent<FusionManagerGlobal>().TurnManagerServer;
-				_callHandler ??= GetComponentInParent<CallHandler>();
+				// CHARLESTON
+				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.CharlestonPass))
+				{
+					Debug.Log("Input Receiver: Charleston Pass");
+					_charlestonHandler.ReceiveTilesFromPlayer(
+						playerIx, new[] {clientInput.TileId, clientInput.TileId2, clientInput.TileId3});
+				}
 				
 				// DISCARD
 				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Discard))

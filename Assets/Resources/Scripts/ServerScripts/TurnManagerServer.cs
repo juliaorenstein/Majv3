@@ -7,17 +7,18 @@ namespace Resources
 		private readonly TileTrackerServer _tileTracker;
 		private readonly FusionManagerGlobal _fusionManager;
 		private readonly ComputerTurn _computerTurn;
-		public CallHandler CallHandler;
+		private readonly CallHandler _callHandler;
 
 		private int TurnPlayerIx => _fusionManager.TurnPlayerIx;
 		private int ExposingPlayerIx => _fusionManager.ExposingPlayerIx;
 		private int DiscardTileId => _fusionManager.DiscardTileId;
 
-		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerGlobal fusionManager)
+		public TurnManagerServer(TileTrackerServer tileTracker, FusionManagerGlobal fusionManager, CallHandler callHandler)
 		{
 			_tileTracker = tileTracker;
 			_fusionManager = fusionManager;
 			_computerTurn = new(this, tileTracker);
+			_callHandler = callHandler;
 		}
 
 		public void StartGame()
@@ -33,8 +34,8 @@ namespace Resources
 				Debug.Log($"Turn Manager server: Discard is valid - discarding tile {tileId}");
 				_fusionManager.DiscardTileId = tileId;
 				_tileTracker.MoveTile(tileId, SLoc.Discard); // move the tile
-				if (Tile.IsJoker(tileId)) CallHandler.WaitForJoker();
-				else CallHandler.StartCalling();
+				if (Tile.IsJoker(tileId)) _callHandler.WaitForJoker();
+				else _callHandler.StartCalling();
 				_fusionManager.CurrentTurnStage = TurnStage.Call;
 				_fusionManager.ExposingPlayerIx = -1;
 				_fusionManager.TurnPlayerIx = playerIx;

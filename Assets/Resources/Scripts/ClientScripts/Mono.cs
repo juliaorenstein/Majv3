@@ -72,6 +72,7 @@ namespace Resources
 			MoveTile(tileTransform, locTransform, ix);
 		}
 
+		// BUG: moving tile to pool during charleston doesn't reflect on UI
 		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
 			// get the facts
@@ -106,7 +107,7 @@ namespace Resources
 			// activate the tiles in the rack up to count, deactivate the rest
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
 		}
-
+		
 		public void MoveTileCharleston(int tileId, CLoc spot)
 		{
 			Transform tileTransform = AllTileTransforms[tileId];

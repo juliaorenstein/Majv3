@@ -7,7 +7,6 @@ namespace Resources
 	public class ButtonHandlerMono : MonoBehaviour
 	{
 		public InputSender InputSender;
-		public TurnManagerServer TurnManager;
 		
 		public Button startGame;
 		public Button pickUpButton;
@@ -17,16 +16,15 @@ namespace Resources
 		public Button charlestonPass;
 		private CharlestonPassArray charlestonPassArray;
 		
-		public void StartGame()
+		private void Start()
 		{
-			TurnManager.StartGame();
 			startGame.gameObject.SetActive(false);
 			charlestonPassArray = charlestonPass.GetComponent<CharlestonPassArray>();
 		}
 
 		public void RequestCharlestonPass()
 		{
-			InputSender.RequestCharlestonPass(charlestonPassArray.TilesToPass);
+			InputSender.RequestCharlestonPass(charlestonPassArray.tilesToPass);
 			charlestonPass.interactable = false;
 		}
 		

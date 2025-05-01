@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Resources
 {
@@ -14,11 +13,15 @@ namespace Resources
 			_fusionManager = fusionManager;
 			List<Tile> tiles = new TileGenerator().GenerateTiles(); 
 			_tileTracker = new(tiles, fusionManager);
-			TurnManagerServer turnManager = new(_tileTracker, fusionManager);
+			TurnManagerServer turnManager = new(_tileTracker, fusionManager, callHandler);
 			fusionManager.TurnManagerServer = turnManager;
-			turnManager.CallHandler = callHandler;
 			callHandler.TurnManager = turnManager;
-
+			CharlestonHandler charlestonHandler = new(_tileTracker);
+			foreach (InputReceiver receiver in fusionManager.GetComponentsInChildren<InputReceiver>())
+			{
+				receiver.Initialize(turnManager, callHandler, charlestonHandler); // Pass the shared instance
+			}
+			
 			Shuffle();
 			Deal();
 		}
@@ -35,10 +38,7 @@ namespace Resources
 			}
 			
 			// put them on the wall
-			foreach (int tileId in shuffleTileList)
-			{
-				_tileTracker.MoveTile(tileId, SLoc.Wall);
-			}
+			_tileTracker.PopulateWall(shuffleTileList);
 		}
 
 		private void Deal(int dealerId = 1)

@@ -17,7 +17,7 @@ namespace Resources
 		public void FirstTurn(int playerIx)
 		{
 			Debug.Log($"First turn for player {playerIx}");
-			int tileId = _tileTracker.GetLocContents(_tileTracker.GetPrivateRackForPlayer(playerIx)).Last();
+			int tileId = _tileTracker.GetPrivateRackContentsForPlayer(playerIx).Last();
 			_turnManager.DoDiscard(playerIx, tileId);
 		}
 		
@@ -25,7 +25,7 @@ namespace Resources
 		{
 			Debug.Log($"Computer turn for player {playerIx}");
 			_turnManager.DoPickUp(playerIx);
-			int tileId = _tileTracker.GetLocContents(_tileTracker.GetPrivateRackForPlayer(playerIx)).Last();
+			int tileId = _tileTracker.GetPrivateRackContentsForPlayer(playerIx).Last();
 			_turnManager.DoDiscard(playerIx, tileId);
 		}
 	}

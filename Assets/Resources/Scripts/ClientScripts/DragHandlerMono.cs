@@ -35,7 +35,7 @@ namespace Resources
 			_dragTransform = GameObject.Find("Dragging").transform;
 			_tileTransform = transform.parent;
 			_fusionManager = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None)[0];
-			_charlestonTransform = GameObject.Find("Charleston").transform;
+			_charlestonTransform = GameObject.Find("Charleston Pass").transform;
 			_charlestonPassArr = _charlestonTransform.GetComponent<CharlestonPassArray>();
 		}
 
@@ -209,13 +209,13 @@ namespace Resources
 			{
 				CLoc spot = candidateLocs.Intersect(_charlestonSpots).First();
 				int arrayIx = _charlestonSpots.IndexOf(spot);
-				int tileCurrentlyInSpot = _charlestonPassArr.TilesToPass[arrayIx];
+				int tileCurrentlyInSpot = _charlestonPassArr.tilesToPass[arrayIx];
 				if (tileCurrentlyInSpot > -1)
 				{
 					mono.MoveTile(tileCurrentlyInSpot, CLoc.LocalPrivateRack);
 				}
 				mono.MoveTileCharleston(tileId, spot);
-				_charlestonPassArr.TilesToPass[arrayIx] = tileId;
+				_charlestonPassArr.tilesToPass[arrayIx] = tileId;
 			}
 
 			void MoveBack()

@@ -1,7 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Codice.Client.Common.Connection;
-
 
 namespace Resources
 {
@@ -29,7 +26,6 @@ namespace Resources
 		private CLoc GetDisplayRackForPlayer(int playerIx) => DisplayRacks[( 4 + playerIx - GameState.PlayerIx) % 4];
 
 		public int[] TilesToPass = { -1, -1, -1 };
-			
 		
 		private readonly Dictionary<CLoc, List<int>> _inverseGameState = new();
 
