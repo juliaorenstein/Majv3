@@ -78,6 +78,12 @@ namespace Resources
 		public void MoveTile(int tileId, CLoc loc, int ix = -1)
 		{
 			Transform tileTransform = AllTileTransforms[tileId];
+			MoveTile(tileTransform, loc, ix);
+			
+		}
+
+		public void MoveTile(Transform tileTransform, CLoc loc, int ix = -1)
+		{
 			Transform locTransform = LocToTransform[loc];
 			MoveTile(tileTransform, locTransform, ix);
 		}
@@ -86,9 +92,9 @@ namespace Resources
 		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
 			// get the facts
-			_tileFace = tileTransform.GetChild(0);
-			_startX = _tileFace.position.x;
-			_startY = _tileFace.position.y;
+			_lerp.TileFace = tileTransform.GetChild(0);
+			_lerp.StartX = _lerp.TileFace.position.x;
+			_lerp.StartY = _lerp.TileFace.position.y;
 
 			// set parent to new location and lerp the face
 			tileTransform.SetParent(locTransform);
@@ -96,13 +102,13 @@ namespace Resources
 			else tileTransform.SetSiblingIndex(tileTransform.parent.childCount - 1);
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locTransform);
 			
-			_endX = tileTransform.position.x;
-			_endY = tileTransform.position.y;
-			_lerping = true;
-			_locTransform = locTransform;
+			_lerp.EndX = tileTransform.position.x;
+			_lerp.EndY = tileTransform.position.y;
+			_lerp.LocTransform = locTransform;
+			_lerp.Active = true;
 			
 			// if loc is the private local rack or charleston, set raycast target = True. Otherwise, false
-			_tileFace.GetComponent<Image>().raycastTarget = locTransform == LocToTransform[CLoc.LocalPrivateRack];
+			_lerp.TileFace.GetComponent<Image>().raycastTarget = locTransform == LocToTransform[CLoc.LocalPrivateRack];
 		}
 
 		// update the number of tile backs showing on a private rack.
@@ -118,40 +124,18 @@ namespace Resources
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
 		}
 		
-		public void MoveTileCharlestonBox(int tileId, CLoc spot)
-		{
-			Transform tileTransform = AllTileTransforms[tileId];
-			Transform spotTransform = LocToTransform[spot];
-			
-			// get the facts
-			_tileFace = tileTransform.GetChild(0);
-			_startX = _tileFace.position.x;
-			_startY = _tileFace.position.y;
-
-			// set parent to new location and lerp the face
-			tileTransform.SetParent(spotTransform);
-			tileTransform.position = spotTransform.position;
-			
-			_endX = tileTransform.position.x;
-			_endY = tileTransform.position.y;
-			_lerping = true;
-			_locTransform = spotTransform;
-
-			_tileFace.GetComponent<Image>().raycastTarget = true;
-		}
-		
 		public void MoveCharlestonBoxOnSubmit()
 		{
 			int dir = 1; // TODO: update dir correctly
 			int rack = 1 - dir;
 
-			_tileFace = _charlestonBox; // not technically a tile face here, but oh well
-			_startX = _charlestonBox.position.x;
-			_startY = _charlestonBox.position.y;
-			_endX = _charlestonX;
-			_endY = _charlestonY[rack];
-			_locTransform = null;
-			_lerping = true;
+			_lerp.TileFace = _charlestonBox; // not technically a tile face here, but oh well
+			_lerp.StartX = _charlestonBox.position.x;
+			_lerp.StartY = _charlestonBox.position.y;
+			_lerp.EndX = _charlestonX;
+			_lerp.EndY = _charlestonY[rack];
+			_lerp.LocTransform = null;
+			_lerp.Active = true;
 		}
 
 		public void MoveOtherPlayersCharlestonOnSubmit(CLoc privateRack, int numTiles)
@@ -164,13 +148,13 @@ namespace Resources
 			for (int i = 0; i < numTiles; i++)
 			{
 				Transform tileTransform = rackTransform.GetChild(numChildren - numChildren + i);
-				_tileFace = tileTransform.GetChild(0);
-				_startX = _tileFace.position.x;
-				_startY = _tileFace.position.y;
-				_endX = _charlestonX;
-				_endY = _charlestonY[rack];
-				_locTransform = null;
-				_lerping = true;	
+				_lerp.TileFace = tileTransform.GetChild(0);
+				_lerp.StartX = _lerp.TileFace.position.x;
+				_lerp.StartY = _lerp.TileFace.position.y;
+				_lerp.EndX = _charlestonX;
+				_lerp.EndY = _charlestonY[rack];
+				_lerp.LocTransform = null;
+				_lerp.Active = true;
 			}
 		}
 
@@ -182,39 +166,38 @@ namespace Resources
 		public void SetActionButton(Action action, bool state) =>
 			_actionToButton[action].interactable = state;
 
-		private Transform _tileFace;
-		private bool _lerping;
-		private float _startX;
-		private float _startY;
-		private float _endX;
-		private float _endY;
-		private float _t;
-		private Transform _locTransform;
+		private Lerp _lerp = new Lerp { Active = false };
 		
 		private void Update()
 		{
-			if (!_lerping) return; // quit out immediately unless lerping
-			
-			// set position of the tileFace
-			_tileFace.position = new Vector3(Mathf.Lerp(_startX, _endX, _t), Mathf.Lerp(_startY, _endY, _t), 0);
+			Lerp(ref _lerp);
+		}
+		
+		// BUG: last tile in rack is off at start
+		public void Lerp(ref Lerp lerp)
+		{
+			if (!lerp.Active) return; // quit out immediately unless lerping is active
 
-			// increase the t interpolater
-			_t += 0.02f;
+			// Set the position of the tileFace using the values from the Lerp struct
+			lerp.TileFace.position = new Vector3(
+				Mathf.Lerp(lerp.StartX, lerp.EndX, lerp.T), 
+				Mathf.Lerp(lerp.StartY, lerp.EndY, lerp.T), 
+				0
+			);
 
-			// check if we're done
-			if (_t < 1.0f) return;
-			_tileFace.position = new(_endX, _endY);
-			if (_locTransform) LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)_locTransform);
-			
-			// reset variables
-			_t = 0;
-			_lerping = false;
-			_tileFace = null;
-			_startX = 0;
-			_startY = 0;
-			_endX = 0;
-			_endY = 0;
-			_locTransform = null;
+			// Increase the T interpolator
+			lerp.T += 0.02f;
+
+			// Check if we're done
+			if (lerp.T < 1.0f) return;
+
+			// Final position
+			lerp.TileFace.position = new Vector3(lerp.EndX, lerp.EndY);
+			lerp.Active = false;
+			lerp.T = 0;
+
+			// If there is a location transform, rebuild its layout
+			if (lerp.LocTransform) LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lerp.LocTransform);
 		}
 	}
 	
@@ -224,6 +207,18 @@ namespace Resources
 		public void UpdatePrivateRackCount(CLoc privateRack, int count);
 		public void SetActionButton(Action action, bool state);
 		public void AddSpaceToDisplayRack(CLoc loc);
+	}
+
+	public struct Lerp
+	{
+		public bool Active;
+		public Transform TileFace;
+		public float StartX;
+		public float StartY;
+		public float EndX;
+		public float EndY;
+		public float T;
+		public Transform LocTransform;
 	}
 	
 	// TODO: when a player discards, other players should see the tile move from that rack

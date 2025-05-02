@@ -20,7 +20,8 @@ namespace Resources
 		Cancel = 4,
 		Expose = 5,
 		JokerSwap = 6,
-		CharlestonPass = 7
+		TileToCharlestonBox = 7,
+		CharlestonPass = 8
 	}
 	
 	public class InputSender
@@ -31,6 +32,13 @@ namespace Resources
 		{
 			Debug.Log($"InputSender: Requesting discard for tile {tileId}");
 			Input.Action.SetDown(Action.Discard);
+			Input.TileId = tileId;
+		}
+
+		public void RequestTileToCharlestonBox(int tileId)
+		{
+			Debug.Log($"InputSender: Requesting tile {tileId} to charleston box");
+			Input.Action.SetDown(Action.TileToCharlestonBox);
 			Input.TileId = tileId;
 		}
 

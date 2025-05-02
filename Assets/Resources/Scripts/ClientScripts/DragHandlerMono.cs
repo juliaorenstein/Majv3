@@ -17,16 +17,14 @@ namespace Resources
 		public TileTrackerClient TileTracker;
 		public InputSender InputSender;
 		private FusionManagerGlobal _fusionManager;
+		private CharlestonUIHandlerMono _charlestonUI;
 		
 		public int tileId;
 		private CLoc CurLoc => TileTracker.GetTileLoc(tileId);
 		private Image _image;
 		private Transform _dragTransform;
 		private Transform _tileTransform;
-		
-		// charleston spots
 		private Transform _charlestonTransform;
-		private CharlestonPassArray _charlestonPassArr;
 		private readonly List<CLoc> _charlestonSpots = new() 
 			{ CLoc.CharlestonSpot1, CLoc.CharlestonSpot2, CLoc.CharlestonSpot3 };
 
@@ -36,8 +34,8 @@ namespace Resources
 			_dragTransform = GameObject.Find("Dragging").transform;
 			_tileTransform = transform.parent;
 			_fusionManager = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None)[0];
-			_charlestonTransform = GameObject.Find("Charleston Pass").transform;
-			_charlestonPassArr = _charlestonTransform.GetComponent<CharlestonPassArray>();
+			_charlestonTransform = GameObject.Find("Charleston").transform;
+			_charlestonUI = GameObject.Find("GameManager").GetComponent<CharlestonUIHandlerMono>();
 		}
 
 		public void OnBeginDrag(PointerEventData eventData)
@@ -62,8 +60,6 @@ namespace Resources
 			// get list of current raycast results
 			List<RaycastResult> candidates = new();
 			EventSystem.current.RaycastAll(eventData, candidates);
-			// there should only be up to two results: a location and possibly another tile
-			Debug.Assert(candidates.Count <= 2); 
 			
 			// translates candidates to their CLocs. If no valid CLoc, set to pool
 			List<CLoc> candidateLocs = candidates.Select(candidate => 
@@ -73,7 +69,7 @@ namespace Resources
 			if (IsRackRearrange())
 			{
 				Debug.Log("Drag: Rack Rearrange");
-				DoRackRearrange();
+				DoMoveToRack();
 			}
 			else if (IsDiscard()) 
 			{
@@ -156,9 +152,9 @@ namespace Resources
 			
 			bool IsRackToCharleston() => _fusionManager.CurrentTurnStage == TurnStage.Charleston 
 			                       && CurLoc is CLoc.LocalPrivateRack
-			                       && candidateLocs.Intersect(_charlestonSpots).Any();
+                                   && candidateLocs.Intersect(_charlestonSpots).Any();
 
-			void DoRackRearrange()
+			void DoMoveToRack()
 			{
 				int siblingIndexOfTileDroppedOn = -1;
 				int rightOfCenter = 0; // using int instead of bool for math down below
@@ -208,15 +204,9 @@ namespace Resources
 
 			void DoRackToCharleston()
 			{
-				CLoc spot = candidateLocs.Intersect(_charlestonSpots).First();
-				int arrayIx = _charlestonSpots.IndexOf(spot);
-				int tileCurrentlyInSpot = _charlestonPassArr.tilesToPass[arrayIx];
-				if (tileCurrentlyInSpot > -1)
-				{
-					uiHandlerMono.MoveTile(tileCurrentlyInSpot, CLoc.LocalPrivateRack);
-				}
-				uiHandlerMono.MoveTileCharlestonBox(tileId, spot);
-				_charlestonPassArr.tilesToPass[arrayIx] = tileId;
+				InputSender.RequestTileToCharlestonBox(tileId);
+				Transform spot = uiHandlerMono.LocToTransform[candidateLocs.Intersect(_charlestonSpots).FirstOrDefault()];
+				_charlestonUI.MoveTileRackToCharlestonBox(transform, spot);
 			}
 
 			void MoveBack()
