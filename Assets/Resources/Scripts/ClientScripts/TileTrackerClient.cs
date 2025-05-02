@@ -6,7 +6,7 @@ namespace Resources
 	{
 		public readonly IReadOnlyList<Tile> AllTiles;
 		
-		private readonly IMono _mono;
+		private readonly IUIHandler _uiHandler;
 		public INetworkedGameState GameState;
 		private readonly InputSender _inputSender;
 		private readonly IFusionManagerGlobal _fusionManager;
@@ -29,10 +29,10 @@ namespace Resources
 		
 		private readonly Dictionary<CLoc, List<int>> _inverseGameState = new();
 
-		public TileTrackerClient(IMono mono, List<Tile> allTiles, InputSender inputSender, IFusionManagerGlobal fusionManager)
+		public TileTrackerClient(IUIHandler uiHandler, List<Tile> allTiles, InputSender inputSender, IFusionManagerGlobal fusionManager)
 		{
 			// initialize variables
-			_mono = mono;
+			_uiHandler = uiHandler;
 			AllTiles = allTiles;
 			_inputSender = inputSender;
 			_currentGameState = new CLoc[AllTiles.Count];
@@ -84,45 +84,46 @@ namespace Resources
 			_currentGameState[tileId] = newLoc;
 			
 			// update UI
-			_mono.MoveTile(tileId, newLoc, ix);
+			_uiHandler.MoveTile(tileId, newLoc, ix);
 		}
-		
+
 		public void UpdateGameState()
 		{
 			// TODO: Right now racks at start of game are being sorted by tileId because this goes through tiles by id.
 			// Clear input
 			_inputSender.ClearInput();
-			
+
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
 				// if tile is already here, quit out
 				CLoc locFromServer = GameStateFromServer[tileId];
 				if (locFromServer == _currentGameState[tileId]) continue;
 				// special handling for display rack
-				if (DisplayRacks.Contains(locFromServer) 
+				if (DisplayRacks.Contains(locFromServer)
 				    && tileId == _fusionManager.DiscardTileId
 				    && GetLocContents(locFromServer).Count > 0)
 				{
-					_mono.AddSpaceToDisplayRack(locFromServer);
+					_uiHandler.AddSpaceToDisplayRack(locFromServer);
 				}
+
 				MoveTile(tileId, GameStateFromServer[tileId]);
 			}
-			
+
 			// update the tiles that display as private on other players' racks
 			// start for loop at 1 to skip player's own rack
 			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
 				// skip this process for local player
 				if (GameState.PlayerIx == playerIx) continue;
-				
+
 				CLoc privateRack = GetPrivateRackForPlayer(playerIx);
 				// if count already matches, continue
 				if (PrivateRackCountsFromServer[playerIx] == _privateRackCounts[playerIx]) continue;
 				// update the count in the privateRackCounts variable and on the UI
 				_privateRackCounts[playerIx] = PrivateRackCountsFromServer[playerIx];
-				_mono.UpdatePrivateRackCount(privateRack, PrivateRackCountsFromServer[playerIx]);
+				_uiHandler.UpdatePrivateRackCount(privateRack, PrivateRackCountsFromServer[playerIx]);
 			}
-			
+
 			UpdateButtons();
 
 			return;
@@ -131,22 +132,15 @@ namespace Resources
 			{
 				// Pick Up - enable if it's my turn and I haven't picked up yet
 				bool state = _fusionManager.CurrentTurnStage == TurnStage.PickUp && _fusionManager.IsMyTurn;
-				_mono.SetActionButton(Action.PickUp, state);
-				
+				_uiHandler.SetActionButton(Action.PickUp, state);
+
 				// Call - enable if somebody discarded
-				state = _fusionManager.CurrentTurnStage == TurnStage.Call 
+				state = _fusionManager.CurrentTurnStage == TurnStage.Call
 				        && !_fusionManager.IsMyTurn
 				        && !Tile.IsJoker(_fusionManager.DiscardTileId)
 				        && _fusionManager.CurrentTurnStage != TurnStage.PickUp;
-				_mono.SetActionButton(Action.Call, state);
+				_uiHandler.SetActionButton(Action.Call, state);
 			}
-		}
-
-		// Send a request for a move to the server. Also updates the UI for the player in the meantime.
-		// TODO: remove this?
-		public void RequestMove(int tileId, CLoc loc)
-		{
-			_mono.MoveTile(tileId, loc);
 		}
 	}
 }

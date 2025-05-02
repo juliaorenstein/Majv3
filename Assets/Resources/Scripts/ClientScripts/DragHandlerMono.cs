@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
@@ -12,7 +13,7 @@ namespace Resources
 		, IBeginDragHandler, IDragHandler, IEndDragHandler
 	{
 		// mono and tileTracker set in SetupMono
-		public Mono mono;
+		public UIHandlerMono uiHandlerMono;
 		public TileTrackerClient TileTracker;
 		public InputSender InputSender;
 		private FusionManagerGlobal _fusionManager;
@@ -66,7 +67,7 @@ namespace Resources
 			
 			// translates candidates to their CLocs. If no valid CLoc, set to pool
 			List<CLoc> candidateLocs = candidates.Select(candidate => 
-				mono.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
+				uiHandlerMono.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
 			
 			// if this is a rack rearrange, we don't need to notify the server
 			if (IsRackRearrange())
@@ -212,15 +213,15 @@ namespace Resources
 				int tileCurrentlyInSpot = _charlestonPassArr.tilesToPass[arrayIx];
 				if (tileCurrentlyInSpot > -1)
 				{
-					mono.MoveTile(tileCurrentlyInSpot, CLoc.LocalPrivateRack);
+					uiHandlerMono.MoveTile(tileCurrentlyInSpot, CLoc.LocalPrivateRack);
 				}
-				mono.MoveTileCharleston(tileId, spot);
+				uiHandlerMono.MoveTileCharlestonBox(tileId, spot);
 				_charlestonPassArr.tilesToPass[arrayIx] = tileId;
 			}
 
 			void MoveBack()
 			{
-				mono.MoveTile(tileId, CLoc.LocalPrivateRack);
+				uiHandlerMono.MoveTile(tileId, CLoc.LocalPrivateRack);
 			}
 		}
 	}

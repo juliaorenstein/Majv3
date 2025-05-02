@@ -7,7 +7,7 @@ namespace Resources
 {
     public class SetupMono : MonoBehaviour
     {
-        private Mono _mono;
+        private UIHandlerMono _uiHandlerMono;
         private InputSender _inputSender;
         private TileTrackerClient _tileTracker;
         private NetworkedGameState _myGameState;
@@ -15,7 +15,7 @@ namespace Resources
         public void SetUp(NetworkedGameState myNetworkedGameState)
         {
             Debug.Log("SetupMono.SetUp()");
-            _mono = GetComponent<Mono>();
+            _uiHandlerMono = GetComponent<UIHandlerMono>();
             
             _inputSender = new();
             myNetworkedGameState.Runner.GetComponent<FusionEventHandler>().InputSender = _inputSender;
@@ -27,7 +27,7 @@ namespace Resources
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
-            _tileTracker = new(_mono, tiles, _inputSender, fusionManagerGlobal);
+            _tileTracker = new(_uiHandlerMono, tiles, _inputSender, fusionManagerGlobal);
             
            myNetworkedGameState.TileTracker = _tileTracker;
            _tileTracker.GameState = myNetworkedGameState;
@@ -81,13 +81,13 @@ namespace Resources
                     = UnityEngine.Resources.Load<Sprite>($"TileImages/{imageName}");
                 // set mono and _tileTracker on Drag Handler
                 DragHandlerMono dragHandler = newTileTransform.GetComponentInChildren<DragHandlerMono>();
-                dragHandler.mono = _mono;
+                dragHandler.uiHandlerMono = _uiHandlerMono;
                 dragHandler.TileTracker = _tileTracker;
                 dragHandler.tileId = tile.Id;
                 dragHandler.InputSender = _inputSender;
                 
                 // add this to the list of tile transforms
-                _mono.AllTileTransforms.Add(newTileTransform);
+                _uiHandlerMono.AllTileTransforms.Add(newTileTransform);
             }
         }
     }

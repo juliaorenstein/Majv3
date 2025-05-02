@@ -36,7 +36,9 @@ namespace Resources
 		
 		public void ReceiveTilesFromPlayer(int playerIx, int[] tiles)
 		{
-			// Debug.Log($"Received tiles from player {playerIx}: {string.Join(", ", tiles)}");
+			// validation
+			
+			// make sure the tiles passed are in the player's rack
 			foreach (int tileId in tiles)
 			{
 				if (tileId != -1 && !_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
@@ -44,27 +46,33 @@ namespace Resources
 					throw new UnityEngine.UnityException($"Tile {tileId} is not in player {playerIx}'s rack");
 				}
 			}
+			
+			// make sure array contains three (even if some elements == -1)
 			if (tiles == null || tiles.Length != 3)
 			{
 				throw new UnityEngine.UnityException("Tiles array must contain exactly 3 elements");
 			}
 
+			// make sure playerIx is valid
 			if (playerIx is < 0 or >= 4)
 			{
 				throw new UnityEngine.UnityException("Player index must be between 0 and 3");
 			}
 
+			// update _passArr and _numTilesPassedByPlayer
 			for (int i = 0; i < 3; i++)
 			{
 				_passArr[i][playerIx] = tiles[i];
 				if (tiles[i] != -1) _numTilesPassedByPlayer[playerIx]++;
 			}
 			
+			// if less than 3 tiles passed and not a partial pass, throw exception
 			if (!_partialPasses.Contains(_passNum) && _numTilesPassedByPlayer[playerIx] < 3)
 			{
 				throw new UnityEngine.UnityException("Players passed < 3 tiles on non-partial passes");
 			}
 
+			// do the pass if all players have submitted
 			_playersReady++;
 			if (_playersReady == 4) DoPass();
 		}

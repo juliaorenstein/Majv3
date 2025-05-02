@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Resources
 {
-	public class Mono : MonoBehaviour, IMono
+	public class UIHandlerMono : MonoBehaviour, IUIHandler
 	{
 		public readonly Dictionary<CLoc, Transform> LocToTransform = new();
 		public readonly Dictionary<Transform, CLoc> TransformToLoc = new();
@@ -18,6 +18,10 @@ namespace Resources
 		private Dictionary<Action, Button> _actionToButton;
 
 		private GameObject _displayRackSpace;
+
+		private Transform _charlestonBox;
+		private float _charlestonX;
+		private readonly float[] _charlestonY = new float[3];
 
 		private void Start()
 		{
@@ -63,6 +67,12 @@ namespace Resources
 			};
 			
 			_displayRackSpace = UnityEngine.Resources.Load<GameObject>("Prefabs/Space");
+			
+			_charlestonBox = GameObject.Find("Charleston").transform;
+			_charlestonX = LocToTransform[CLoc.OtherDisplayRack1].parent.position.x * 2;
+			_charlestonY[0] = LocToTransform[CLoc.OtherPrivateRack1].parent.position.y;
+			_charlestonY[1] = LocToTransform[CLoc.OtherPrivateRack2].parent.position.y;
+			_charlestonY[2]= LocToTransform[CLoc.OtherPrivateRack3].parent.position.y;
 		}
 		
 		public void MoveTile(int tileId, CLoc loc, int ix = -1)
@@ -108,7 +118,7 @@ namespace Resources
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
 		}
 		
-		public void MoveTileCharleston(int tileId, CLoc spot)
+		public void MoveTileCharlestonBox(int tileId, CLoc spot)
 		{
 			Transform tileTransform = AllTileTransforms[tileId];
 			Transform spotTransform = LocToTransform[spot];
@@ -128,6 +138,40 @@ namespace Resources
 			_locTransform = spotTransform;
 
 			_tileFace.GetComponent<Image>().raycastTarget = true;
+		}
+		
+		public void MoveCharlestonBoxOnSubmit()
+		{
+			int dir = 1; // TODO: update dir correctly
+			int rack = 1 - dir;
+
+			_tileFace = _charlestonBox; // not technically a tile face here, but oh well
+			_startX = _charlestonBox.position.x;
+			_startY = _charlestonBox.position.y;
+			_endX = _charlestonX;
+			_endY = _charlestonY[rack];
+			_locTransform = null;
+			_lerping = true;
+		}
+
+		public void MoveOtherPlayersCharlestonOnSubmit(CLoc privateRack, int numTiles)
+		{
+			Debug.Assert(privateRack is CLoc.OtherPrivateRack1 or CLoc.OtherPrivateRack2 or CLoc.OtherPrivateRack3);
+			int dir = 1; // TODO: need to actually set this
+			int rack = 1 - dir;
+			Transform rackTransform = LocToTransform[privateRack];
+			int numChildren = rackTransform.childCount;
+			for (int i = 0; i < numTiles; i++)
+			{
+				Transform tileTransform = rackTransform.GetChild(numChildren - numChildren + i);
+				_tileFace = tileTransform.GetChild(0);
+				_startX = _tileFace.position.x;
+				_startY = _tileFace.position.y;
+				_endX = _charlestonX;
+				_endY = _charlestonY[rack];
+				_locTransform = null;
+				_lerping = true;	
+			}
 		}
 
 		public void AddSpaceToDisplayRack(CLoc displayRack)
@@ -159,14 +203,22 @@ namespace Resources
 
 			// check if we're done
 			if (_t < 1.0f) return;
+			_tileFace.position = new(_endX, _endY);
+			if (_locTransform) LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)_locTransform);
+			
+			// reset variables
 			_t = 0;
 			_lerping = false;
-			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)_locTransform);
-			_tileFace.position = _tileFace.parent.position;
+			_tileFace = null;
+			_startX = 0;
+			_startY = 0;
+			_endX = 0;
+			_endY = 0;
+			_locTransform = null;
 		}
 	}
 	
-	public interface IMono
+	public interface IUIHandler
 	{
 		public void MoveTile(int tileId, CLoc loc, int ix = -1);
 		public void UpdatePrivateRackCount(CLoc privateRack, int count);

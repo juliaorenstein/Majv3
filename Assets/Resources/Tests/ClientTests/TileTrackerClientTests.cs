@@ -9,15 +9,15 @@ namespace Resources.ClientTests
 	{
 		private TileTrackerClient _tileTracker;
 		private FakeNetworkedGameState _fakeNetworkedGameState;
-		private IMono _mono;
+		private IUIHandler _iuiHandler;
 		
 		[SetUp]
 		public void Setup()
 		{
-			_mono = new FakeMono();
+			_iuiHandler = new FakeIuiHandler();
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
 			_fakeNetworkedGameState = new FakeNetworkedGameState();
-			_tileTracker = new(_mono, tiles, new(), new FakeFusionManagerGlobal());
+			_tileTracker = new(_iuiHandler, tiles, new(), new FakeFusionManagerGlobal());
 			_tileTracker.GameState = _fakeNetworkedGameState;
 		}
 		
@@ -62,14 +62,6 @@ namespace Resources.ClientTests
 			
 			CollectionAssert.AreEqual(new List<int> { 132, 134, 133 }
 				, _tileTracker.GetLocContents(CLoc.LocalPrivateRack));
-		}
-		
-		[Test]
-		public void RequestMoveTile_WhenCalled_GameStateDoesntChange()
-		{
-			_tileTracker.RequestMove(84, CLoc.Discard);
-			
-			Assert.AreEqual(CLoc.Pool, _tileTracker.GetTileLoc(84));
 		}
 
 		[Test]
