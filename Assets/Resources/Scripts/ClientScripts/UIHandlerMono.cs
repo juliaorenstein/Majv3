@@ -114,14 +114,14 @@ namespace Resources
 		// update the number of tile backs showing on a private rack.
 		public void UpdatePrivateRackCount(CLoc privateRack, int count)
 		{
-			/* Each rack will always have 14 child tile backs. This method activates and deactivates the appropriate
-				number to match the requested count */
-			
+			// TODO: is this still needed?
+			/*
 			// first make sure we're getting another player's private rack
 			Debug.Assert(new [] {CLoc.OtherPrivateRack1, CLoc.OtherPrivateRack2, CLoc.OtherPrivateRack3}.Contains(privateRack));
 			Transform rackTransform = LocToTransform[privateRack];
 			// activate the tiles in the rack up to count, deactivate the rest
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
+			*/
 		}
 		
 		public void MoveCharlestonBoxOnSubmit()

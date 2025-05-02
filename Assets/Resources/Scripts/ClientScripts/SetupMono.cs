@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +10,7 @@ namespace Resources
         private InputSender _inputSender;
         private TileTrackerClient _tileTracker;
         private NetworkedGameState _myGameState;
+        private FusionManagerGlobal _fusionManager;
 
         public void SetUp(NetworkedGameState myNetworkedGameState)
         {
@@ -23,11 +23,11 @@ namespace Resources
             // get my networked game state and exchange tile tracker client
             var fusionManagerGlobals = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None);
             if (fusionManagerGlobals.Length > 1) throw new UnityException("There is more than one FusionManagerGlobal object.");
-            FusionManagerGlobal fusionManagerGlobal = fusionManagerGlobals[0];
+            _fusionManager = fusionManagerGlobals[0];
             
             // generate tiles and add to tracker
             List<Tile> tiles = new TileGenerator().GenerateTiles();
-            _tileTracker = new(_uiHandlerMono, tiles, _inputSender, fusionManagerGlobal);
+            _tileTracker = new(_uiHandlerMono, tiles, _inputSender, _fusionManager);
             
            myNetworkedGameState.TileTracker = _tileTracker;
            _tileTracker.GameState = myNetworkedGameState;
@@ -35,6 +35,7 @@ namespace Resources
             
             // make the game objects
             GenerateTileGameObjects();
+            PopulateOtherPrivateRacks();
             
             // find the button handler and add input there
             ButtonHandlerMono buttonHandler = GameObject.Find("Actions").GetComponent<ButtonHandlerMono>();
@@ -88,6 +89,29 @@ namespace Resources
                 
                 // add this to the list of tile transforms
                 _uiHandlerMono.AllTileTransforms.Add(newTileTransform);
+            }
+        }
+
+        private void PopulateOtherPrivateRacks()
+        {
+            GameObject tileBackPrefab = UnityEngine.Resources.Load<GameObject>("Prefabs/Tile Back");
+            int dealerIx = (_fusionManager.TurnPlayerIx - _fusionManager.LocalPlayerIx + 4) % 4;
+            List<Transform> racks = new()
+            {
+                _uiHandlerMono.LocToTransform[CLoc.OtherPrivateRack1],
+                _uiHandlerMono.LocToTransform[CLoc.OtherPrivateRack2],
+                _uiHandlerMono.LocToTransform[CLoc.OtherPrivateRack3]
+            };
+            for (int rackIx = 1; rackIx <= 3; rackIx++)
+            {
+                Transform rack = racks[rackIx - 1];
+                for (int _ = 0; _ < 13; _++)
+                {
+                    Instantiate(tileBackPrefab, rack);
+                }
+                // deal one extra to the dealer
+                if (rackIx == dealerIx) Instantiate(tileBackPrefab, rack);
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
             }
         }
     }
