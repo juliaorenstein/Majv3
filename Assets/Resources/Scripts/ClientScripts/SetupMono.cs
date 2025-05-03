@@ -96,7 +96,7 @@ namespace Resources
                 dragHandler.InputSender = _inputSender;
                 
                 // add this to the list of tile transforms
-                _uiHandlerMono.AllTileTransforms.Add(newTileTransform);
+                _uiHandlerMono.allTileTransforms.Add(newTileTransform);
             }
         }
 

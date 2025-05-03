@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
-using System.Linq;
 
 namespace Resources
 {
@@ -9,7 +9,7 @@ namespace Resources
 	{
 		public readonly Dictionary<CLoc, Transform> LocToTransform = new();
 		public readonly Dictionary<Transform, CLoc> TransformToLoc = new();
-		public List<Transform> AllTileTransforms = new();
+		[FormerlySerializedAs("AllTileTransforms")] public List<Transform> allTileTransforms = new();
 
 		private Button _pickUp;
 		private Button _call;
@@ -19,9 +19,9 @@ namespace Resources
 
 		private GameObject _displayRackSpace;
 
-		private Transform _charlestonBox;
-		private float _charlestonX;
-		private readonly float[] _charlestonY = new float[3];
+		//private Transform _charlestonBox;
+		//private float _charlestonX;
+		//private readonly float[] _charlestonY = new float[3];
 
 		private void Start()
 		{
@@ -68,16 +68,16 @@ namespace Resources
 			
 			_displayRackSpace = UnityEngine.Resources.Load<GameObject>("Prefabs/Space");
 			
-			_charlestonBox = GameObject.Find("Charleston").transform;
-			_charlestonX = LocToTransform[CLoc.OtherDisplayRack1].parent.position.x * 2;
-			_charlestonY[0] = LocToTransform[CLoc.OtherPrivateRack1].parent.position.y;
-			_charlestonY[1] = LocToTransform[CLoc.OtherPrivateRack2].parent.position.y;
-			_charlestonY[2]= LocToTransform[CLoc.OtherPrivateRack3].parent.position.y;
+			//_charlestonBox = GameObject.Find("Charleston").transform;
+			//_charlestonX = LocToTransform[CLoc.OtherDisplayRack1].parent.position.x * 2;
+			//_charlestonY[0] = LocToTransform[CLoc.OtherPrivateRack1].parent.position.y;
+			//_charlestonY[1] = LocToTransform[CLoc.OtherPrivateRack2].parent.position.y;
+			//_charlestonY[2]= LocToTransform[CLoc.OtherPrivateRack3].parent.position.y;
 		}
 		
 		public void MoveTile(int tileId, CLoc loc, int ix = -1)
 		{
-			Transform tileTransform = AllTileTransforms[tileId];
+			Transform tileTransform = allTileTransforms[tileId];
 			MoveTile(tileTransform, loc, ix);
 			
 		}
@@ -124,6 +124,7 @@ namespace Resources
 			*/
 		}
 		
+		/*
 		public void MoveCharlestonBoxOnSubmit()
 		{
 			int dir = 1; // TODO: update dir correctly
@@ -157,6 +158,7 @@ namespace Resources
 				_lerp.Active = true;
 			}
 		}
+		*/
 
 		public void AddSpaceToDisplayRack(CLoc displayRack)
 		{
@@ -170,11 +172,11 @@ namespace Resources
 		
 		private void Update()
 		{
-			Lerp(ref _lerp);
+			Lerp(_lerp);
 		}
 		
 		// BUG: last tile in rack is off at start
-		public void Lerp(ref Lerp lerp)
+		public static void Lerp(Lerp lerp)
 		{
 			if (!lerp.Active) return; // quit out immediately unless lerping is active
 
@@ -184,7 +186,7 @@ namespace Resources
 				Mathf.Lerp(lerp.StartY, lerp.EndY, lerp.T), 
 				0
 			);
-
+			
 			// Increase the T interpolator
 			lerp.T += 0.02f;
 
@@ -209,7 +211,7 @@ namespace Resources
 		public void AddSpaceToDisplayRack(CLoc loc);
 	}
 
-	public struct Lerp
+	public class Lerp
 	{
 		public bool Active;
 		public Transform TileFace;

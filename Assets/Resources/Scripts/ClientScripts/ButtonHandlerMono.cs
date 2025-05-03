@@ -26,7 +26,6 @@ namespace Resources
 
 		public void RequestCharlestonPass()
 		{
-			_uiHandler.MoveCharlestonBoxOnSubmit();
 			InputSender.RequestCharlestonPass(charlestonPassArray.tilesToPass);
 			charlestonPass.interactable = false;
 		}

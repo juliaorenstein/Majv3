@@ -71,6 +71,7 @@ namespace Resources
 			// do the pass if all players have submitted
 			_playersReady++;
 			if (_playersReady == 4) DoPass();
+			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
 
 		private void DoPass()

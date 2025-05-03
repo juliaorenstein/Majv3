@@ -14,6 +14,8 @@ namespace Resources
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots1 { get; }
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots2 { get; }
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots3 { get; }
+		
+		[Networked, Capacity(4)] public NetworkArray<NetworkBool> PlayersReady { get; }
 
 		public NetworkArray<NetworkBool>[] OccupiedSpots;
 
@@ -22,7 +24,6 @@ namespace Resources
 			_changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 			OccupiedSpots = new[] {OccupiedSpots0, OccupiedSpots1, OccupiedSpots2, OccupiedSpots3};
 		}
-		
 		
 		private void Update()
 		{

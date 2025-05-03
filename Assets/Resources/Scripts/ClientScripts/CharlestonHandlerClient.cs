@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using UnityEngine;
 
@@ -27,8 +26,17 @@ namespace Resources
 		
 		public void UpdateCharlestonState()
 		{
-			//Debug.Log("Client: Updating charleston state");
+			Debug.Log("Client: Updating charleston state");
 			_inputSender.ClearInput();
+
+			// if everybody is ready, move tiles to other private racks
+			if (_charlestonHandlerNetwork.PlayersReady.All(b => b))
+			{
+				_charlestonUIHandler.DoPass();
+				return;
+			}
+			
+			// otherwise, check for other updates
 			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
 				// already updated UI locally for local player changes
@@ -44,11 +52,10 @@ namespace Resources
 						_charlestonUIHandler.MoveOtherTileToCharlestonBox(playerIx, spotIx);
 
 					// else, move tile back to private rack
-
-					
-					
+					// TODO: move tile back to rack
 				}
 			}
+			_charlestonUIHandler.UpdateReadyIndicator(_charlestonHandlerNetwork.PlayersReady.Select(b => (bool)b).ToArray());
 		}
 	}
 }
