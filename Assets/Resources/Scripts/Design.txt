@@ -72,6 +72,9 @@ BAD CALL
 - allow calling for everybody until next player picks up
 - pick up should be renamed "pick"
  
-// TODO: 2024 card allows for some groups of nonmatching tiles in consecutives
+ 
+CHARLESTON
+TODO: on other clients, show if a tile is retracted after initially being put in charleston box
+TODO: show tiles entering other players racks on pass, and then send those tiles to the pool
         
     

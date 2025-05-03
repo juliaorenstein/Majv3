@@ -15,8 +15,9 @@ namespace Resources
 			_tileTracker = new(tiles, fusionManager);
 			TurnManagerServer turnManager = new(_tileTracker, fusionManager, callHandler);
 			fusionManager.TurnManagerServer = turnManager;
+			CharlestonHandlerNetwork charlestonHandlerNetwork = fusionManager.GetComponent<CharlestonHandlerNetwork>();
 			callHandler.TurnManager = turnManager;
-			CharlestonHandler charlestonHandler = new(_tileTracker);
+			CharlestonHandler charlestonHandler = new(_tileTracker, charlestonHandlerNetwork);
 			foreach (InputReceiver receiver in fusionManager.GetComponentsInChildren<InputReceiver>())
 			{
 				receiver.Initialize(turnManager, callHandler, charlestonHandler); // Pass the shared instance

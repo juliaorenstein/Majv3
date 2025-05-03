@@ -37,9 +37,17 @@ namespace Resources
             GenerateTileGameObjects();
             PopulateOtherPrivateRacks();
             
+            _tileTracker.UpdateGameState();
+            
             // find the button handler and add input there
             ButtonHandlerMono buttonHandler = GameObject.Find("Actions").GetComponent<ButtonHandlerMono>();
             buttonHandler.InputSender = _inputSender;
+            
+            // Charleston stuff
+            CharlestonUIHandlerMono charlestonUIHandler = GetComponent<CharlestonUIHandlerMono>();
+            charlestonUIHandler.SetLocalPlayerIx(_fusionManager.LocalPlayerIx);
+            CharlestonHandlerNetwork charlestonHandlerNetwork = _fusionManager.GetComponent<CharlestonHandlerNetwork>();
+            new CharlestonHandlerClient(_inputSender, _fusionManager, charlestonHandlerNetwork, charlestonUIHandler);
             
             // set up charleston stuff
             GameObject.Find("Charleston");

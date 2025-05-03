@@ -36,7 +36,6 @@ namespace Resources
 		public void OnConnectedToServer(NetworkRunner runner)
 		{
 			Debug.Log("OnConnectedToServer");
-			GameObject.Find("Start Game").SetActive(false);
 		}
 		
 		// Called on server when a client leaves

@@ -11,7 +11,7 @@ namespace Resources
          Each client (besides host) will get updates for just their own copy, which they'll use to track their game
          state.*/
         [Networked] public int GameStateVersion { get; set; }
-        private int _gameStateVersion;
+        private ChangeDetector _changeDetector;
         [Networked] public PlayerRef Player { get; set; }
         public int PlayerIx { get; private set; }
         [Networked, Capacity(152)] private NetworkArray<CLoc> ClientGameStateNetArr => default;
@@ -24,6 +24,7 @@ namespace Resources
 
         public override void Spawned()
         {
+	        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 	        PlayerIx = transform.GetSiblingIndex();
 	        // Setup UI once this is spawned
 	        if (Player != Runner.LocalPlayer) return;
@@ -56,9 +57,10 @@ namespace Resources
 
         public override void FixedUpdateNetwork()
         {
-	        if (TileTracker == null || _gameStateVersion == GameStateVersion) return;
-	        TileTracker.UpdateGameState();
-	        _gameStateVersion = GameStateVersion;
+	        if (TileTracker is not null && _changeDetector.DetectChanges(this).Changed(nameof(GameStateVersion)))
+	        {
+		        TileTracker.UpdateGameState();
+	        }
         }
     }	
 	

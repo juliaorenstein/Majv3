@@ -7,8 +7,7 @@ namespace Resources
 	{
 		public NetworkButtons Action;
 		public int TileId;
-		public int TileId2;
-		public int TileId3;
+		public int SpotIx;
 	}
 	
 	public enum Action
@@ -27,28 +26,26 @@ namespace Resources
 	public class InputSender
 	{
 		public Input Input;
-
-		public void RequestDiscard(int tileId)
-		{
-			Debug.Log($"InputSender: Requesting discard for tile {tileId}");
-			Input.Action.SetDown(Action.Discard);
-			Input.TileId = tileId;
-		}
-
-		public void RequestTileToCharlestonBox(int tileId)
+		
+		public void RequestTileToCharlestonBox(int tileId, int spotIx)
 		{
 			Debug.Log($"InputSender: Requesting tile {tileId} to charleston box");
-			Input.Action.SetDown(Action.TileToCharlestonBox);
 			Input.TileId = tileId;
+			Input.SpotIx = spotIx;
+			Input.Action.SetDown(Action.TileToCharlestonBox);
 		}
 
 		public void RequestCharlestonPass(int[] tileIds)
 		{
 			Debug.Log($"InputSender: Requesting charleston pass for tiles {tileIds[0]}, {tileIds[1]}, {tileIds[2]}");
 			Input.Action.SetDown(Action.CharlestonPass);
-			Input.TileId = tileIds[0];
-			Input.TileId2 = tileIds[1];
-			Input.TileId3 = tileIds[2];
+		}
+
+		public void RequestDiscard(int tileId)
+		{
+			Debug.Log($"InputSender: Requesting discard for tile {tileId}");
+			Input.Action.SetDown(Action.Discard);
+			Input.TileId = tileId;
 		}
 
 		public void RequestPickUp()
@@ -87,6 +84,7 @@ namespace Resources
 			//Debug.Log("InputSender: Clearing input");
 			Input.Action.SetAllUp();
 			Input.TileId = -1;
+			Input.SpotIx = -1;
 		}
 	}
 }

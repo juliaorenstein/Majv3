@@ -6,9 +6,17 @@ namespace Resources
 {
 	public class CharlestonHandler
 	{
-		private int _playersReady = 0;
+		private readonly CharlestonHandlerNetwork _charlestonHandlerNetwork;
+		
+		private int _playersReady;
 		private readonly int[] _numTilesPassedByPlayer = new int[4];
-		private readonly int[][] _passArr = { new int[4], new int[4], new int[4] };
+		
+		private readonly int[][] _passArr =
+		{
+			new[] { -1, -1, -1, -1},
+			new[] { -1, -1, -1, -1},
+			new[] { -1, -1, -1, -1}
+		};
 		private readonly int[] _passDir = { 1, 0, -1, -1, 0, 1, 0 };
 		private int _passNum;
 		private readonly int[] _partialPasses = { 2, 5, 6 };
@@ -29,43 +37,31 @@ namespace Resources
 		//		{ P1T3, P3T3,		P4T3 }	=>	{ P4T3, P1T3,		P3T3 }
 		//	}
 
-		public CharlestonHandler(TileTrackerServer tileTracker)
+		public CharlestonHandler(TileTrackerServer tileTracker, CharlestonHandlerNetwork charlestonHandlerNetwork)
 		{
 			_tileTracker = tileTracker;
+			_charlestonHandlerNetwork = charlestonHandlerNetwork;
+		}
+
+		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
+		{
+			// validate that tileId is in playerIx's rack
+			if (tileId != -1 && !_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
+			{
+				throw new UnityEngine.UnityException($"Tile {tileId} is not in player {playerIx}'s rack");
+			}
+			
+			// update server-side data
+			if (_passArr[spotIx][playerIx] == -1) _numTilesPassedByPlayer[playerIx]++;
+			_passArr[spotIx][playerIx] = tileId;
+			_charlestonHandlerNetwork.OccupiedSpots[playerIx][spotIx] = true;
+			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
 		
-		public void ReceiveTilesFromPlayer(int playerIx, int[] tiles)
+		// TODO: make a CharlestonBoxToRack to clear OccupiedSpots when tile is removed
+		
+		public void PlayerReady(int playerIx)
 		{
-			// validation
-			
-			// make sure the tiles passed are in the player's rack
-			foreach (int tileId in tiles)
-			{
-				if (tileId != -1 && !_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
-				{
-					throw new UnityEngine.UnityException($"Tile {tileId} is not in player {playerIx}'s rack");
-				}
-			}
-			
-			// make sure array contains three (even if some elements == -1)
-			if (tiles == null || tiles.Length != 3)
-			{
-				throw new UnityEngine.UnityException("Tiles array must contain exactly 3 elements");
-			}
-
-			// make sure playerIx is valid
-			if (playerIx is < 0 or >= 4)
-			{
-				throw new UnityEngine.UnityException("Player index must be between 0 and 3");
-			}
-
-			// update _passArr and _numTilesPassedByPlayer
-			for (int i = 0; i < 3; i++)
-			{
-				_passArr[i][playerIx] = tiles[i];
-				if (tiles[i] != -1) _numTilesPassedByPlayer[playerIx]++;
-			}
-			
 			// if less than 3 tiles passed and not a partial pass, throw exception
 			if (!_partialPasses.Contains(_passNum) && _numTilesPassedByPlayer[playerIx] < 3)
 			{

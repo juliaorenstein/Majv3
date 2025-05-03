@@ -32,12 +32,18 @@ namespace Resources
 			if (!Runner.IsServer) return;
 			if (GetInput(out Input clientInput))
 			{
-				// CHARLESTON
+				// CHARLESTON - MOVE TO BOX
+				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.TileToCharlestonBox))
+				{
+					Debug.Log("Input Receiver: Tile to Charleston Box");
+					_charlestonHandler.TileToCharlestonBox(playerIx, clientInput.TileId, clientInput.SpotIx);
+				}
+				
+				// CHARLESTON - DO PASS
 				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.CharlestonPass))
 				{
 					Debug.Log("Input Receiver: Charleston Pass");
-					_charlestonHandler.ReceiveTilesFromPlayer(
-						playerIx, new[] {clientInput.TileId, clientInput.TileId2, clientInput.TileId3});
+					_charlestonHandler.PlayerReady(playerIx);
 				}
 				
 				// DISCARD

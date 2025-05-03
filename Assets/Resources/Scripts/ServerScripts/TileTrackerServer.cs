@@ -19,7 +19,7 @@ namespace Resources
 		// Game States
 		private readonly SLoc[] _serverGameState = new SLoc[152]; // location at index n is tile n's location
 		public SLoc[] GameState => (SLoc[])_serverGameState.Clone();
-		private int _gameStateVersion = 0;
+		private int _gameStateVersion;
 		
 		private readonly IFusionManagerGlobal _fusionManager;
 

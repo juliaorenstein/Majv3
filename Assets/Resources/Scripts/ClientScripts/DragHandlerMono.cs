@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -204,9 +205,10 @@ namespace Resources
 
 			void DoRackToCharleston()
 			{
-				InputSender.RequestTileToCharlestonBox(tileId);
-				Transform spot = uiHandlerMono.LocToTransform[candidateLocs.Intersect(_charlestonSpots).FirstOrDefault()];
-				_charlestonUI.MoveTileRackToCharlestonBox(transform, spot);
+				CLoc spotLoc = candidateLocs.Intersect(_charlestonSpots).FirstOrDefault();
+				Transform spot = uiHandlerMono.LocToTransform[spotLoc];
+				InputSender.RequestTileToCharlestonBox(tileId, _charlestonSpots.IndexOf(spotLoc));
+				_charlestonUI.MoveLocalTileRackToCharlestonBox(transform, spot);
 			}
 
 			void MoveBack()

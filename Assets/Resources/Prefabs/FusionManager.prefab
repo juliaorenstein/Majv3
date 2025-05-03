@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1114352315642792544}
   - component: {fileID: -6969063905697161596}
   - component: {fileID: 6496284287248700223}
+  - component: {fileID: 1020999155478426592}
   m_Layer: 0
   m_Name: FusionManager
   m_TagString: Untagged
@@ -61,6 +62,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: -6969063905697161596}
   - {fileID: 6496284287248700223}
+  - {fileID: 1020999155478426592}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-6969063905697161596
 MonoBehaviour:
@@ -77,6 +79,8 @@ MonoBehaviour:
   _Players: []
   _TurnPlayerIx: 0
   _ExposingPlayerIx: 0
+  _numTilesExposedThisTurn: 0
+  _DiscardTileId: 0
   _CurrentTurnStage: 0
 --- !u!114 &6496284287248700223
 MonoBehaviour:
@@ -91,8 +95,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayersCalling: 
-  PlayersThinking: 
-  PlayersPassing: 
+  PlayersConfirmed: 
+--- !u!114 &1020999155478426592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114352315642792559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ade4820c0f64e25bb0b1b32c63b2dcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _CharlestonVersion: 0
+  _OccupiedSpots0: []
+  _OccupiedSpots1: []
+  _OccupiedSpots2: []
+  _OccupiedSpots3: []
 --- !u!1 &1590049023482601950
 GameObject:
   m_ObjectHideFlags: 0

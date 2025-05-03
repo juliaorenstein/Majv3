@@ -14,7 +14,7 @@ namespace Resources.ServerTests
 		{
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
 			_tileTracker = new(tiles, new FakeFusionManagerGlobal());
-			_charlestonHandler = new(_tileTracker);
+			_charlestonHandler = new(_tileTracker, new CharlestonHandlerNetwork()); // TODO: Abstract this out
 			SetUpRacks();
 		}
 
@@ -227,18 +227,7 @@ namespace Resources.ServerTests
 
 		private void InitializePass(int player0Num = 3, int player1Num = 3, int player2Num = 3, int player3Num = 3)
 		{
-			int[] numTilesPerPlayer = { player0Num, player1Num, player2Num, player3Num };
-			for (int playerIx = 0; playerIx < 4; playerIx++)
-			{
-				int[] arr = { -1, -1, -1 };
-				List<int> rack = _tileTracker.GetPrivateRackContentsForPlayer(playerIx);
-				for (int i = 0; i < numTilesPerPlayer[playerIx]; i++)
-				{
-					arr[i] = rack[i];
-				}
-
-				_charlestonHandler.ReceiveTilesFromPlayer(playerIx, arr);
-			}
+			// TODO: need to rewrite this
 		}
 
 		private void AssertResult(int[][] expectedResArr)
