@@ -6,6 +6,8 @@ namespace Resources
 	{
 		public int CharlestonVersion { get; set; }
 		public NetworkArray<NetworkBool> PlayersReady { get; }
+		public int PassNum { get; set; }
+		public int[] PassDir { get; }
 		public bool[][] OccupiedSpots { get; }
 		
 		public FakeCharlestonHandlerNetwork()

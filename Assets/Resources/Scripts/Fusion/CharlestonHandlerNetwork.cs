@@ -1,6 +1,7 @@
 using System.Linq;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Resources
 {
@@ -17,6 +18,9 @@ namespace Resources
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots3 { get; }
 		
 		[Networked, Capacity(4)] public NetworkArray<NetworkBool> PlayersReady { get; }
+		
+		public int PassNum { get; set; }
+		public int[] PassDir { get; } = { 1, 0, -1, -1, 0, 1, 0 };
 
 		private NetworkArray<NetworkBool>[] _occupiedSpots;
 		public bool[][] OccupiedSpots => _occupiedSpots.Select(
@@ -46,6 +50,8 @@ namespace Resources
 	{
 		int CharlestonVersion { get; set; }
 		NetworkArray<NetworkBool> PlayersReady { get; }
+		public int PassNum { get; set; }
+		public int[] PassDir { get; }
 		bool[][] OccupiedSpots { get; }
 		public void SetOccupiedSpots(int playerIx, int spotIx, bool state);
 	}

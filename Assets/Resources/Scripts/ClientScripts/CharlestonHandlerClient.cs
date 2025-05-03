@@ -31,7 +31,8 @@ namespace Resources
 			// if everybody is ready, move tiles to other private racks
 			if (_charlestonHandlerNetwork.PlayersReady.All(b => b))
 			{
-				_charlestonUIHandler.DoPass();
+				int dir = _charlestonHandlerNetwork.PassDir[_charlestonHandlerNetwork.PassNum - 1];
+				_charlestonUIHandler.DoPass(dir);
 				return;
 			}
 			

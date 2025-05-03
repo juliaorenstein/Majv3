@@ -102,9 +102,10 @@ namespace Resources
 		}
 
 		// CLIENT COMMUNICATION
-		public void SendGameStateToAll()
+		public void SendGameStateToAll(bool updateUI = true)
 		{
-			_gameStateVersion++;
+			_gameStateVersion = Math.Abs(_gameStateVersion) + 1;
+			if (!updateUI) _gameStateVersion = -_gameStateVersion; // client will not update UI if version < 0
 			
 			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{

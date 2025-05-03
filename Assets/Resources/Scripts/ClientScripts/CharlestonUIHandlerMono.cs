@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine.UI;
 
 namespace Resources
@@ -10,35 +8,39 @@ namespace Resources
 	{
 		// charleston spots
 		private Transform _charlestonTransform;
-		private CharlestonPassArray _charlestonPassArr;
 
-		private readonly List<CLoc> _charlestonSpots = new()
-			{ CLoc.CharlestonSpot1, CLoc.CharlestonSpot2, CLoc.CharlestonSpot3 };
-
-		private List<Transform> _otherPrivateRacks;
-		private List<Transform> _otherCharlestonBoxes;
+		private List<Transform> privateRacks;
+		private List<Transform> _charlestonBoxes;
 		private int _localPlayerIx;
+		private Transform _tileBack;
+		private Transform _pool;
 
 		private UIHandlerMono _uiHandler;
+		private TileTrackerClient _tileTracker;
 
 		private void Start()
 		{
 			_charlestonTransform = GameObject.Find("Charleston Pass").transform;
-			_charlestonPassArr = _charlestonTransform.GetComponent<CharlestonPassArray>();
 			_uiHandler = GetComponent<UIHandlerMono>();
-			_otherPrivateRacks = new()
+			privateRacks = new()
 			{
+				GameObject.Find("Local Rack").transform.GetChild(1),
 				GameObject.Find("Other Rack 1").transform.GetChild(1),
 				GameObject.Find("Other Rack 2").transform.GetChild(1),
 				GameObject.Find("Other Rack 3").transform.GetChild(1)
 			};
-			_otherCharlestonBoxes = new()
+			_charlestonBoxes = new()
 			{
+				GameObject.Find("Charleston").transform,
 				GameObject.Find("Other Charleston 1").transform,
 				GameObject.Find("Other Charleston 2").transform,
 				GameObject.Find("Other Charleston 3").transform
 			};
+			_tileBack = ((GameObject)UnityEngine.Resources.Load("Prefabs/Tile Back")).transform;
+			_pool = GameObject.Find("Pool").transform;
 		}
+		
+		public void SetTileTracker(TileTrackerClient tileTracker) => _tileTracker = tileTracker;
 
 		public void SetLocalPlayerIx(int playerIx) => _localPlayerIx = playerIx;
 
@@ -75,39 +77,51 @@ namespace Resources
 
 		public void MoveOtherTileToCharlestonBox(int playerIx, int spotIx)
 		{
-			int rackIx = (playerIx - _localPlayerIx + 4) % 4 - 1;
-			Transform spot = _otherCharlestonBoxes[rackIx].GetChild(spotIx);
-			Transform tileBack = _otherPrivateRacks[rackIx].GetChild(_otherPrivateRacks[rackIx].childCount - 1);
+			int rackIx = (playerIx - _localPlayerIx + 4) % 4;
+			Transform spot = _charlestonBoxes[rackIx].GetChild(spotIx);
+			Transform tileBack = privateRacks[rackIx].GetChild(privateRacks[rackIx].childCount - 1);
 			
 			CreateAndAddLerp(tileBack, spot);
 		}
 
-		public void DoPass()
+		public void DoPass(int dir)
 		{
-			for (int i = 0; i < _otherCharlestonBoxes.Count; i++) // Loop through each Charleston box
+			Debug.Log("UI: doing pass");
+			for (int i = 0; i < _charlestonBoxes.Count; i++) // Loop through each Charleston box
 			{
-				for (int j = 0; j < _otherCharlestonBoxes[i].childCount; j++) // Loop through each spot in the box
+				for (int j = 0; j < _charlestonBoxes[i].childCount; j++) // Loop through each spot in the box
 				{
-					Transform spot = _otherCharlestonBoxes[i].GetChild(j);
+					Transform spot = _charlestonBoxes[i].GetChild(j);
 
 					if (spot.childCount == 0) continue; // Check if the spot has a child (tile)
 					
 					Transform tile = spot.GetChild(0); // Get the child tile
-					Transform targetRack = _otherPrivateRacks[i]; // Corresponding other private rack
+					int targetIx = (i + 2 - dir) % 4;
+					
+					Transform targetRack = privateRacks[targetIx]; // Corresponding other private rack
 					
 					CreateAndAddLerp(tile, targetRack, true); // Create and add the lerp
+					if (i == 0) _passFromLocalIxs.Add(_lerps.Count - 1); // track tiles FROM local rack to flip them later
+					if (targetIx == 0) _passToLocalIxs.Add(_lerps.Count - 1); // track tiles TO local rack to flip them later
 				}
 			}
 		}
 
 		private readonly List<Lerp> _lerps = new();
+		private readonly List<int> _passFromLocalIxs = new();
+		private readonly List<int> _passToLocalIxs = new();
 
 		private void Update()
 		{
 			for (int i = _lerps.Count - 1; i >= 0; i--) // going backwards so we can remove items as we go
 			{
 				UIHandlerMono.Lerp(_lerps[i]);
-				if (!_lerps[i].Active) _lerps.RemoveAt(i);
+				if (!_lerps[i].Active)
+				{
+					if (_passFromLocalIxs.Contains(i)) ReplaceTileWithTileBack(_lerps[i].TileFace.parent);
+					else if (_passToLocalIxs.Contains(i)) ReplaceBackWithTile(_lerps[i].TileFace.parent);
+					_lerps.RemoveAt(i);
+				}
 			}
 		}
 		
@@ -119,8 +133,6 @@ namespace Resources
 				TileFace = tile.GetChild(0),
 				StartX = tile.position.x,
 				StartY = tile.position.y,
-				EndX = target.position.x,
-				EndY = target.position.y,
 				Active = true,
 				T = 0
 			};
@@ -129,11 +141,37 @@ namespace Resources
 			// snap tile to position
 			if (rack) LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)target); // Force rebuild the layout;
 			else tile.position = target.position;
+			lerp.EndX = tile.position.x;
+			lerp.EndY = tile.position.y;
 			
 			// make sure tile face doesn't flash to new location
 			lerp.TileFace.position = new Vector3(lerp.StartX, lerp.StartY, 0);
 			
 			_lerps.Add(lerp);
+		}
+
+		
+		private void ReplaceTileWithTileBack(Transform tileTransform)
+		{
+			Transform rack = tileTransform.parent;
+			int siblingIx = tileTransform.GetSiblingIndex();
+			Instantiate(_tileBack, rack).SetSiblingIndex(siblingIx);
+			tileTransform.SetParent(_pool);
+			tileTransform.position = _pool.position;
+			
+			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
+		}
+		
+		private void ReplaceBackWithTile(Transform tileBack)
+		{
+			Transform rack = tileBack.parent;
+			int siblingIx = tileBack.GetSiblingIndex();
+			int tileId = _tileTracker.GetLocContents(CLoc.LocalPrivateRack)[siblingIx];
+			tileBack.SetParent(_pool);
+			tileBack.position = _pool.position;
+			
+			_uiHandler.allTileTransforms[tileId].SetParent(rack);
+			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
 		}
 	}
 }

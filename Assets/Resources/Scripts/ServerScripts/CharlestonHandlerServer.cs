@@ -10,15 +10,13 @@ namespace Resources
 		
 		private int _playersReady;
 		private readonly int[] _numTilesPassedByPlayer = new int[4];
-		
 		private readonly int[][] _passArr =
 		{
 			new[] { -1, -1, -1, -1},
 			new[] { -1, -1, -1, -1},
 			new[] { -1, -1, -1, -1}
 		};
-		private readonly int[] _passDir = { 1, 0, -1, -1, 0, 1, 0 };
-		private int _passNum;
+		
 		private readonly int[] _partialPasses = { 2, 5, 6 };
 		private readonly int[][] _passResult = { new int[3], new int[3], new int[3], new int[3] };
 		private readonly TileTrackerServer _tileTracker;
@@ -77,13 +75,14 @@ namespace Resources
 		public void PlayerReady(int playerIx)
 		{
 			// if less than 3 tiles passed and not a partial pass, throw exception
-			if (!_partialPasses.Contains(_passNum) && _numTilesPassedByPlayer[playerIx] < 3)
+			if (!_partialPasses.Contains(_charlestonHandlerNetwork.PassNum) && _numTilesPassedByPlayer[playerIx] < 3)
 			{
 				throw new UnityEngine.UnityException("Players passed < 3 tiles on non-partial passes");
 			}
 
 			// do the pass if all players have submitted
 			_playersReady++;
+			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, true);
 			if (_playersReady == 4) DoPass();
 			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
@@ -98,21 +97,21 @@ namespace Resources
 				List<int> pass = arr.Where(tileId => tileId != -1).ToList();
 				if (pass.Count == 0) break;
 				// pass right
-				if (_passDir[_passNum] == 1)
+				if (_charlestonHandlerNetwork.PassDir[_charlestonHandlerNetwork.PassNum] == 1)
 				{
 					int last = pass.Last();
 					pass.RemoveAt(pass.Count - 1);
 					pass.Insert(0, last);
 				}
 				// pass left
-				if (_passDir[_passNum] == -1)
+				if (_charlestonHandlerNetwork.PassDir[_charlestonHandlerNetwork.PassNum] == -1)
 				{
 					int first = pass.First();
 					pass.RemoveAt(0);
 					pass.Add(first);
 				}
 				// pass across - you can assume all 4 are populated
-				if (_passDir[_passNum] == 0)
+				if (_charlestonHandlerNetwork.PassDir[_charlestonHandlerNetwork.PassNum] == 0)
 				{
 					List<int> passHalf = pass.Take(2).ToList();
 					pass = pass.Skip(2).ToList();
@@ -138,7 +137,8 @@ namespace Resources
 					_tileTracker.MoveTile(tileId, _tileTracker.GetPrivateRackForPlayer(playerIx), sendToAll: false);
 				}
 			}
-			_tileTracker.SendGameStateToAll();
+			
+			_tileTracker.SendGameStateToAll(false);
 			
 			// Reset state for next pass
 			_playersReady = 0;
@@ -146,9 +146,9 @@ namespace Resources
 			
 			foreach (var arr in _passArr) Array.Fill(arr, -1);
 
-			_passNum++;
+			_charlestonHandlerNetwork.PassNum++;
 			// Check if we've completed all passes
-			if (_passNum >= _passDir.Length)
+			if (_charlestonHandlerNetwork.PassNum >= _charlestonHandlerNetwork.PassDir.Length)
 			{
 				OnCharlestonComplete();
 			}

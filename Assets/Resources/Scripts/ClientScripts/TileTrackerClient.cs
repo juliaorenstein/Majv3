@@ -82,7 +82,7 @@ namespace Resources
 			_currentGameState[tileId] = newLoc;
 			
 			// update UI
-			_uiHandler.MoveTile(tileId, newLoc, ix);
+			if (GameState.GameStateVersion > 0) _uiHandler.MoveTile(tileId, newLoc, ix);
 		}
 
 		public void UpdateGameState()

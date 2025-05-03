@@ -9,7 +9,7 @@ namespace Resources
 	{
 		public readonly Dictionary<CLoc, Transform> LocToTransform = new();
 		public readonly Dictionary<Transform, CLoc> TransformToLoc = new();
-		[FormerlySerializedAs("AllTileTransforms")] public List<Transform> allTileTransforms = new();
+		public List<Transform> allTileTransforms = new();
 
 		private Button _pickUp;
 		private Button _call;
@@ -88,7 +88,6 @@ namespace Resources
 			MoveTile(tileTransform, locTransform, ix);
 		}
 
-		// BUG: moving tile to pool during charleston doesn't reflect on UI
 		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
 			// get the facts
@@ -123,42 +122,6 @@ namespace Resources
 			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
 			*/
 		}
-		
-		/*
-		public void MoveCharlestonBoxOnSubmit()
-		{
-			int dir = 1; // TODO: update dir correctly
-			int rack = 1 - dir;
-
-			_lerp.TileFace = _charlestonBox; // not technically a tile face here, but oh well
-			_lerp.StartX = _charlestonBox.position.x;
-			_lerp.StartY = _charlestonBox.position.y;
-			_lerp.EndX = _charlestonX;
-			_lerp.EndY = _charlestonY[rack];
-			_lerp.LocTransform = null;
-			_lerp.Active = true;
-		}
-
-		public void MoveOtherPlayersCharlestonOnSubmit(CLoc privateRack, int numTiles)
-		{
-			Debug.Assert(privateRack is CLoc.OtherPrivateRack1 or CLoc.OtherPrivateRack2 or CLoc.OtherPrivateRack3);
-			int dir = 1; // TODO: need to actually set this
-			int rack = 1 - dir;
-			Transform rackTransform = LocToTransform[privateRack];
-			int numChildren = rackTransform.childCount;
-			for (int i = 0; i < numTiles; i++)
-			{
-				Transform tileTransform = rackTransform.GetChild(numChildren - numChildren + i);
-				_lerp.TileFace = tileTransform.GetChild(0);
-				_lerp.StartX = _lerp.TileFace.position.x;
-				_lerp.StartY = _lerp.TileFace.position.y;
-				_lerp.EndX = _charlestonX;
-				_lerp.EndY = _charlestonY[rack];
-				_lerp.LocTransform = null;
-				_lerp.Active = true;
-			}
-		}
-		*/
 
 		public void AddSpaceToDisplayRack(CLoc displayRack)
 		{

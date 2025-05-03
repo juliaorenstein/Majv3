@@ -35,9 +35,9 @@ namespace Resources
 			Input.Action.SetDown(Action.TileToCharlestonBox);
 		}
 
-		public void RequestCharlestonPass(int[] tileIds)
+		public void RequestCharlestonPass()
 		{
-			Debug.Log($"InputSender: Requesting charleston pass for tiles {tileIds[0]}, {tileIds[1]}, {tileIds[2]}");
+			Debug.Log($"InputSender: Requesting charleston pass.");
 			Input.Action.SetDown(Action.CharlestonPass);
 		}
 

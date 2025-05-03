@@ -15,18 +15,16 @@ namespace Resources
 		public Button confirmButton;
 		public Button cancelButton;
 		public Button charlestonPass;
-		private CharlestonPassArray charlestonPassArray;
 		
 		private void Start()
 		{
 			startGame.gameObject.SetActive(false);
-			charlestonPassArray = charlestonPass.GetComponent<CharlestonPassArray>();
 			_uiHandler = GameObject.Find("GameManager").GetComponent<UIHandlerMono>();
 		}
 
 		public void RequestCharlestonPass()
 		{
-			InputSender.RequestCharlestonPass(charlestonPassArray.tilesToPass);
+			InputSender.RequestCharlestonPass();
 			charlestonPass.interactable = false;
 		}
 		
