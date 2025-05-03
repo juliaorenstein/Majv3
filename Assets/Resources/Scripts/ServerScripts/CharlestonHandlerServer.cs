@@ -22,6 +22,8 @@ namespace Resources
 		private readonly int[] _partialPasses = { 2, 5, 6 };
 		private readonly int[][] _passResult = { new int[3], new int[3], new int[3], new int[3] };
 		private readonly TileTrackerServer _tileTracker;
+		private readonly IFusionManagerGlobal _fusionManager;
+		private bool _computerPassesDone = false;
 		
 		// _passArr is an array
 		// of the form:
@@ -37,14 +39,26 @@ namespace Resources
 		//		{ P1T3, P3T3,		P4T3 }	=>	{ P4T3, P1T3,		P3T3 }
 		//	}
 
-		public CharlestonHandlerServer(TileTrackerServer tileTracker, CharlestonHandlerNetwork charlestonHandlerNetwork)
+		public CharlestonHandlerServer(
+			TileTrackerServer tileTracker, CharlestonHandlerNetwork charlestonHandlerNetwork, IFusionManagerGlobal fusionManager)
 		{
 			_tileTracker = tileTracker;
 			_charlestonHandlerNetwork = charlestonHandlerNetwork;
+			_fusionManager = fusionManager;
 		}
 
 		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
 		{
+			// start computer turn if not already done
+			if (!_computerPassesDone)
+			{
+				_computerPassesDone = true;
+				for (int compPlayerIx = _fusionManager.PlayerCount; compPlayerIx < 4; compPlayerIx++)
+				{
+					ComputerPass(compPlayerIx);
+				}
+			}
+			
 			// validate that tileId is in playerIx's rack
 			if (tileId != -1 && !_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
 			{
@@ -142,6 +156,17 @@ namespace Resources
 		private void OnCharlestonComplete()
 		{
 			//UnityEngine.Debug.Log("OnCharlestonComplete not implemented yet");
+		}
+
+		void ComputerPass(int playerIx)
+		{
+			int[] tileIds = _tileTracker.GetPrivateRackContentsForPlayer(playerIx).Take(3).ToArray();
+			for (int i = 0; i < 3; i++)
+			{
+				
+				TileToCharlestonBox(playerIx, tileIds[i], i);
+			}
+			PlayerReady(playerIx);
 		}
 	}
 }

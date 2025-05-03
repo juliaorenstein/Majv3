@@ -13,8 +13,9 @@ namespace Resources.ServerTests
 		public void SetUp()
 		{
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
-			_tileTracker = new(tiles, new FakeFusionManagerGlobal());
-			_charlestonHandler = new(_tileTracker, new CharlestonHandlerNetwork()); // TODO: Abstract this out
+			FakeFusionManagerGlobal fakeFusionManager = new();
+			_tileTracker = new(tiles, fakeFusionManager);
+			_charlestonHandler = new(_tileTracker, new CharlestonHandlerNetwork(), fakeFusionManager); // TODO: Abstract this out
 			SetUpRacks();
 		}
 
