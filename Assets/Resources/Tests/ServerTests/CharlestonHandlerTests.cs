@@ -6,7 +6,7 @@ namespace Resources.ServerTests
 {
 	public class CharlestonHandlerTests
 	{
-		private CharlestonHandler _charlestonHandler;
+		private CharlestonHandlerServer _charlestonHandler;
 		private TileTrackerServer _tileTracker;
 		
 		[SetUp]

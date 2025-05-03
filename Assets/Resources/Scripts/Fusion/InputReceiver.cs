@@ -10,7 +10,7 @@ namespace Resources
 	{
 		public int playerIx; 
 		private TurnManagerServer _turnManager;
-		private CharlestonHandler _charlestonHandler;
+		private CharlestonHandlerServer _charlestonHandler;
 		private NetworkButtons _previousTurnOptions;
 		private CallHandler _callHandler;
 
@@ -20,7 +20,7 @@ namespace Resources
 			playerIx = transform.GetSiblingIndex();
 		}
 
-		public void Initialize(TurnManagerServer turnManagerServer, CallHandler callHandler, CharlestonHandler charlestonHandler)
+		public void Initialize(TurnManagerServer turnManagerServer, CallHandler callHandler, CharlestonHandlerServer charlestonHandler)
 		{
 			_turnManager = turnManagerServer;
 			_callHandler = callHandler;

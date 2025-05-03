@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Resources
 {
-	public class CharlestonHandler
+	public class CharlestonHandlerServer
 	{
 		private readonly CharlestonHandlerNetwork _charlestonHandlerNetwork;
 		
@@ -37,7 +37,7 @@ namespace Resources
 		//		{ P1T3, P3T3,		P4T3 }	=>	{ P4T3, P1T3,		P3T3 }
 		//	}
 
-		public CharlestonHandler(TileTrackerServer tileTracker, CharlestonHandlerNetwork charlestonHandlerNetwork)
+		public CharlestonHandlerServer(TileTrackerServer tileTracker, CharlestonHandlerNetwork charlestonHandlerNetwork)
 		{
 			_tileTracker = tileTracker;
 			_charlestonHandlerNetwork = charlestonHandlerNetwork;
