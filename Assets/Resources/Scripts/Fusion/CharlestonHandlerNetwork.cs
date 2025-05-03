@@ -1,9 +1,10 @@
+using System.Linq;
 using Fusion;
 using UnityEngine;
 
 namespace Resources
 {
-	public class CharlestonHandlerNetwork : NetworkBehaviour
+	public class CharlestonHandlerNetwork : NetworkBehaviour, ICharlestonHandlerNetwork
 	{
 		public CharlestonHandlerClient CharlestonHandlerClient;
 		private ChangeDetector _changeDetector;
@@ -17,12 +18,14 @@ namespace Resources
 		
 		[Networked, Capacity(4)] public NetworkArray<NetworkBool> PlayersReady { get; }
 
-		public NetworkArray<NetworkBool>[] OccupiedSpots;
-
+		private NetworkArray<NetworkBool>[] _occupiedSpots;
+		public bool[][] OccupiedSpots => _occupiedSpots.Select(
+			a => a.Select(b => (bool)b).ToArray()).ToArray();
+		
 		public override void Spawned()
 		{
 			_changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-			OccupiedSpots = new[] {OccupiedSpots0, OccupiedSpots1, OccupiedSpots2, OccupiedSpots3};
+			_occupiedSpots = new[] {OccupiedSpots0, OccupiedSpots1, OccupiedSpots2, OccupiedSpots3};
 		}
 		
 		private void Update()
@@ -32,5 +35,18 @@ namespace Resources
 				CharlestonHandlerClient.UpdateCharlestonState();
 			}
 		}
+
+		public void SetOccupiedSpots(int playerIx, int spotIx, bool state)
+		{
+			_occupiedSpots[playerIx].Set(spotIx, state);
+		}
+	}
+	
+	public interface ICharlestonHandlerNetwork
+	{
+		int CharlestonVersion { get; set; }
+		NetworkArray<NetworkBool> PlayersReady { get; }
+		bool[][] OccupiedSpots { get; }
+		public void SetOccupiedSpots(int playerIx, int spotIx, bool state);
 	}
 }

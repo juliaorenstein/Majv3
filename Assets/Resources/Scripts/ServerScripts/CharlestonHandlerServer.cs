@@ -6,7 +6,7 @@ namespace Resources
 {
 	public class CharlestonHandlerServer
 	{
-		private readonly CharlestonHandlerNetwork _charlestonHandlerNetwork;
+		private readonly ICharlestonHandlerNetwork _charlestonHandlerNetwork;
 		
 		private int _playersReady;
 		private readonly int[] _numTilesPassedByPlayer = new int[4];
@@ -40,7 +40,7 @@ namespace Resources
 		//	}
 
 		public CharlestonHandlerServer(
-			TileTrackerServer tileTracker, CharlestonHandlerNetwork charlestonHandlerNetwork, IFusionManagerGlobal fusionManager)
+			TileTrackerServer tileTracker, ICharlestonHandlerNetwork charlestonHandlerNetwork, IFusionManagerGlobal fusionManager)
 		{
 			_tileTracker = tileTracker;
 			_charlestonHandlerNetwork = charlestonHandlerNetwork;
@@ -60,7 +60,7 @@ namespace Resources
 			}
 			
 			// validate that tileId is in playerIx's rack
-			if (tileId != -1 && !_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
+			if (!_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
 			{
 				throw new UnityEngine.UnityException($"Tile {tileId} is not in player {playerIx}'s rack");
 			}
@@ -68,7 +68,7 @@ namespace Resources
 			// update server-side data
 			if (_passArr[spotIx][playerIx] == -1) _numTilesPassedByPlayer[playerIx]++;
 			_passArr[spotIx][playerIx] = tileId;
-			_charlestonHandlerNetwork.OccupiedSpots[playerIx][spotIx] = true;
+			_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, true);
 			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
 		
@@ -90,7 +90,6 @@ namespace Resources
 
 		private void DoPass()
 		{
-			// Debug.Log($"Doing pass {_passNum}");
 			// Build pass result
 			List<List<int>> passList = new();
 			
@@ -145,8 +144,10 @@ namespace Resources
 			_playersReady = 0;
 			Array.Clear(_numTilesPassedByPlayer, 0, _numTilesPassedByPlayer.Length);
 			
-			// Check if we've completed all passes
+			foreach (var arr in _passArr) Array.Fill(arr, -1);
+
 			_passNum++;
+			// Check if we've completed all passes
 			if (_passNum >= _passDir.Length)
 			{
 				OnCharlestonComplete();

@@ -1,5 +1,7 @@
+using System.Linq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using Assert = NUnit.Framework.Assert;
 
 namespace Resources.ServerTests
 {
@@ -13,10 +15,7 @@ namespace Resources.ServerTests
 			List<Tile> tiles = new TileGenerator().GenerateTiles();
 			_tileTracker = new(tiles, new FakeFusionManagerGlobal());
 			// move all the tiles to the wall. This doesn't happen in TileTrackerServer constructor
-			for (int tileId = 0; tileId < tiles.Count; tileId++)
-			{
-				_tileTracker.MoveTile(tileId, SLoc.Wall);
-			}
+			_tileTracker.PopulateWall(Enumerable.Range(0, 152).ToList());
 		}
 		
 		[Test]
@@ -66,6 +65,8 @@ namespace Resources.ServerTests
 		public void PickupTileWallToRack_WhenCalled_MovesTileToRack()
 		{
 			int tileId = 151; // should be last tile in unshuffled wall
+			
+			
 			_tileTracker.PickupTileWallToRack(2);
 			
 			SLoc tileLoc = _tileTracker.GetTileLoc(tileId);

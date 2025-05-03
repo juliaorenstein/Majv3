@@ -9,8 +9,7 @@ namespace Resources
 		private readonly FusionManagerGlobal _fusionManager; // TODO: need to initialize
 		private readonly CharlestonUIHandlerMono _charlestonUIHandler;
 		private readonly CharlestonHandlerNetwork _charlestonHandlerNetwork;
-		private bool[][] OccupiedSpots => _charlestonHandlerNetwork.OccupiedSpots.Select(
-			a => a.Select(b => (bool)b).ToArray()).ToArray();
+		private bool[][] OccupiedSpots => _charlestonHandlerNetwork.OccupiedSpots;
 		private readonly bool[][] _occupiedSpots;
 
 		public CharlestonHandlerClient(InputSender inputSender, FusionManagerGlobal fusionManager
