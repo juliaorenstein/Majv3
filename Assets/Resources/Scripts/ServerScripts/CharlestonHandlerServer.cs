@@ -21,7 +21,7 @@ namespace Resources
 		private readonly int[][] _passResult = { new int[3], new int[3], new int[3], new int[3] };
 		private readonly TileTrackerServer _tileTracker;
 		private readonly IFusionManagerGlobal _fusionManager;
-		private bool _computerPassesDone = false;
+		private bool _computerPassesDone;
 		
 		// _passArr is an array
 		// of the form:
@@ -47,6 +47,8 @@ namespace Resources
 
 		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
 		{
+			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, false);
+			
 			// start computer turn if not already done
 			if (!_computerPassesDone)
 			{
@@ -140,17 +142,31 @@ namespace Resources
 			
 			_tileTracker.SendGameStateToAll(false);
 			
-			// Reset state for next pass
-			_playersReady = 0;
-			Array.Clear(_numTilesPassedByPlayer, 0, _numTilesPassedByPlayer.Length);
-			
-			foreach (var arr in _passArr) Array.Fill(arr, -1);
+			ResetState();
 
 			_charlestonHandlerNetwork.PassNum++;
 			// Check if we've completed all passes
 			if (_charlestonHandlerNetwork.PassNum >= _charlestonHandlerNetwork.PassDir.Length)
 			{
 				OnCharlestonComplete();
+			}
+			return;
+			
+			void ResetState()
+			{
+				_playersReady = 0;
+				Array.Clear(_numTilesPassedByPlayer, 0, _numTilesPassedByPlayer.Length);
+				for (int playerIx = 0; playerIx < 4; playerIx++)
+				{
+					for (int spotIx = 0; spotIx < 3; spotIx++)
+					{
+						_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, false);
+					}
+					//_charlestonHandlerNetwork.PlayersReady.Clear();
+				}
+			
+				foreach (var arr in _passArr) Array.Fill(arr, -1);
+				_computerPassesDone = false;
 			}
 		}
 
@@ -164,7 +180,6 @@ namespace Resources
 			int[] tileIds = _tileTracker.GetPrivateRackContentsForPlayer(playerIx).Take(3).ToArray();
 			for (int i = 0; i < 3; i++)
 			{
-				
 				TileToCharlestonBox(playerIx, tileIds[i], i);
 			}
 			PlayerReady(playerIx);

@@ -6,7 +6,7 @@ namespace Resources
 	public class CharlestonHandlerClient
 	{
 		private readonly InputSender _inputSender;
-		private readonly FusionManagerGlobal _fusionManager; // TODO: need to initialize
+		private readonly FusionManagerGlobal _fusionManager;
 		private readonly CharlestonUIHandlerMono _charlestonUIHandler;
 		private readonly CharlestonHandlerNetwork _charlestonHandlerNetwork;
 		private bool[][] OccupiedSpots => _charlestonHandlerNetwork.OccupiedSpots;

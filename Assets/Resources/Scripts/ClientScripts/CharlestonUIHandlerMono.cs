@@ -101,27 +101,26 @@ namespace Resources
 					Transform targetRack = privateRacks[targetIx]; // Corresponding other private rack
 					
 					CreateAndAddLerp(tile, targetRack, true); // Create and add the lerp
-					if (i == 0) _passFromLocalIxs.Add(_lerps.Count - 1); // track tiles FROM local rack to flip them later
-					if (targetIx == 0) _passToLocalIxs.Add(_lerps.Count - 1); // track tiles TO local rack to flip them later
+					if (i == 0) _passFromLocalIxs.Add(tile); // track tiles FROM local rack to flip them later
+					if (targetIx == 0) _passToLocalIxs.Add(tile); // track tiles TO local rack to flip them later
 				}
 			}
 		}
 
 		private readonly List<Lerp> _lerps = new();
-		private readonly List<int> _passFromLocalIxs = new();
-		private readonly List<int> _passToLocalIxs = new();
+		private readonly List<Transform> _passFromLocalIxs = new();
+		private readonly List<Transform> _passToLocalIxs = new();
 
 		private void Update()
 		{
 			for (int i = _lerps.Count - 1; i >= 0; i--) // going backwards so we can remove items as we go
 			{
 				UIHandlerMono.Lerp(_lerps[i]);
-				if (!_lerps[i].Active)
-				{
-					if (_passFromLocalIxs.Contains(i)) ReplaceTileWithTileBack(_lerps[i].TileFace.parent);
-					else if (_passToLocalIxs.Contains(i)) ReplaceBackWithTile(_lerps[i].TileFace.parent);
-					_lerps.RemoveAt(i);
-				}
+				if (_lerps[i].Active) continue;
+				// if done lerping this tile, do some final checks then remove from list
+				if (_passFromLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileFaceWithTileBack(_lerps[i].TileFace.parent);
+				else if (_passToLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileBackWithTileFace(_lerps[i].TileFace.parent);
+				_lerps.RemoveAt(i);
 			}
 		}
 		
@@ -151,7 +150,7 @@ namespace Resources
 		}
 
 		
-		private void ReplaceTileWithTileBack(Transform tileTransform)
+		private void ReplaceTileFaceWithTileBack(Transform tileTransform)
 		{
 			Transform rack = tileTransform.parent;
 			int siblingIx = tileTransform.GetSiblingIndex();
@@ -162,15 +161,16 @@ namespace Resources
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
 		}
 		
-		private void ReplaceBackWithTile(Transform tileBack)
+		private void ReplaceTileBackWithTileFace(Transform tileBack)
 		{
 			Transform rack = tileBack.parent;
 			int siblingIx = tileBack.GetSiblingIndex();
 			int tileId = _tileTracker.GetLocContents(CLoc.LocalPrivateRack)[siblingIx];
-			tileBack.SetParent(_pool);
-			tileBack.position = _pool.position;
-			
-			_uiHandler.allTileTransforms[tileId].SetParent(rack);
+			Destroy(tileBack.gameObject);
+
+			Transform tile = _uiHandler.allTileTransforms[tileId];
+			tile.SetParent(rack);
+			tile.SetSiblingIndex(siblingIx);
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
 		}
 	}
