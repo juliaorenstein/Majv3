@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Resources
@@ -137,7 +137,9 @@ namespace Resources
 		{
 			Lerp(_lerp);
 		}
-		
+
+		private const float Speed = 4f;
+
 		// BUG: last tile in rack is off at start
 		public static void Lerp(Lerp lerp)
 		{
@@ -151,10 +153,10 @@ namespace Resources
 			);
 			
 			// Increase the T interpolator
-			lerp.T += 0.02f;
+			lerp.T += Time.deltaTime * Speed;
 
 			// Check if we're done
-			if (lerp.T < 1.0f) return;
+			if (lerp.T < 1.0f ) return;
 
 			// Final position
 			lerp.TileFace.position = new Vector3(lerp.EndX, lerp.EndY);

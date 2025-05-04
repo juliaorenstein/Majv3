@@ -213,7 +213,8 @@ namespace Resources
 
 			void MoveBack()
 			{
-				uiHandlerMono.MoveTile(tileId, CLoc.LocalPrivateRack);
+				int siblingIx = _tileTransform.GetSiblingIndex();
+				uiHandlerMono.MoveTile(tileId, CLoc.LocalPrivateRack, siblingIx);
 			}
 		}
 	}

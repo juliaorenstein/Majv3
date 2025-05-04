@@ -32,7 +32,7 @@ namespace Resources
 			_occupiedSpots = new[] {OccupiedSpots0, OccupiedSpots1, OccupiedSpots2, OccupiedSpots3};
 		}
 		
-		private void Update()
+		private void FixedUpdate()
 		{
 			if (_changeDetector.DetectChanges(this).Changed(nameof(CharlestonVersion)))
 			{
