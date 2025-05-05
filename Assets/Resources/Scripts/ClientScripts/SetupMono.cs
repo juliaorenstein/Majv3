@@ -46,8 +46,8 @@ namespace Resources
             // Charleston stuff
             CharlestonUIHandlerMono charlestonUIHandler = GetComponent<CharlestonUIHandlerMono>();
             charlestonUIHandler.SetLocalPlayerIx(_fusionManager.LocalPlayerIx);
-            charlestonUIHandler.SetTileTracker(_tileTracker);
             CharlestonHandlerNetwork charlestonHandlerNetwork = _fusionManager.GetComponent<CharlestonHandlerNetwork>();
+            charlestonUIHandler.SetTileTrackerAndCharlestonNetwork(_tileTracker, charlestonHandlerNetwork);
             new CharlestonHandlerClient(_inputSender, _fusionManager, charlestonHandlerNetwork, charlestonUIHandler);
             
             // set up charleston stuff

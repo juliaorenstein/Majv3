@@ -22,6 +22,8 @@ namespace Resources
 		[Networked, Capacity(4)] public NetworkArray<NetworkBool> PlayersReady { get; }
 		
 		public int[] PassDir { get; } = { 1, 0, -1, -1, 0, 1, 0 };
+		public int[] PartialPasses { get; } = { 2, 5, 6 };
+		public bool IsPartialPass => PartialPasses.Contains(PassNum);
 
 		private NetworkArray<NetworkBool>[] _occupiedSpots;
 		public bool[][] OccupiedSpots => _occupiedSpots.Select(
@@ -43,7 +45,8 @@ namespace Resources
 					case nameof(PassNum):
 						CharlestonHandlerClient.InputSender.ClearInput();
 						int dir = PassDir[PassNum - 1];
-						_charlestonUI.DoPass(dir);
+						int nextDir = PassDir[PassNum]; // BUG: throwing exception on last pass
+						_charlestonUI.DoPass(dir, nextDir);
 						break;
 					case nameof(CharlestonVersion):
 						CharlestonHandlerClient.UpdateCharlestonState();
@@ -64,6 +67,8 @@ namespace Resources
 		NetworkArray<NetworkBool> PlayersReady { get; }
 		public int PassNum { get; set; }
 		public int[] PassDir { get; }
+		public int[] PartialPasses { get; }
+		public bool IsPartialPass { get; }
 		bool[][] OccupiedSpots { get; }
 		public void SetOccupiedSpots(int playerIx, int spotIx, bool state);
 	}

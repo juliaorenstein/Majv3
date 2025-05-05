@@ -31,23 +31,30 @@ namespace Resources
 			// otherwise, check for other updates
 			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
-				// already updated UI locally for local player changes
-				if (playerIx == _fusionManager.LocalPlayerIx) continue;
-				
 				for (int spotIx = 0; spotIx < 3; spotIx++)
 				{
 					if (OccupiedSpots[playerIx][spotIx] == _occupiedSpots[playerIx][spotIx]) continue;
 					_occupiedSpots[playerIx][spotIx] = OccupiedSpots[playerIx][spotIx];
-					
-					// if newly occupied, move tile to that spot
-					if (OccupiedSpots[playerIx][spotIx])
-						_charlestonUIHandler.MoveOtherTileToCharlestonBox(playerIx, spotIx);
+					if (playerIx == _fusionManager.LocalPlayerIx)
+					{
+						if (_occupiedSpots[playerIx].All(b=>b)) _charlestonUIHandler.EnablePassButton();
+					}
+					else
+					{
+						// if newly occupied, move tile to that spot
+						if (OccupiedSpots[playerIx][spotIx])
+							_charlestonUIHandler.MoveOtherTileToCharlestonBox(playerIx, spotIx);
 
-					// else, move tile back to private rack
-					// TODO: move tile back to rack
+						// else, move tile back to private rack
+						// TODO: move tile back to rack
+					}
 				}
 			}
 			_charlestonUIHandler.UpdateReadyIndicator(_charlestonHandlerNetwork.PlayersReady.Select(b => (bool)b).ToArray());
 		}
 	}
 }
+
+
+// TODO: add client-side validation for no jokers and non-partial passes
+// BUG: when dragging from charleston to rack after first pass, tile goes behind rack and stays as child of charleston box 

@@ -8,18 +8,15 @@ namespace Resources
 		public NetworkArray<NetworkBool> PlayersReady { get; }
 		public int PassNum { get; set; }
 		public int[] PassDir { get; }
-		public bool[][] OccupiedSpots { get; }
-		
-		public FakeCharlestonHandlerNetwork()
-		{
-			OccupiedSpots = new[]
-			{
-				new[] {false, false, false },
-				new[] {false, false, false },
-				new[] {false, false, false },
-				new[] {false, false, false }
-			};
-		}
+		public int[] PartialPasses { get; }
+		public bool IsPartialPass { get; }
+		public bool[][] OccupiedSpots { get; } = {
+			new[] {false, false, false },
+			new[] {false, false, false },
+			new[] {false, false, false },
+			new[] {false, false, false }
+		};
+
 		public void UpdateCharlestonState()
 		{
 		}

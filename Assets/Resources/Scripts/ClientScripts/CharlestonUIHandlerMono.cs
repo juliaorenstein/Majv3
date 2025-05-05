@@ -1,24 +1,31 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine.UI;
 
 namespace Resources
 {
 	public class CharlestonUIHandlerMono : MonoBehaviour
 	{
-		private List<Transform> privateRacks;
+		private List<Transform> _privateRacks;
 		private List<Transform> _charlestonBoxes;
 		private int _localPlayerIx;
 		private Transform _tileBack;
 		private Transform _pool;
+		
 
 		private UIHandlerMono _uiHandler;
 		private TileTrackerClient _tileTracker;
+		private CharlestonHandlerNetwork _charlestonNetwork;
+		
+		private Button _passButton;
+		private TextMeshProUGUI _passButtonText;
 
 		private void Start()
 		{
 			_uiHandler = GetComponent<UIHandlerMono>();
-			privateRacks = new()
+			_privateRacks = new()
 			{
 				GameObject.Find("Local Rack").transform.GetChild(1),
 				GameObject.Find("Other Rack 1").transform.GetChild(1),
@@ -34,9 +41,16 @@ namespace Resources
 			};
 			_tileBack = ((GameObject)UnityEngine.Resources.Load("Prefabs/Tile Back")).transform;
 			_pool = GameObject.Find("Pool").transform;
+			
+			_passButton = GameObject.Find("Charleston Pass").GetComponent<Button>();
+			_passButtonText = _passButton.GetComponentInChildren<TextMeshProUGUI>();
 		}
-		
-		public void SetTileTracker(TileTrackerClient tileTracker) => _tileTracker = tileTracker;
+
+		public void SetTileTrackerAndCharlestonNetwork(TileTrackerClient tileTracker, CharlestonHandlerNetwork charlestonNetwork)
+		{
+			_tileTracker = tileTracker;
+			_charlestonNetwork = charlestonNetwork;
+		}
 
 		public void SetLocalPlayerIx(int playerIx) => _localPlayerIx = playerIx;
 
@@ -46,8 +60,7 @@ namespace Resources
 			bool spotOccupied = spot.childCount > 0;
 
 			// get the facts
-			Lerp lerp = new Lerp();
-			lerp.TileFace = tileFace;
+			Lerp lerp = new Lerp { TileFace = tileFace };
 			lerp.StartX = lerp.TileFace.position.x;
 			lerp.StartY = lerp.TileFace.position.y;
 
@@ -62,8 +75,6 @@ namespace Resources
 			_lerps.Add(lerp);
 
 			if (spotOccupied) _uiHandler.MoveTile(spot.GetChild(0), CLoc.LocalPrivateRack);
-
-			tileFace.GetComponent<Image>().raycastTarget = true;
 		}
 
 		public void UpdateReadyIndicator(bool[] playersReady)
@@ -75,12 +86,17 @@ namespace Resources
 		{
 			int rackIx = (playerIx - _localPlayerIx + 4) % 4;
 			Transform spot = _charlestonBoxes[rackIx].GetChild(spotIx);
-			Transform tileBack = privateRacks[rackIx].GetChild(privateRacks[rackIx].childCount - 1);
+			Transform tileBack = _privateRacks[rackIx].GetChild(_privateRacks[rackIx].childCount - 1);
 			
 			CreateAndAddLerp(tileBack, spot);
 		}
 
-		public void DoPass(int dir)
+		public void EnablePassButton()
+		{
+			_passButton.interactable = true;
+		}
+
+		public void DoPass(int dir, int nextDir)
 		{
 			Debug.Log("UI: doing pass");
 			
@@ -95,13 +111,22 @@ namespace Resources
 					Transform tile = spot.GetChild(0); // Get the child tile
 					int targetIx = (i + 2 - dir) % 4;
 					
-					Transform targetRack = privateRacks[targetIx]; // Corresponding other private rack
+					Transform targetRack = _privateRacks[targetIx]; // Corresponding other private rack
 					
 					CreateAndAddLerp(tile, targetRack, true); // Create and add the lerp
 					if (i == 0) _passFromLocalIxs.Add(tile); // track tiles FROM local rack to flip them later
 					if (targetIx == 0) _passToLocalIxs.Add(tile); // track tiles TO local rack to flip them later
 				}
 			}
+			
+			string text = nextDir switch
+			{
+				1 => "Pass Right",
+				0 => "Pass Across",
+				-1 => "Pass Left",
+				_ => "Invalid Directions"
+			};
+			_passButtonText.SetText(text);
 		}
 
 		private readonly List<Lerp> _lerps = new();
@@ -115,7 +140,9 @@ namespace Resources
 				UIHandlerMono.Lerp(_lerps[i]);
 				if (_lerps[i].Active) continue;
 				// if done lerping this tile, do some final checks then remove from list
+				_lerps[i].TileFace.GetComponent<Image>().raycastTarget = true;
 				if (_passFromLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileFaceWithTileBack(_lerps[i].TileFace.parent);
+				// BUG: next line throwing an error on partial passes
 				else if (_passToLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileBackWithTileFace(_lerps[i].TileFace.parent);
 				_lerps.RemoveAt(i);
 			}

@@ -17,7 +17,6 @@ namespace Resources
 			new[] { -1, -1, -1, -1}
 		};
 		
-		private readonly int[] _partialPasses = { 2, 5, 6 };
 		private readonly int[][] _passResult = { new int[3], new int[3], new int[3], new int[3] };
 		private readonly TileTrackerServer _tileTracker;
 		private readonly IFusionManagerGlobal _fusionManager;
@@ -78,7 +77,7 @@ namespace Resources
 		public void PlayerReady(int playerIx)
 		{
 			// if less than 3 tiles passed and not a partial pass, throw exception
-			if (!_partialPasses.Contains(_charlestonHandlerNetwork.PassNum) && _numTilesPassedByPlayer[playerIx] < 3)
+			if (!_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum) && _numTilesPassedByPlayer[playerIx] < 3)
 			{
 				throw new UnityEngine.UnityException("Players passed < 3 tiles on non-partial passes");
 			}
@@ -178,9 +177,10 @@ namespace Resources
 
 		void ComputerPass(int playerIx)
 		{
-			int[] tileIds = _tileTracker.GetPrivateRackContentsForPlayer(playerIx).Take(3).ToArray();
+			List<int> tileIds = _tileTracker.GetPrivateRackContentsForPlayer(playerIx).ToList();
 			for (int i = 0; i < 3; i++)
 			{
+				while (Tile.IsJoker(tileIds[i])) tileIds.RemoveAt(i); // don't pass jokers
 				TileToCharlestonBox(playerIx, tileIds[i], i);
 			}
 			PlayerReady(playerIx);

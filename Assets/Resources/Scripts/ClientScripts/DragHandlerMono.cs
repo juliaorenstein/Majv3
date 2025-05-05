@@ -153,7 +153,8 @@ namespace Resources
 			
 			bool IsRackToCharleston() => _fusionManager.CurrentTurnStage == TurnStage.Charleston 
 			                       && CurLoc is CLoc.LocalPrivateRack
-                                   && candidateLocs.Intersect(_charlestonSpots).Any();
+                                   && candidateLocs.Intersect(_charlestonSpots).Any()
+			                       && !Tile.IsJoker(tileId);
 
 			void DoMoveToRack()
 			{
