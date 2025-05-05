@@ -8,9 +8,11 @@ namespace Resources
 	public class CharlestonHandlerNetwork : NetworkBehaviour, ICharlestonHandlerNetwork
 	{
 		public CharlestonHandlerClient CharlestonHandlerClient;
+		private CharlestonUIHandlerMono _charlestonUI;
 		private ChangeDetector _changeDetector;
 		
 		[Networked] public int CharlestonVersion { get; set; }
+		[Networked] public int PassNum { get; set; }
 		
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots0 { get; }
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots1 { get; }
@@ -19,7 +21,6 @@ namespace Resources
 		
 		[Networked, Capacity(4)] public NetworkArray<NetworkBool> PlayersReady { get; }
 		
-		public int PassNum { get; set; }
 		public int[] PassDir { get; } = { 1, 0, -1, -1, 0, 1, 0 };
 
 		private NetworkArray<NetworkBool>[] _occupiedSpots;
@@ -30,13 +31,24 @@ namespace Resources
 		{
 			_changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 			_occupiedSpots = new[] {OccupiedSpots0, OccupiedSpots1, OccupiedSpots2, OccupiedSpots3};
+			_charlestonUI = GameObject.Find("GameManager").GetComponent<CharlestonUIHandlerMono>();
 		}
 		
-		private void FixedUpdate()
+		private void Update()
 		{
-			if (_changeDetector.DetectChanges(this).Changed(nameof(CharlestonVersion)))
+			foreach (string change in _changeDetector.DetectChanges(this))
 			{
-				CharlestonHandlerClient.UpdateCharlestonState();
+				switch (change)
+				{
+					case nameof(PassNum):
+						CharlestonHandlerClient.InputSender.ClearInput();
+						int dir = PassDir[PassNum - 1];
+						_charlestonUI.DoPass(dir);
+						break;
+					case nameof(CharlestonVersion):
+						CharlestonHandlerClient.UpdateCharlestonState();
+						break;
+				}
 			}
 		}
 

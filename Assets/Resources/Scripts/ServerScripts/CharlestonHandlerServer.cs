@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Resources
 {
@@ -8,7 +9,6 @@ namespace Resources
 	{
 		private readonly ICharlestonHandlerNetwork _charlestonHandlerNetwork;
 		
-		private int _playersReady;
 		private readonly int[] _numTilesPassedByPlayer = new int[4];
 		private readonly int[][] _passArr =
 		{
@@ -47,6 +47,7 @@ namespace Resources
 
 		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
 		{
+			Debug.Log("TileToCharlestonBox");
 			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, false);
 			
 			// start computer turn if not already done
@@ -62,7 +63,7 @@ namespace Resources
 			// validate that tileId is in playerIx's rack
 			if (!_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
 			{
-				throw new UnityEngine.UnityException($"Tile {tileId} is not in player {playerIx}'s rack");
+				throw new UnityException($"Tile {tileId} is not in player {playerIx}'s rack");
 			}
 			
 			// update server-side data
@@ -83,9 +84,8 @@ namespace Resources
 			}
 
 			// do the pass if all players have submitted
-			_playersReady++;
 			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, true);
-			if (_playersReady == 4) DoPass();
+			if (_charlestonHandlerNetwork.PlayersReady.All(b => b)) DoPass();
 			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
 
@@ -143,8 +143,7 @@ namespace Resources
 			_tileTracker.SendGameStateToAll(false);
 			
 			ResetState();
-
-			_charlestonHandlerNetwork.PassNum++;
+			
 			// Check if we've completed all passes
 			if (_charlestonHandlerNetwork.PassNum >= _charlestonHandlerNetwork.PassDir.Length)
 			{
@@ -154,19 +153,21 @@ namespace Resources
 			
 			void ResetState()
 			{
-				_playersReady = 0;
+				// clear tiles passed by players
 				Array.Clear(_numTilesPassedByPlayer, 0, _numTilesPassedByPlayer.Length);
+				// clear occupied spots
 				for (int playerIx = 0; playerIx < 4; playerIx++)
 				{
 					for (int spotIx = 0; spotIx < 3; spotIx++)
 					{
 						_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, false);
 					}
-					//_charlestonHandlerNetwork.PlayersReady.Clear();
 				}
-			
+				// clear players ready and passArr
+				_charlestonHandlerNetwork.PlayersReady.Clear();
 				foreach (var arr in _passArr) Array.Fill(arr, -1);
-				_computerPassesDone = false;
+				_computerPassesDone = false;			// reset AI players
+				_charlestonHandlerNetwork.PassNum++;	// increment pass num (this is how clients know to pass)
 			}
 		}
 

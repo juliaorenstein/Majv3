@@ -6,9 +6,6 @@ namespace Resources
 {
 	public class CharlestonUIHandlerMono : MonoBehaviour
 	{
-		// charleston spots
-		private Transform _charlestonTransform;
-
 		private List<Transform> privateRacks;
 		private List<Transform> _charlestonBoxes;
 		private int _localPlayerIx;
@@ -20,7 +17,6 @@ namespace Resources
 
 		private void Start()
 		{
-			_charlestonTransform = GameObject.Find("Charleston Pass").transform;
 			_uiHandler = GetComponent<UIHandlerMono>();
 			privateRacks = new()
 			{
@@ -87,6 +83,7 @@ namespace Resources
 		public void DoPass(int dir)
 		{
 			Debug.Log("UI: doing pass");
+			
 			for (int i = 0; i < _charlestonBoxes.Count; i++) // Loop through each Charleston box
 			{
 				for (int j = 0; j < _charlestonBoxes[i].childCount; j++) // Loop through each spot in the box

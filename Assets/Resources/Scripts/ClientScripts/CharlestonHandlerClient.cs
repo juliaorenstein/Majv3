@@ -5,7 +5,7 @@ namespace Resources
 {
 	public class CharlestonHandlerClient
 	{
-		private readonly InputSender _inputSender;
+		public readonly InputSender InputSender;
 		private readonly FusionManagerGlobal _fusionManager;
 		private readonly CharlestonUIHandlerMono _charlestonUIHandler;
 		private readonly CharlestonHandlerNetwork _charlestonHandlerNetwork;
@@ -15,7 +15,7 @@ namespace Resources
 		public CharlestonHandlerClient(InputSender inputSender, FusionManagerGlobal fusionManager
 			, CharlestonHandlerNetwork charlestonHandlerNetwork, CharlestonUIHandlerMono charlestonUIHandler)
 		{
-			_inputSender = inputSender;
+			InputSender = inputSender;
 			_fusionManager = fusionManager;
 			_charlestonHandlerNetwork = charlestonHandlerNetwork;
 			_charlestonHandlerNetwork.CharlestonHandlerClient = this;
@@ -26,15 +26,7 @@ namespace Resources
 		public void UpdateCharlestonState()
 		{
 			Debug.Log("Client: Updating charleston state");
-			_inputSender.ClearInput();
-
-			// if everybody is ready, move tiles to other private racks
-			if (_charlestonHandlerNetwork.PlayersReady.All(b => b))
-			{
-				int dir = _charlestonHandlerNetwork.PassDir[_charlestonHandlerNetwork.PassNum - 1];
-				_charlestonUIHandler.DoPass(dir);
-				return;
-			}
+			InputSender.ClearInput();
 			
 			// otherwise, check for other updates
 			for (int playerIx = 0; playerIx < 4; playerIx++)

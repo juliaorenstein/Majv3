@@ -4080,7 +4080,6 @@ GameObject:
   - component: {fileID: 1951470787}
   - component: {fileID: 1951470786}
   - component: {fileID: 1951470785}
-  - component: {fileID: 1951470788}
   m_Layer: 5
   m_Name: Charleston Pass
   m_TagString: Untagged
@@ -4202,19 +4201,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1951470783}
   m_CullTransparentMesh: 1
---- !u!114 &1951470788
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1951470783}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfcec7011b316480e9677d532fd7393f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tilesToPass: ffffffffffffffffffffffff
 --- !u!1 &2044362563
 GameObject:
   m_ObjectHideFlags: 0

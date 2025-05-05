@@ -81,7 +81,7 @@ namespace Resources
 
 		public void ClearInput()
 		{
-			//Debug.Log("InputSender: Clearing input");
+			Debug.Log("InputSender: Clearing input");
 			Input.Action.SetAllUp();
 			Input.TileId = -1;
 			Input.SpotIx = -1;
