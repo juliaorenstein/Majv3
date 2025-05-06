@@ -24,7 +24,8 @@ namespace Resources
 		public void StartGame()
 		{
 			Debug.Log("Starting game");
-			//_computerTurn.FirstTurn(TurnPlayerIx); // TODO: delete this method or make it work for charleston
+			_fusionManager.CurrentTurnStage = TurnStage.Discard;
+			if (TurnPlayerIx >= _fusionManager.PlayerCount) _computerTurn.FirstTurn(TurnPlayerIx);
 		}
 
 		public void DoDiscard(int playerIx, int tileId)

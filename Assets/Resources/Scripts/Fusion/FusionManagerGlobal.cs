@@ -23,7 +23,7 @@ namespace Resources
 		public int PlayerCount => Players.ToArray().Count(player => player != PlayerRef.None);
 		
 		public INetworkedGameState[] NetworkedGameStates { get; set; }
-		public TurnManagerServer TurnManagerServer;
+		public TurnManagerServer TurnManagerServer { get; set; }
 		public CharlestonHandlerServer CharlestonHandlerServer;
 		
 
@@ -55,10 +55,11 @@ namespace Resources
 		public int DiscardTileId { get; }
 		public bool IsMyTurn { get; }
 		public bool IsMyExpose { get; }
+		public TurnManagerServer TurnManagerServer { get; set; }
 		int PlayerIx(int playerId);
 		int PlayerIx(PlayerRef playerRef);
 		INetworkedGameState[] NetworkedGameStates { get; set; }
 		int PlayerCount { get; }
-		public TurnStage CurrentTurnStage { get; }
+		public TurnStage CurrentTurnStage { get; set; }
 	}
 }

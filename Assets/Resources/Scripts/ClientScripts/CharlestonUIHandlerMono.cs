@@ -119,14 +119,27 @@ namespace Resources
 				}
 			}
 			
-			string text = nextDir switch
+			// end passing if nextDir == -2. Otherwise set the text of the button for the next pass
+			if (nextDir == -2) EndCharlestons();
+			else
 			{
-				1 => "Pass Right",
-				0 => "Pass Across",
-				-1 => "Pass Left",
-				_ => "Invalid Directions"
-			};
-			_passButtonText.SetText(text);
+				string text = nextDir switch
+				{
+					1 => "Pass Right",
+					0 => "Pass Across",
+					-1 => "Pass Left",
+					_ => "Invalid Directions"
+				};
+				_passButtonText.SetText(text);
+			}
+			// BUG: sometimes dragging tile to charleston, the face disappears but charleston pass still works. I think it's when the tile has been passed before.
+		}
+
+		private void EndCharlestons()
+		{
+			_passButton.gameObject.SetActive(false);
+			_charlestonBoxes.ForEach(box => box.gameObject.SetActive(false));
+			// TODO: indicate who's turn it is.
 		}
 
 		private readonly List<Lerp> _lerps = new();
@@ -142,7 +155,7 @@ namespace Resources
 				// if done lerping this tile, do some final checks then remove from list
 				_lerps[i].TileFace.GetComponent<Image>().raycastTarget = true;
 				if (_passFromLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileFaceWithTileBack(_lerps[i].TileFace.parent);
-				// BUG: next line throwing an error on partial passes
+				// BUG: next line throwing an error on partial passes and last pass
 				else if (_passToLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileBackWithTileFace(_lerps[i].TileFace.parent);
 				_lerps.RemoveAt(i);
 			}
@@ -181,6 +194,7 @@ namespace Resources
 			Instantiate(_tileBack, rack).SetSiblingIndex(siblingIx);
 			tileTransform.SetParent(_pool);
 			tileTransform.position = _pool.position;
+			_passFromLocalIxs.Remove(tileTransform.GetChild(0));
 			
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
 		}
@@ -189,12 +203,17 @@ namespace Resources
 		{
 			Transform rack = tileBack.parent;
 			int siblingIx = tileBack.GetSiblingIndex();
-			int tileId = _tileTracker.GetLocContents(CLoc.LocalPrivateRack)[siblingIx];
+			List<int> rackContents = _tileTracker.GetLocContents(CLoc.LocalPrivateRack);
+			if (siblingIx < rackContents.Count)
+			{
+				int tileId = _tileTracker.GetLocContents(CLoc.LocalPrivateRack)[siblingIx];
+				Transform tile = _uiHandler.allTileTransforms[tileId];
+				tile.SetParent(rack);
+				tile.SetSiblingIndex(siblingIx);
+			}
 			Destroy(tileBack.gameObject);
-
-			Transform tile = _uiHandler.allTileTransforms[tileId];
-			tile.SetParent(rack);
-			tile.SetSiblingIndex(siblingIx);
+			_passToLocalIxs.Remove(tileBack.GetChild(0));
+			
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
 		}
 	}

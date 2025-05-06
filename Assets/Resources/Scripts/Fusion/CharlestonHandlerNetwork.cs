@@ -45,7 +45,8 @@ namespace Resources
 					case nameof(PassNum):
 						CharlestonHandlerClient.InputSender.ClearInput();
 						int dir = PassDir[PassNum - 1];
-						int nextDir = PassDir[PassNum]; // BUG: throwing exception on last pass
+						int nextDir = -2; // -2 indicates end of passing
+						if (PassNum < PassDir.Length) nextDir = PassDir[PassNum];
 						_charlestonUI.DoPass(dir, nextDir);
 						break;
 					case nameof(CharlestonVersion):

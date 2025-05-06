@@ -143,11 +143,10 @@ namespace Resources
 			
 			ResetState();
 			
-			// Check if we've completed all passes
-			if (_charlestonHandlerNetwork.PassNum >= _charlestonHandlerNetwork.PassDir.Length)
-			{
-				OnCharlestonComplete();
-			}
+			// Check if we've completed all passes, start game if so
+			if (_charlestonHandlerNetwork.PassNum < _charlestonHandlerNetwork.PassDir.Length) return;
+			_fusionManager.CurrentTurnStage = TurnStage.Discard;
+			_fusionManager.TurnManagerServer.StartGame();
 			return;
 			
 			void ResetState()
@@ -168,11 +167,6 @@ namespace Resources
 				_computerPassesDone = false;			// reset AI players
 				_charlestonHandlerNetwork.PassNum++;	// increment pass num (this is how clients know to pass)
 			}
-		}
-
-		private void OnCharlestonComplete()
-		{
-			//UnityEngine.Debug.Log("OnCharlestonComplete not implemented yet");
 		}
 
 		void ComputerPass(int playerIx)

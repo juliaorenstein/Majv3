@@ -55,6 +55,7 @@ namespace Resources
 		public void OnEndDrag(PointerEventData eventData)
 		{
 			// TODO: potential refactor. Check chatGPT "Drag Validation Workflow Design" chat for details
+			// BUG: if you drag a tile a little but end on same spot on rack, the tile doesn't snap back to original location
 			
 			transform.SetParent(_tileTransform, true);
 			
