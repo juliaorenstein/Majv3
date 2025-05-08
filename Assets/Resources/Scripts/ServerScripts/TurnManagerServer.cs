@@ -25,7 +25,7 @@ namespace Resources
 		{
 			Debug.Log("Starting game");
 			_fusionManager.CurrentTurnStage = TurnStage.Discard;
-			if (TurnPlayerIx >= _fusionManager.PlayerCount) _computerTurn.FirstTurn(TurnPlayerIx);
+			if (TurnPlayerIx >= _fusionManager.HumanPlayerCount) _computerTurn.FirstTurn(TurnPlayerIx);
 		}
 
 		public void DoDiscard(int playerIx, int tileId)
@@ -112,7 +112,7 @@ namespace Resources
 			_fusionManager.CurrentTurnStage = TurnStage.PickUp;
 			_tileTracker.SendGameStateToAll();
 			
-			if (TurnPlayerIx >= _fusionManager.PlayerCount) _computerTurn.TakeTurn(TurnPlayerIx);
+			if (TurnPlayerIx >= _fusionManager.HumanPlayerCount) _computerTurn.TakeTurn(TurnPlayerIx);
 		}
 		
 		// TODO: do nevermind later

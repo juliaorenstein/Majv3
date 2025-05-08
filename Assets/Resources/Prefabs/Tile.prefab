@@ -280,5 +280,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b55e9cb70024fd097cd94c392613697, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mono: {fileID: 0}
+  uiHandlerMono: {fileID: 0}
   tileId: 0

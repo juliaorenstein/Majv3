@@ -20,12 +20,13 @@ namespace Resources
 		
 		public int PlayerIx(int playerId) => Array.IndexOf(PlayerIds, playerId);
 		public int PlayerIx(PlayerRef playerRef) => Array.IndexOf(PlayerIds, playerRef.PlayerId);
-		public int PlayerCount => Players.ToArray().Count(player => player != PlayerRef.None);
+		public int HumanPlayerCount => Players.ToArray().Count(player => player != PlayerRef.None);
 		
 		public INetworkedGameState[] NetworkedGameStates { get; set; }
 		public TurnManagerServer TurnManagerServer { get; set; }
-		public CharlestonHandlerServer CharlestonHandlerServer;
-		
+
+		private int _readyToStart;
+
 
 		public override void Spawned()
 		{
@@ -35,6 +36,15 @@ namespace Resources
 			TurnPlayerIx = 1;
 			ExposingPlayerIx = -1;
 			numTilesExposedThisTurn = 0;
+		}
+
+		public void PlayerReadyToStartGamePlay()
+		{
+			_readyToStart++;
+			if (_readyToStart == HumanPlayerCount)
+			{
+				TurnManagerServer.StartGame();
+			}
 		}
 	}
 
@@ -59,7 +69,7 @@ namespace Resources
 		int PlayerIx(int playerId);
 		int PlayerIx(PlayerRef playerRef);
 		INetworkedGameState[] NetworkedGameStates { get; set; }
-		int PlayerCount { get; }
+		int HumanPlayerCount { get; }
 		public TurnStage CurrentTurnStage { get; set; }
 	}
 }

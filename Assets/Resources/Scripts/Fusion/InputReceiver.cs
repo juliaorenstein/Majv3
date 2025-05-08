@@ -1,7 +1,5 @@
-using System.Linq;
 using Fusion;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Resources
 {
@@ -13,6 +11,8 @@ namespace Resources
 		private CharlestonHandlerServer _charlestonHandler;
 		private NetworkButtons _previousTurnOptions;
 		private CallHandler _callHandler;
+		private FusionManagerGlobal _fusionManager;
+		private bool _readyFlagFlipped;
 
 		public override void Spawned()
 		{
@@ -20,11 +20,15 @@ namespace Resources
 			playerIx = transform.GetSiblingIndex();
 		}
 
-		public void Initialize(TurnManagerServer turnManagerServer, CallHandler callHandler, CharlestonHandlerServer charlestonHandler)
+		public void Initialize(TurnManagerServer turnManagerServer
+			, CallHandler callHandler
+			, CharlestonHandlerServer charlestonHandler
+			, FusionManagerGlobal fusionManager)
 		{
 			_turnManager = turnManagerServer;
 			_callHandler = callHandler;
 			_charlestonHandler = charlestonHandler;
+			_fusionManager = fusionManager;
 		}
 
 		public override void FixedUpdateNetwork()
@@ -44,6 +48,14 @@ namespace Resources
 				{
 					Debug.Log("Input Receiver: Charleston Pass");
 					_charlestonHandler.PlayerReady(playerIx);
+				}
+				
+				// CHARLESTON - START GAMEPLAY
+				if (!_readyFlagFlipped && clientInput.StartGame)
+				{
+					Debug.Log("Input Receiver: Start Game Play");
+					_readyFlagFlipped = true;
+					_fusionManager.PlayerReadyToStartGamePlay();
 				}
 				
 				// DISCARD

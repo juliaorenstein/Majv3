@@ -13,11 +13,11 @@ namespace Resources
 		private int _localPlayerIx;
 		private Transform _tileBack;
 		private Transform _pool;
-		
+		private List<Transform> _localSpots;
 
 		private UIHandlerMono _uiHandler;
 		private TileTrackerClient _tileTracker;
-		private CharlestonHandlerNetwork _charlestonNetwork;
+		private InputSender _inputSender;
 		
 		private Button _passButton;
 		private TextMeshProUGUI _passButtonText;
@@ -41,21 +41,31 @@ namespace Resources
 			};
 			_tileBack = ((GameObject)UnityEngine.Resources.Load("Prefabs/Tile Back")).transform;
 			_pool = GameObject.Find("Pool").transform;
+			_localSpots = _charlestonBoxes[0].GetComponentsInChildren<Transform>().ToList();
 			
 			_passButton = GameObject.Find("Charleston Pass").GetComponent<Button>();
 			_passButtonText = _passButton.GetComponentInChildren<TextMeshProUGUI>();
 		}
 
-		public void SetTileTrackerAndCharlestonNetwork(TileTrackerClient tileTracker, CharlestonHandlerNetwork charlestonNetwork)
+		public void SetReferences(
+			TileTrackerClient tileTracker
+			, InputSender inputSender)
 		{
 			_tileTracker = tileTracker;
-			_charlestonNetwork = charlestonNetwork;
+			_inputSender = inputSender;
 		}
 
 		public void SetLocalPlayerIx(int playerIx) => _localPlayerIx = playerIx;
 
+		public void MoveLocalTileRackToCharlestonBox(Transform tileFace, int spotIx)
+		{
+			Transform spot = _localSpots[spotIx];
+			MoveLocalTileRackToCharlestonBox(tileFace, spot);
+		}
+		
 		public void MoveLocalTileRackToCharlestonBox(Transform tileFace, Transform spot)
 		{
+			Debug.Assert(_localSpots.Contains(spot));
 			Transform tile = tileFace.parent;
 			bool spotOccupied = spot.childCount > 0;
 
@@ -137,6 +147,7 @@ namespace Resources
 
 		private void EndCharlestons()
 		{
+			_readyToStartGamePlay = true;
 			_passButton.gameObject.SetActive(false);
 			_charlestonBoxes.ForEach(box => box.gameObject.SetActive(false));
 			// TODO: indicate who's turn it is.
@@ -145,6 +156,7 @@ namespace Resources
 		private readonly List<Lerp> _lerps = new();
 		private readonly List<Transform> _passFromLocalIxs = new();
 		private readonly List<Transform> _passToLocalIxs = new();
+		private bool _readyToStartGamePlay;
 
 		private void Update()
 		{
@@ -158,6 +170,11 @@ namespace Resources
 				// BUG: next line throwing an error on partial passes and last pass
 				else if (_passToLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileBackWithTileFace(_lerps[i].TileFace.parent);
 				_lerps.RemoveAt(i);
+			}
+
+			if (_readyToStartGamePlay && _lerps.Count == 0)
+			{
+				_inputSender.Input.StartGame = true;
 			}
 		}
 		

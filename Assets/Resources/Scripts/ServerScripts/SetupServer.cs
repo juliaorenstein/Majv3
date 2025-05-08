@@ -20,7 +20,7 @@ namespace Resources
 			CharlestonHandlerServer charlestonHandler = new(_tileTracker, charlestonHandlerNetwork, fusionManager);
 			foreach (InputReceiver receiver in fusionManager.GetComponentsInChildren<InputReceiver>())
 			{
-				receiver.Initialize(turnManager, callHandler, charlestonHandler); // Pass the shared instance
+				receiver.Initialize(turnManager, callHandler, charlestonHandler, fusionManager); // Pass the shared instance
 			}
 			
 			Shuffle();

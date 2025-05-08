@@ -47,7 +47,7 @@ namespace Resources
             CharlestonUIHandlerMono charlestonUIHandler = GetComponent<CharlestonUIHandlerMono>();
             charlestonUIHandler.SetLocalPlayerIx(_fusionManager.LocalPlayerIx);
             CharlestonHandlerNetwork charlestonHandlerNetwork = _fusionManager.GetComponent<CharlestonHandlerNetwork>();
-            charlestonUIHandler.SetTileTrackerAndCharlestonNetwork(_tileTracker, charlestonHandlerNetwork);
+            charlestonUIHandler.SetReferences(_tileTracker, _inputSender);
             new CharlestonHandlerClient(_inputSender, _fusionManager, charlestonHandlerNetwork, charlestonUIHandler);
             
             // set up charleston stuff
@@ -98,6 +98,8 @@ namespace Resources
                 
                 // add this to the list of tile transforms
                 _uiHandlerMono.allTileTransforms.Add(newTileTransform);
+                
+                
             }
         }
 

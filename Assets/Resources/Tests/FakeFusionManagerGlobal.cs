@@ -4,7 +4,7 @@ namespace Resources
 {
 	public class FakeFusionManagerGlobal : IFusionManagerGlobal
 	{
-		public int PlayerCount => 4;
+		public int HumanPlayerCount => 4;
 		public TurnStage CurrentTurnStage { get; set; }
 		public NetworkArray<PlayerRef> Players { get; set; } = new();
 		public int TurnPlayerIx { get; set; }

@@ -8,6 +8,7 @@ namespace Resources
 		public NetworkButtons Action;
 		public int TileId;
 		public int SpotIx;
+		public bool StartGame;
 	}
 	
 	public enum Action
@@ -81,7 +82,7 @@ namespace Resources
 
 		public void ClearInput()
 		{
-			Debug.Log("InputSender: Clearing input");
+			// Debug.Log("InputSender: Clearing input");
 			Input.Action.SetAllUp();
 			Input.TileId = -1;
 			Input.SpotIx = -1;

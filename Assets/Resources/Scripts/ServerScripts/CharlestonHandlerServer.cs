@@ -46,14 +46,14 @@ namespace Resources
 
 		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
 		{
-			Debug.Log("TileToCharlestonBox");
-			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, false);
+			// Debug.Log("TileToCharlestonBox");
+			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, false); // BUG: IndexOutOfRangeException on unit tests here
 			
 			// start computer turn if not already done
 			if (!_computerPassesDone)
 			{
 				_computerPassesDone = true;
-				for (int compPlayerIx = _fusionManager.PlayerCount; compPlayerIx < 4; compPlayerIx++)
+				for (int compPlayerIx = _fusionManager.HumanPlayerCount; compPlayerIx < 4; compPlayerIx++)
 				{
 					ComputerPass(compPlayerIx);
 				}
@@ -142,11 +142,6 @@ namespace Resources
 			_tileTracker.SendGameStateToAll(false);
 			
 			ResetState();
-			
-			// Check if we've completed all passes, start game if so
-			if (_charlestonHandlerNetwork.PassNum < _charlestonHandlerNetwork.PassDir.Length) return;
-			_fusionManager.CurrentTurnStage = TurnStage.Discard;
-			_fusionManager.TurnManagerServer.StartGame();
 			return;
 			
 			void ResetState()
