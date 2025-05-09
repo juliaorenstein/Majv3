@@ -51,7 +51,8 @@ namespace Resources
 				}
 				
 				// CHARLESTON - START GAMEPLAY
-				if (!_readyFlagFlipped && clientInput.StartGame)
+				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.SkipCharlestons)
+				    || (!_readyFlagFlipped && clientInput.StartGame)) 
 				{
 					Debug.Log("Input Receiver: Start Game Play");
 					_readyFlagFlipped = true;

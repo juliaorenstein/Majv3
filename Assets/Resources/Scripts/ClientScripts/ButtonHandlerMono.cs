@@ -15,6 +15,7 @@ namespace Resources
 		public Button confirmButton;
 		public Button cancelButton;
 		public Button charlestonPass;
+		public Button skipCharlestons;
 		
 		private void Start()
 		{
@@ -26,6 +27,13 @@ namespace Resources
 		{
 			InputSender.RequestCharlestonPass();
 			charlestonPass.interactable = false;
+		}
+
+		public void RequestSkipCharlestons()
+		{
+			InputSender.RequestSkipCharlestons();
+			GameObject.Find("GameManager").GetComponent<CharlestonUIHandlerMono>().EndCharlestons();
+			skipCharlestons.gameObject.SetActive(false);
 		}
 		
 		public void RequestPickUp()

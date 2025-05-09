@@ -146,11 +146,6 @@ namespace Resources
 				        && _fusionManager.CurrentTurnStage != TurnStage.PickUp;
 				_uiHandler.SetActionButton(Action.Call, state);
 			}
-
-			void EndGame()
-			{
-				
-			}
 		}
 	}
 }

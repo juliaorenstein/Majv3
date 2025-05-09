@@ -145,7 +145,7 @@ namespace Resources
 			// BUG: sometimes dragging tile to charleston, the face disappears but charleston pass still works. I think it's when the tile has been passed before.
 		}
 
-		private void EndCharlestons()
+		public void EndCharlestons()
 		{
 			_readyToStartGamePlay = true;
 			_passButton.gameObject.SetActive(false);
