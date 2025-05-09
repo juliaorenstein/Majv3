@@ -10,17 +10,20 @@ namespace Resources
 		public static bool AnyMahJongg(List<int> tileIds, Card card)
 		{
 			List<Tile> tiles = tileIds.Select(tileId => Tile.AllTiles[tileId]).ToList();
-			return card.BaseHands.Any(hand => CheckHand(tiles, hand.ToString()));
+			return card.BaseHands.Any(hand => CheckHand(tiles, hand));
 		}
-		
-		public static bool CheckHand(List<Tile> tiles, string handStr)
+
+		public static bool CheckHand(List<Tile> tiles, string handStr) => CheckHand(tiles, Hand.GetBaseHand(handStr));
+
+		private static bool CheckHand(List<Tile> tiles, Hand hand)
 		{
 			if (tiles.Count != 14) return false;
 							
-			List<Hand> permutations = HandParser.GetAllPermutations(handStr);
+			List<Hand> permutations = HandParser.GetAllPermutations(hand);
 			Debug.Assert(permutations.Count > 0);
 
-			return permutations.Any(hand => CheckPermutation(new(tiles), hand));
+			// handidate, like hand candidate, get it? lol
+			return permutations.Any(handidate => CheckPermutation(new(tiles), handidate));
 		}
 
 		private static bool CheckPermutation(List<Tile> tilesCopy, Hand permutation)
