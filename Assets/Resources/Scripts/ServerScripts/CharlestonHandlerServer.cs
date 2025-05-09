@@ -47,7 +47,7 @@ namespace Resources
 		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
 		{
 			// Debug.Log("TileToCharlestonBox");
-			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, false); // BUG: IndexOutOfRangeException on unit tests here
+			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, false); 
 			
 			// start computer turn if not already done
 			if (!_computerPassesDone)
@@ -83,7 +83,7 @@ namespace Resources
 			}
 
 			// do the pass if all players have submitted
-			_charlestonHandlerNetwork.PlayersReady.Set(playerIx, true);
+			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, true);
 			if (_charlestonHandlerNetwork.PlayersReady.All(b => b)) DoPass();
 			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
@@ -157,7 +157,7 @@ namespace Resources
 					}
 				}
 				// clear players ready and passArr
-				_charlestonHandlerNetwork.PlayersReady.Clear();
+				for (int playerIx = 0; playerIx < 4; playerIx++) _charlestonHandlerNetwork.SetPlayerReadyState(playerIx, false);
 				foreach (var arr in _passArr) Array.Fill(arr, -1);
 				_computerPassesDone = false;			// reset AI players
 				_charlestonHandlerNetwork.PassNum++;	// increment pass num (this is how clients know to pass)

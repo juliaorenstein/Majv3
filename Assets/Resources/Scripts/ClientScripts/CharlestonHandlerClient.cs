@@ -50,7 +50,7 @@ namespace Resources
 					}
 				}
 			}
-			_charlestonUIHandler.UpdateReadyIndicator(_charlestonHandlerNetwork.PlayersReady.Select(b => (bool)b).ToArray());
+			_charlestonUIHandler.UpdateReadyIndicator(_charlestonHandlerNetwork.PlayersReadyNetworked.Select(b => (bool)b).ToArray());
 		}
 	}
 }

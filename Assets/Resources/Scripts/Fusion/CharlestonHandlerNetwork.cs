@@ -19,7 +19,8 @@ namespace Resources
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots2 { get; }
 		[Networked, Capacity(3)] public NetworkArray<NetworkBool> OccupiedSpots3 { get; }
 		
-		[Networked, Capacity(4)] public NetworkArray<NetworkBool> PlayersReady { get; }
+		[Networked, Capacity(4)] public NetworkArray<NetworkBool> PlayersReadyNetworked { get; }
+		public bool[] PlayersReady => PlayersReadyNetworked.Select(b => (bool)b).ToArray();
 		
 		public int[] PassDir { get; } = { 1, 0, -1, -1, 0, 1, 0 };
 		public int[] PartialPasses { get; } = { 2, 5, 6 };
@@ -56,21 +57,20 @@ namespace Resources
 			}
 		}
 
-		public void SetOccupiedSpots(int playerIx, int spotIx, bool state)
-		{
-			_occupiedSpots[playerIx].Set(spotIx, state);
-		}
+		public void SetOccupiedSpots(int playerIx, int spotIx, bool state) => _occupiedSpots[playerIx].Set(spotIx, state);
+		public void SetPlayerReadyState(int playerIx, bool state) => PlayersReadyNetworked.Set(playerIx, state);
 	}
 	
 	public interface ICharlestonHandlerNetwork
 	{
 		int CharlestonVersion { get; set; }
-		NetworkArray<NetworkBool> PlayersReady { get; }
+		public bool[] PlayersReady { get; }
 		public int PassNum { get; set; }
 		public int[] PassDir { get; }
 		public int[] PartialPasses { get; }
 		public bool IsPartialPass { get; }
 		bool[][] OccupiedSpots { get; }
 		public void SetOccupiedSpots(int playerIx, int spotIx, bool state);
+		public void SetPlayerReadyState(int playerIx, bool state);
 	}
 }

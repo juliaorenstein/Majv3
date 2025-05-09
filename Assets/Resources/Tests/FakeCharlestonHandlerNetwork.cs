@@ -5,10 +5,10 @@ namespace Resources
 	public class FakeCharlestonHandlerNetwork : ICharlestonHandlerNetwork
 	{
 		public int CharlestonVersion { get; set; }
-		public NetworkArray<NetworkBool> PlayersReady { get; }
+		public bool[] PlayersReady { get; private set; } = { false, false, false, false };
 		public int PassNum { get; set; }
-		public int[] PassDir { get; }
-		public int[] PartialPasses { get; }
+		public int[] PassDir { get; } = { 1, 0, -1, -1, 0, 1, 0 };
+		public int[] PartialPasses { get; } = { 2, 5, 6 };
 		public bool IsPartialPass { get; }
 		public bool[][] OccupiedSpots { get; } = {
 			new[] {false, false, false },
@@ -24,6 +24,11 @@ namespace Resources
 		public void SetOccupiedSpots(int playerIx, int spotIx, bool state)
 		{
 			OccupiedSpots[playerIx][spotIx] = state;
+		}
+
+		public void SetPlayerReadyState(int playerIx, bool state)
+		{
+			PlayersReady[playerIx] = state;
 		}
 	}
 }
