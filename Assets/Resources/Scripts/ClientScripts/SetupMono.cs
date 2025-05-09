@@ -94,7 +94,7 @@ namespace Resources
                     = UnityEngine.Resources.Load<Sprite>($"TileImages/{imageName}");
                 // set mono and _tileTracker on Drag Handler
                 DragHandlerMono dragHandler = newTileTransform.GetComponentInChildren<DragHandlerMono>();
-                dragHandler.uiHandlerMono = _uiHandlerMono;
+                dragHandler.uiHandler = _uiHandlerMono;
                 dragHandler.TileTracker = _tileTracker;
                 dragHandler.tileId = tile.Id;
                 dragHandler.InputSender = _inputSender;

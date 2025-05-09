@@ -14,7 +14,7 @@ namespace Resources
 		, IBeginDragHandler, IDragHandler, IEndDragHandler
 	{
 		// mono and tileTracker set in SetupMono
-		public UIHandlerMono uiHandlerMono;
+		[FormerlySerializedAs("uiHander")] [FormerlySerializedAs("uiHandlerMono")] public UIHandlerMono uiHandler;
 		public TileTrackerClient TileTracker;
 		public InputSender InputSender;
 		private FusionManagerGlobal _fusionManager;
@@ -65,7 +65,7 @@ namespace Resources
 			
 			// translates candidates to their CLocs. If no valid CLoc, set to pool
 			List<CLoc> candidateLocs = candidates.Select(candidate => 
-				uiHandlerMono.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
+				uiHandler.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
 			
 			// if this is a rack rearrange, we don't need to notify the server
 			if (IsRackRearrange())
@@ -178,13 +178,13 @@ namespace Resources
 				// if not dropped on another tile, send to end of rack
 				if (siblingIndexOfTileDroppedOn == -1)
 				{
-					TileTracker.MoveTile(tileId, CLoc.LocalPrivateRack);
+					uiHandler.MoveTile(tileId, CLoc.LocalPrivateRack);
 					return;
 				}
 				
 				// otherwise, drop on the appropriate index
 				int dropIx = siblingIndexOfTileDroppedOn + rightOfCenter - movingRight;
-				TileTracker.MoveTile(tileId, CLoc.LocalPrivateRack, dropIx);
+				uiHandler.MoveTile(tileId, CLoc.LocalPrivateRack, dropIx);
 			}
 			
 			void DoDiscard()
@@ -208,7 +208,7 @@ namespace Resources
 			void DoRackToCharleston()
 			{
 				CLoc spotLoc = candidateLocs.Intersect(_charlestonSpots).FirstOrDefault();
-				Transform spot = uiHandlerMono.LocToTransform[spotLoc];
+				Transform spot = uiHandler.LocToTransform[spotLoc];
 				InputSender.RequestTileToCharlestonBox(tileId, _charlestonSpots.IndexOf(spotLoc));
 				_charlestonUI.MoveLocalTileRackToCharlestonBox(transform, spot);
 			}
@@ -216,7 +216,7 @@ namespace Resources
 			void MoveBack()
 			{
 				int siblingIx = _tileTransform.GetSiblingIndex();
-				uiHandlerMono.MoveTile(tileId, CLoc.LocalPrivateRack, siblingIx);
+				uiHandler.MoveTile(tileId, CLoc.LocalPrivateRack, siblingIx);
 			}
 		}
 	}
