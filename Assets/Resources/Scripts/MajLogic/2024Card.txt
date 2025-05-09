@@ -64,10 +64,10 @@ NNN E W SSS 111g 111r flexNum C30
 
 333g 666g 6666r 9999r X25
 333g 666g 6666r 9999 X25
-FF 3g 66g 999g 333r 333 [link pungs 3, 6, 9] X25 //TODO: handle this
+FF 3g 66g 999g 333r 333 X25 //[link pungs 3, 6, 9] TODO: handle this
 FF 3333 6666 9999 X25
 FF 3333g 6666r 9999 X25
-333g DDDDg 333r DDDDr [369] X25 // TODO: handle this
+333g DDDDg 333r DDDDr X25 //[369] TODO: handle this
 3333g 66r 66g 66 9999g X30
 FFFF 33g 66g 999g DDDr X25
 333g 666g 333r 666r 99 C30
