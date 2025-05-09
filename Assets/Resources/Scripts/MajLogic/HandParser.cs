@@ -204,6 +204,9 @@ namespace Resources
 	public class Hand
 	{
 		public List<Group> Groups;
+		public bool Open; // if true, open hand. if false, closed hand
+		public int Score; // score of the hand.
+		
 		public bool PermutateNum;
 		public bool PermutateSuit;
 		public bool PermutateWind;
@@ -242,16 +245,25 @@ namespace Resources
 			{
 				switch (str)
 				{
-					case "consec":
+					case "flexNum":			// used on consecutive and like num hands
 						baseHand.PermutateNum = true;
 						continue;
-					case "even" or "odd":
+					case "even" or "odd":	// specify flexNum should only cover evens or odds
 						baseHand.PermutateNum = true;
 						baseHand.EvenOdd = true;
 						continue;
-					case "anyWind":
+					case "flexWind":		// used when the card shows Ns but says any wind
 						baseHand.PermutateWind = true;
 						continue;
+					case not null when str.StartsWith("X") || str.StartsWith("C"):	// is the hand open or closed?
+						baseHand.Open = str.StartsWith("X");
+						int.TryParse(str.Substring(1), out baseHand.Score);		// set the value of the hand
+						if (baseHand.Score == 0) throw new UnityException("Invalid hand score");
+						continue;
+					case not null when str.StartsWith("//"): // this is a comment on the card, quit out of whole function now
+						return baseHand;
+					case null:				// should not arrive here
+						throw new UnityException("Null string in card hand");
 				}
 				
 				Group group = new();
