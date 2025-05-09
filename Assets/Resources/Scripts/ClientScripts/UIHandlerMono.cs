@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,7 @@ namespace Resources
 		private Button _confirm;
 		private Button _cancel;
 		private Dictionary<Action, Button> _actionToButton;
+		private GameObject _mahJongg;
 
 		private GameObject _displayRackSpace;
 
@@ -67,7 +69,8 @@ namespace Resources
 			};
 			
 			_displayRackSpace = UnityEngine.Resources.Load<GameObject>("Prefabs/Space");
-			
+			_mahJongg = GameObject.Find("Mah Jongg");
+
 			//_charlestonBox = GameObject.Find("Charleston").transform;
 			//_charlestonX = LocToTransform[CLoc.OtherDisplayRack1].parent.position.x * 2;
 			//_charlestonY[0] = LocToTransform[CLoc.OtherPrivateRack1].parent.position.y;
@@ -131,6 +134,11 @@ namespace Resources
 		public void SetActionButton(Action action, bool state) =>
 			_actionToButton[action].interactable = state;
 
+		public void EndGame()
+		{
+			_mahJongg.SetActive(true);
+		}
+
 		private Lerp _lerp = new Lerp { Active = false };
 		
 		private void Update()
@@ -174,6 +182,7 @@ namespace Resources
 		public void UpdatePrivateRackCount(CLoc privateRack, int count);
 		public void SetActionButton(Action action, bool state);
 		public void AddSpaceToDisplayRack(CLoc loc);
+		public void EndGame();
 	}
 
 	public class Lerp

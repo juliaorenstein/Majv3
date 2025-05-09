@@ -7,7 +7,7 @@ namespace Resources
 {
 	public class Tile : IComparable<Tile>, IComparable
 	{
-		private static readonly List<Tile> AllTiles = new();
+		public static readonly List<Tile> AllTiles = new();
 		
 		// properties
 		public int Id { get; private set; }

@@ -12,11 +12,13 @@ namespace Resources
 		[Networked] public int numTilesExposedThisTurn { get; set; }
 		[Networked] public int DiscardTileId { get; set; }
 		[Networked] public TurnStage CurrentTurnStage { get; set; }
+		[Networked] public NetworkBool MahJonggNetworked {get; set;}
 		
 		private int[] PlayerIds => Players.Select(player => player.PlayerId).ToArray();
 		public int LocalPlayerIx => PlayerIx(Runner.LocalPlayer);
 		public bool IsMyTurn => PlayerIx(Runner.LocalPlayer) == TurnPlayerIx;
 		public bool IsMyExpose => PlayerIx(Runner.LocalPlayer) == ExposingPlayerIx;
+		public bool MahJongg => MahJonggNetworked;
 		
 		public int PlayerIx(int playerId) => Array.IndexOf(PlayerIds, playerId);
 		public int PlayerIx(PlayerRef playerRef) => Array.IndexOf(PlayerIds, playerRef.PlayerId);
@@ -71,5 +73,6 @@ namespace Resources
 		INetworkedGameState[] NetworkedGameStates { get; set; }
 		int HumanPlayerCount { get; }
 		public TurnStage CurrentTurnStage { get; set; }
+		public bool MahJongg { get; }
 	}
 }

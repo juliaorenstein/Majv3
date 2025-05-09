@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Resources
@@ -8,6 +10,7 @@ namespace Resources
 		private readonly FusionManagerGlobal _fusionManager;
 		private readonly ComputerTurn _computerTurn;
 		private readonly CallHandler _callHandler;
+		private readonly Card _card;
 
 		private int TurnPlayerIx => _fusionManager.TurnPlayerIx;
 		private int ExposingPlayerIx => _fusionManager.ExposingPlayerIx;
@@ -19,6 +22,7 @@ namespace Resources
 			_fusionManager = fusionManager;
 			_computerTurn = new(this, tileTracker);
 			_callHandler = callHandler;
+			_card = new("/Users/juliaorenstein/Unity/Majv3/Assets/Resources/Scripts/MajLogic/2024Card.txt");
 		}
 
 		public void StartGame()
@@ -89,7 +93,9 @@ namespace Resources
 				Debug.Log("Turn Manager server: Pick up is valid - picking up");
 				_fusionManager.CurrentTurnStage = TurnStage.Discard;
 				_tileTracker.PickupTileWallToRack(playerIx);
-				// TODO: do we have a Mah Jongg?
+				List<int> rack = _tileTracker.GetPrivateRackContentsForPlayer(playerIx);
+				rack.AddRange(_tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(playerIx)));
+				if (HandChecker.AnyMahJongg(rack, _card)) _fusionManager.MahJonggNetworked = true;
 				
 				return;
 			}

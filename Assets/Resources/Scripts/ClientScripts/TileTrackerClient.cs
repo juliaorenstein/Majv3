@@ -90,6 +90,13 @@ namespace Resources
 			// TODO: Right now racks at start of game are being sorted by tileId because this goes through tiles by id.
 			// Clear input
 			_inputSender.ClearInput();
+			
+			// is the game over?
+			if (_fusionManager.MahJongg)
+			{
+				_uiHandler.EndGame();
+				return;
+			}
 
 			for (int tileId = 0; tileId < AllTiles.Count; tileId++)
 			{
@@ -138,6 +145,11 @@ namespace Resources
 				        && !Tile.IsJoker(_fusionManager.DiscardTileId)
 				        && _fusionManager.CurrentTurnStage != TurnStage.PickUp;
 				_uiHandler.SetActionButton(Action.Call, state);
+			}
+
+			void EndGame()
+			{
+				
 			}
 		}
 	}

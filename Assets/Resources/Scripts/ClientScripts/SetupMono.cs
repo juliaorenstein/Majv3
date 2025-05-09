@@ -53,6 +53,9 @@ namespace Resources
             // set up charleston stuff
             GameObject.Find("Charleston");
             
+            // inactivate mah jongg object
+            GameObject.Find("Mah Jongg").SetActive(false);
+            
             Destroy(this);
         }
 

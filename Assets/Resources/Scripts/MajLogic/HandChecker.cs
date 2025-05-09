@@ -7,6 +7,12 @@ namespace Resources
 {
 	public static class HandChecker
 	{
+		public static bool AnyMahJongg(List<int> tileIds, Card card)
+		{
+			List<Tile> tiles = tileIds.Select(tileId => Tile.AllTiles[tileId]).ToList();
+			return card.BaseHands.Any(hand => CheckHand(tiles, hand.ToString()));
+		}
+		
 		public static bool CheckHand(List<Tile> tiles, string handStr)
 		{
 			if (tiles.Count != 14) return false;

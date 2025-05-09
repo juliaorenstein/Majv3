@@ -11,5 +11,10 @@ namespace Resources.ClientTests
 		{
 			
 		}
+
+		public void EndGame()
+		{
+			
+		}
 	}
 }
