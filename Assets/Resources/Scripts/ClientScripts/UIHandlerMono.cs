@@ -91,6 +91,7 @@ namespace Resources
 			MoveTile(tileTransform, locTransform, ix);
 		}
 
+		// BUG: tile lerps to the a spot a little to the left and then snaps to the right spot
 		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
 			Lerp lerp = new();
@@ -103,7 +104,6 @@ namespace Resources
 			// set parent to new location and lerp the face
 			tileTransform.SetParent(locTransform);
 			if (ix != -1) tileTransform.SetSiblingIndex(ix);
-			else tileTransform.SetSiblingIndex(tileTransform.parent.childCount - 1);
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locTransform);
 			
 			lerp.EndX = tileTransform.position.x;
@@ -175,12 +175,12 @@ namespace Resources
 			if (lerp.T < 1.0f ) return;
 
 			// Final position
-			lerp.TileFace.position = new Vector3(lerp.EndX, lerp.EndY);
 			lerp.Active = false;
 			lerp.T = 0;
 
 			// If there is a location transform, rebuild its layout
 			if (lerp.LocTransform) LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lerp.LocTransform);
+			lerp.TileFace.position = lerp.TileFace.parent.position;
 		}
 	}
 	
