@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5052037981564901848}
   m_Layer: 5
   m_Name: Tile Back
-  m_TagString: Tile
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 6197490874410537525}
   m_Layer: 6
   m_Name: Face
-  m_TagString: Untagged
+  m_TagString: Back
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

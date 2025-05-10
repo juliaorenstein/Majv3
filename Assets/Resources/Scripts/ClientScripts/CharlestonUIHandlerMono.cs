@@ -109,6 +109,7 @@ namespace Resources
 		public void DoPass(int dir, int nextDir)
 		{
 			Debug.Log("UI: doing pass");
+			_passing = true;
 			
 			for (int i = 0; i < _charlestonBoxes.Count; i++) // Loop through each Charleston box
 			{
@@ -124,10 +125,10 @@ namespace Resources
 					Transform targetRack = _privateRacks[targetIx]; // Corresponding other private rack
 					
 					CreateAndAddLerp(tile, targetRack, true); // Create and add the lerp
-					if (i == 0) _passFromLocalIxs.Add(tile); // track tiles FROM local rack to flip them later
-					if (targetIx == 0) _passToLocalIxs.Add(tile); // track tiles TO local rack to flip them later
 				}
 			}
+
+			_otherRackIx = 2 - dir;
 			
 			// end passing if nextDir == -2. Otherwise set the text of the button for the next pass
 			if (nextDir == -2) EndCharlestons();
@@ -154,9 +155,9 @@ namespace Resources
 		}
 
 		private readonly List<Lerp> _lerps = new();
-		private readonly List<Transform> _passFromLocalIxs = new();
-		private readonly List<Transform> _passToLocalIxs = new();
+		private bool _passing;
 		private bool _readyToStartGamePlay;
+		private int _otherRackIx;
 
 		private void Update()
 		{
@@ -166,10 +167,8 @@ namespace Resources
 				if (_lerps[i].Active) continue;
 				// if done lerping this tile, do some final checks then remove from list
 				_lerps[i].TileFace.GetComponent<Image>().raycastTarget = true;
-				if (_passFromLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileFaceWithTileBack(_lerps[i].TileFace.parent);
-				// BUG: next line throwing an error on partial passes and last pass
-				else if (_passToLocalIxs.Contains(_lerps[i].TileFace.parent)) ReplaceTileBackWithTileFace(_lerps[i].TileFace.parent);
 				_lerps.RemoveAt(i);
+				if (_passing && _lerps.Count == 0) FlipTiles();
 			}
 
 			if (_readyToStartGamePlay && _lerps.Count == 0)
@@ -203,35 +202,43 @@ namespace Resources
 			_lerps.Add(lerp);
 		}
 
-		
-		private void ReplaceTileFaceWithTileBack(Transform tileTransform)
+		private void FlipTiles()
 		{
-			Transform rack = tileTransform.parent;
-			int siblingIx = tileTransform.GetSiblingIndex();
-			Instantiate(_tileBack, rack).SetSiblingIndex(siblingIx);
-			tileTransform.SetParent(_pool);
-			tileTransform.position = _pool.position;
-			_passFromLocalIxs.Remove(tileTransform.GetChild(0));
-			
-			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
-		}
-		
-		private void ReplaceTileBackWithTileFace(Transform tileBack)
-		{
-			Transform rack = tileBack.parent;
-			int siblingIx = tileBack.GetSiblingIndex();
-			List<int> rackContents = _tileTracker.GetLocContents(CLoc.LocalPrivateRack);
-			if (siblingIx < rackContents.Count)
+			Transform localRack = _privateRacks[_localPlayerIx];
+			Transform otherRack = _privateRacks[_otherRackIx];
+
+			// other rack
+			// remove tile faces
+			for (int i = otherRack.childCount - 1; i >= localRack.childCount - 6; i--)
 			{
-				int tileId = _tileTracker.GetLocContents(CLoc.LocalPrivateRack)[siblingIx];
-				Transform tile = _uiHandler.allTileTransforms[tileId];
-				tile.SetParent(rack);
-				tile.SetSiblingIndex(siblingIx);
+				Transform tile = otherRack.GetChild(i);
+				if (!tile.GetChild(0).CompareTag("Tile")) continue;
+				tile.SetParent(_pool);
+				tile.position = _pool.position;
 			}
-			Destroy(tileBack.gameObject);
-			_passToLocalIxs.Remove(tileBack.GetChild(0));
+			// add tile backs
+			for (int i = 0; i < 3; i++) Instantiate(_tileBack, otherRack);
+			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)otherRack);
 			
-			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rack);
+			// local rack
+			// remove tile backs
+			for (int i = localRack.childCount - 1; i >= localRack.childCount - 6; i--)
+			{
+				Transform tile = localRack.GetChild(i);
+				if (!tile.GetChild(0).CompareTag("Back")) continue;
+				Destroy(tile.gameObject);
+			}
+			// add face up tiles
+			List<int> rackContents = _tileTracker.GetLocContents(CLoc.LocalPrivateRack);
+			for (int i = 10; i < rackContents.Count; i++)
+			{
+				int tileId = rackContents[i];
+				Transform tile = _uiHandler.allTileTransforms[tileId];
+				tile.SetParent(localRack);
+			}
+			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)localRack);
+
+			_passing = false;
 		}
 	}
 }
