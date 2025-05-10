@@ -93,10 +93,12 @@ namespace Resources
 
 		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
+			Lerp lerp = new();
+			
 			// get the facts
-			_lerp.TileFace = tileTransform.GetChild(0);
-			_lerp.StartX = _lerp.TileFace.position.x;
-			_lerp.StartY = _lerp.TileFace.position.y;
+			lerp.TileFace = tileTransform.GetChild(0);
+			lerp.StartX = lerp.TileFace.position.x;
+			lerp.StartY = lerp.TileFace.position.y;
 
 			// set parent to new location and lerp the face
 			tileTransform.SetParent(locTransform);
@@ -104,13 +106,15 @@ namespace Resources
 			else tileTransform.SetSiblingIndex(tileTransform.parent.childCount - 1);
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locTransform);
 			
-			_lerp.EndX = tileTransform.position.x;
-			_lerp.EndY = tileTransform.position.y;
-			_lerp.LocTransform = locTransform;
-			_lerp.Active = true;
+			lerp.EndX = tileTransform.position.x;
+			lerp.EndY = tileTransform.position.y;
+			lerp.LocTransform = locTransform;
+			lerp.Active = true;
 			
 			// if loc is the private local rack or charleston, set raycast target = True. Otherwise, false
-			_lerp.TileFace.GetComponent<Image>().raycastTarget = locTransform == LocToTransform[CLoc.LocalPrivateRack];
+			lerp.TileFace.GetComponent<Image>().raycastTarget = locTransform == LocToTransform[CLoc.LocalPrivateRack];
+			
+			_lerps.Add(lerp);
 		}
 
 		// update the number of tile backs showing on a private rack.
@@ -138,14 +142,18 @@ namespace Resources
 		{
 			_mahJongg.SetActive(true);
 		}
-
-		private Lerp _lerp = new Lerp { Active = false };
 		
 		private void Update()
 		{
-			Lerp(_lerp);
+			for (int i = _lerps.Count - 1; i >= 0; i--) // going backwards so we can remove items as we go
+			{
+				Lerp(_lerps[i]);
+				if (_lerps[i].Active) continue;
+				_lerps.RemoveAt(i);
+			}
 		}
 
+		private readonly List<Lerp> _lerps = new();
 		private const float Speed = 4f;
 
 		// BUG: last tile in rack is off at start
