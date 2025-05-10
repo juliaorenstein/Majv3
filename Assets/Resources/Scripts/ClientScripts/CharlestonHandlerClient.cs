@@ -37,7 +37,10 @@ namespace Resources
 					_occupiedSpots[playerIx][spotIx] = OccupiedSpots[playerIx][spotIx];
 					if (playerIx == _fusionManager.LocalPlayerIx)
 					{
-						if (_occupiedSpots[playerIx].All(b=>b)) _charlestonUIHandler.EnablePassButton();
+						if (_occupiedSpots[playerIx].All(b => b) || _charlestonHandlerNetwork.IsPartialPass)
+						{
+							_charlestonUIHandler.EnablePassButton();
+						}
 					}
 					else
 					{
