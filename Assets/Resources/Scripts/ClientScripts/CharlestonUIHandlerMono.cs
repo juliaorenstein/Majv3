@@ -101,6 +101,16 @@ namespace Resources
 			CreateAndAddLerp(tileBack, spot);
 		}
 
+		// TODO: need to test
+		public void MoveOtherTileFromBoxToRack(int playerIx, int spotIx)
+		{
+			int rackIx = (playerIx - _localPlayerIx + 4) % 4;
+			Transform rack = _privateRacks[rackIx];
+			Transform tileBack = _charlestonBoxes[rackIx].GetChild(spotIx).GetChild(0);
+			
+			CreateAndAddLerp(tileBack, rack);
+		}
+
 		public void EnablePassButton()
 		{
 			_passButton.interactable = true;
@@ -130,7 +140,7 @@ namespace Resources
 
 			_otherRackIx = 2 - dir;
 			
-			// end passing if nextDir == -2. Otherwise set the text of the button for the next pass
+			// end passing if nextDir == -2. Otherwise, set the text of the button for the next pass
 			if (nextDir == -2) EndCharlestons();
 			else
 			{

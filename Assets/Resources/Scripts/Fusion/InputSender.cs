@@ -21,8 +21,9 @@ namespace Resources
 		Expose = 5,
 		JokerSwap = 6,
 		TileToCharlestonBox = 7,
-		CharlestonPass = 8,
-		SkipCharlestons = 9
+		TileFromBoxToRack = 8,
+		CharlestonPass = 9,
+		SkipCharlestons = 10
 	}
 	
 	public class InputSender
@@ -37,6 +38,14 @@ namespace Resources
 			Input.Action.SetDown(Action.TileToCharlestonBox);
 		}
 
+		public void RequestTileFromBoxToRack(int tileId, int spotIx)
+		{
+			Debug.Log($"InputSender: Requesting tile {tileId} from box spot {spotIx} to rack");
+			Input.TileId = tileId;
+			Input.SpotIx = spotIx;
+			Input.Action.SetDown(Action.TileFromBoxToRack);
+		}
+		
 		public void RequestCharlestonPass()
 		{
 			Debug.Log("InputSender: Requesting charleston pass.");

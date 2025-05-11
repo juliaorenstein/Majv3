@@ -49,7 +49,10 @@ namespace Resources
 							_charlestonUIHandler.MoveOtherTileToCharlestonBox(playerIx, spotIx);
 
 						// else, move tile back to private rack
-						// TODO: move tile back to rack
+						else
+						{
+							_charlestonUIHandler.MoveOtherTileFromBoxToRack(playerIx, spotIx);
+						}
 					}
 				}
 			}
@@ -57,7 +60,3 @@ namespace Resources
 		}
 	}
 }
-
-
-// TODO: add client-side validation for no jokers and non-partial passes
-// BUG: when dragging from charleston to rack after first pass, tile goes behind rack and stays as child of charleston box 

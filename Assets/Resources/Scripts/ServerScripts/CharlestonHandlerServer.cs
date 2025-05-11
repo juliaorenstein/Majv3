@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Resources
 {
@@ -46,6 +47,10 @@ namespace Resources
 
 		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
 		{
+			// validate that tileId is in playerIx's rack
+			Debug.Assert(_tileTracker.PlayerPrivateRackContains(playerIx, tileId)
+				, $"Tile {tileId} is not in player {playerIx}'s rack");
+			
 			// Debug.Log("TileToCharlestonBox");
 			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, false); 
 			
@@ -59,28 +64,35 @@ namespace Resources
 				}
 			}
 			
-			// validate that tileId is in playerIx's rack
-			if (!_tileTracker.PlayerPrivateRackContains(playerIx, tileId))
-			{
-				throw new UnityException($"Tile {tileId} is not in player {playerIx}'s rack");
-			}
-			
 			// update server-side data
 			if (_passArr[spotIx][playerIx] == -1) _numTilesPassedByPlayer[playerIx]++;
 			_passArr[spotIx][playerIx] = tileId;
 			_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, true);
 			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
-		
-		// TODO: make a CharlestonBoxToRack to clear OccupiedSpots when tile is removed
+
+		public void TileFromBoxToRack(int playerIx, int tileId, int spotIx)
+		{
+			// make sure arguments are valid
+			Debug.Assert(_passArr[spotIx][playerIx] == tileId,
+				$"_passArr[{spotIx}][{playerIx}] is not tile {tileId}");
+			
+			Debug.Log($"TileFromBoxToRack: playerIx: {playerIx}; spotIx: {spotIx}; tileId: {tileId}");
+			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, false);
+			
+			// update server-side data
+			_numTilesPassedByPlayer[playerIx]--;
+			_passArr[spotIx][playerIx] = -1;
+			_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, false);
+			_charlestonHandlerNetwork.CharlestonVersion++;
+		}
 		
 		public void PlayerReady(int playerIx)
 		{
 			// if less than 3 tiles passed and not a partial pass, throw exception
-			if (!_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum) && _numTilesPassedByPlayer[playerIx] < 3)
-			{
-				throw new UnityEngine.UnityException("Players passed < 3 tiles on non-partial passes");
-			}
+			Debug.Assert(_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum)
+			             && _numTilesPassedByPlayer[playerIx] < 3
+				, "Players passed < 3 tiles on non-partial passes");
 
 			// do the pass if all players have submitted
 			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, true);

@@ -67,8 +67,20 @@ namespace Resources
 			List<CLoc> candidateLocs = candidates.Select(candidate => 
 				uiHandler.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
 			
+			if (IsRackToCharleston())
+			{
+				Debug.Log("Drag: Rack to Charleston");
+				DoRackToCharleston();
+			}
+			
+			else if (IsTileFromBoxToRack())
+			{
+				Debug.Log("Drag: Tile from Box to Rack");
+				DoCharlestonToRack();
+			}
+			
 			// if this is a rack rearrange, we don't need to notify the server
-			if (IsRackRearrange())
+			else if (IsRackRearrange())
 			{
 				Debug.Log("Drag: Rack Rearrange");
 				DoMoveToRack();
@@ -89,12 +101,6 @@ namespace Resources
 			{
 				Debug.Log("Drag: Joker Exchange");
 				DoJokerExchange(displayRack, exchangeIx);
-			}
-			
-			else if (IsRackToCharleston())
-			{
-				Debug.Log("Drag: Rack to Charleston");
-				DoRackToCharleston();
 			}
 
 			else
@@ -152,10 +158,14 @@ namespace Resources
 				return false;
 			}
 			
-			bool IsRackToCharleston() => _fusionManager.CurrentTurnStage == TurnStage.Charleston 
-			                       && CurLoc is CLoc.LocalPrivateRack
-                                   && candidateLocs.Intersect(_charlestonSpots).Any()
-			                       && !Tile.IsJoker(tileId);
+			bool IsRackToCharleston() => _fusionManager.CurrentTurnStage is TurnStage.Charleston 
+			                             && CurLoc is CLoc.LocalPrivateRack 
+			                             && candidateLocs.Intersect(_charlestonSpots).Any() 
+			                             && !Tile.IsJoker(tileId);
+
+			bool IsTileFromBoxToRack() => _fusionManager.CurrentTurnStage is TurnStage.Charleston
+			                              && _charlestonSpots.Contains(uiHandler.TransformToLoc.GetValueOrDefault(_tileTransform.parent))
+			                              && candidateLocs.Contains(CLoc.LocalPrivateRack);
 
 			void DoMoveToRack()
 			{
@@ -211,6 +221,14 @@ namespace Resources
 				Transform spot = uiHandler.LocToTransform[spotLoc];
 				InputSender.RequestTileToCharlestonBox(tileId, _charlestonSpots.IndexOf(spotLoc));
 				_charlestonUI.MoveLocalTileRackToCharlestonBox(transform, spot);
+			}
+
+			void DoCharlestonToRack()
+			{
+				CLoc spotLoc = candidateLocs.Intersect(_charlestonSpots).FirstOrDefault();
+				int spotIx = _tileTransform.parent.GetSiblingIndex();
+				InputSender.RequestTileFromBoxToRack(tileId, spotIx);
+				DoMoveToRack();
 			}
 
 			void MoveBack()

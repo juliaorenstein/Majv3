@@ -1,4 +1,5 @@
 using Fusion;
+using PlasticGui.WorkspaceWindow.Merge;
 using UnityEngine;
 
 namespace Resources
@@ -41,6 +42,13 @@ namespace Resources
 				{
 					Debug.Log("Input Receiver: Tile to Charleston Box");
 					_charlestonHandler.TileToCharlestonBox(playerIx, clientInput.TileId, clientInput.SpotIx);
+				}
+				
+				// CHARLESTON - MOVE FROM BOX
+				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.TileFromBoxToRack))
+				{
+					Debug.Log("Input Receiver: Tile from Box to Rack");
+					_charlestonHandler.TileFromBoxToRack(playerIx, clientInput.TileId, clientInput.SpotIx);
 				}
 				
 				// CHARLESTON - DO PASS
