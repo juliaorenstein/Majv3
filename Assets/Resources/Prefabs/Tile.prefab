@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: b913caeb959954d6ea7c98dbe0176b7c, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: -2, y: -2, z: -2, w: -2}
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -280,5 +280,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b55e9cb70024fd097cd94c392613697, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiHandlerMono: {fileID: 0}
+  uiHandler: {fileID: 0}
   tileId: 0

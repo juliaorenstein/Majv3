@@ -26,14 +26,17 @@ namespace Resources
 		private Transform _dragTransform;
 		private Transform _tileTransform;
 		private Transform _charlestonTransform;
+		private Transform _localPrivateRackTransform;
 		private readonly List<CLoc> _charlestonSpots = new() 
 			{ CLoc.CharlestonSpot1, CLoc.CharlestonSpot2, CLoc.CharlestonSpot3 };
+		
 
 		private void Start()
 		{
 			_image = GetComponent<Image>();
 			_dragTransform = GameObject.Find("Dragging").transform;
 			_tileTransform = transform.parent;
+			_localPrivateRackTransform = GameObject.Find("Local Rack").transform.GetChild(1);
 			_fusionManager = FindObjectsByType<FusionManagerGlobal>(FindObjectsSortMode.None)[0];
 			_charlestonTransform = GameObject.Find("Charleston").transform;
 			_charlestonUI = GameObject.Find("GameManager").GetComponent<CharlestonUIHandlerMono>();
@@ -55,7 +58,6 @@ namespace Resources
 		public void OnEndDrag(PointerEventData eventData)
 		{
 			// TODO: potential refactor. Check chatGPT "Drag Validation Workflow Design" chat for details
-			// BUG: if you drag a tile a little but end on same spot on rack, the tile doesn't snap back to original location
 			
 			transform.SetParent(_tileTransform, true);
 			
@@ -177,20 +179,48 @@ namespace Resources
 				{
 					siblingIndexOfTileDroppedOn = candidate.gameObject.transform.parent.GetSiblingIndex();
 					rightOfCenter = transform.position.x > candidate.gameObject.transform.position.x ? 1 : 0;
-					movingRight = siblingIndexOfTileDroppedOn > _tileTransform.GetSiblingIndex() ? 1 : 0;
-					// charleston band aid
-					if (_tileTransform.parent.parent == _charlestonTransform) movingRight = 0;
 					break;
 				}
 				// enable raycast again
 				_image.raycastTarget = true;
 				
-				// if not dropped on another tile, send to end of rack
+				// if not dropped on another tile, it's between two tiles or at the end of rack. 
 				if (siblingIndexOfTileDroppedOn == -1)
 				{
-					uiHandler.MoveTile(tileId, CLoc.LocalPrivateRack);
-					return;
+					// find the two closest tiles
+					int closestIx = -1;
+					float closestDist = float.MaxValue;
+					int secondClosestIx = -1;
+					float secondClosestDist = float.MaxValue;
+					
+					for (int i = 0; i < _localPrivateRackTransform.childCount; i++)
+					{
+						float dist = _localPrivateRackTransform.GetChild(i).position.x - transform.position.x;
+						if (Math.Abs(dist) < Math.Abs(closestDist))
+						{
+							secondClosestIx = closestIx;
+							secondClosestDist = closestDist;
+							
+							closestIx = i;
+							closestDist = dist;
+						}
+						else if (Math.Abs(dist) < Math.Abs(secondClosestDist))
+						{
+							secondClosestIx = i;
+							secondClosestDist = dist;
+						}
+						else break; // if distance is getting bigger we've already found the two closest
+					}
+					if (closestDist < 0 && secondClosestDist < 0)
+					{
+						siblingIndexOfTileDroppedOn = closestIx + 1;
+					}
+					else siblingIndexOfTileDroppedOn = Math.Max(closestIx, secondClosestIx);
 				}
+				
+				movingRight = siblingIndexOfTileDroppedOn > _tileTransform.GetSiblingIndex() ? 1 : 0;
+				// charleston band aid
+				if (_tileTransform.parent.parent == _charlestonTransform) movingRight = 0;
 				
 				// otherwise, drop on the appropriate index
 				int dropIx = siblingIndexOfTileDroppedOn + rightOfCenter - movingRight;
