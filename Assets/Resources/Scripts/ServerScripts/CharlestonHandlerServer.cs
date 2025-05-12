@@ -90,8 +90,8 @@ namespace Resources
 		public void PlayerReady(int playerIx)
 		{
 			// if less than 3 tiles passed and not a partial pass, throw exception
-			Debug.Assert(_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum)
-			             && _numTilesPassedByPlayer[playerIx] < 3
+			Debug.Assert(!(_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum)
+			             && _numTilesPassedByPlayer[playerIx] < 3)
 				, "Players passed < 3 tiles on non-partial passes");
 
 			// do the pass if all players have submitted

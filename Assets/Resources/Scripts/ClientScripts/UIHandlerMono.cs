@@ -92,7 +92,7 @@ namespace Resources
 		}
 
 		// BUG: tile lerps to the a spot a little to the left and then snaps to the right spot
-		private void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
+		public void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
 		{
 			Lerp lerp = new();
 			
@@ -112,7 +112,11 @@ namespace Resources
 			lerp.Active = true;
 			
 			// if loc is the private local rack or charleston, set raycast target = True. Otherwise, false
-			lerp.TileFace.GetComponent<Image>().raycastTarget = locTransform == LocToTransform[CLoc.LocalPrivateRack];
+			lerp.TileFace.GetComponent<Image>().raycastTarget
+				= locTransform == LocToTransform[CLoc.LocalPrivateRack] 
+				  || locTransform == LocToTransform[CLoc.CharlestonSpot1]
+				  || locTransform == LocToTransform[CLoc.CharlestonSpot2]
+				  || locTransform == LocToTransform[CLoc.CharlestonSpot3];
 			
 			_lerps.Add(lerp);
 		}
