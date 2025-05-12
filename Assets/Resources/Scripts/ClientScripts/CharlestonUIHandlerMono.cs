@@ -178,8 +178,8 @@ namespace Resources
 				// if done lerping this tile, do some final checks then remove from list
 				_lerps[i].TileFace.GetComponent<Image>().raycastTarget = true;
 				_lerps.RemoveAt(i);
-				if (_passing && _lerps.Count == 0) FlipTiles();
 			}
+			if (_passing && _lerps.Count == 0) FlipTiles();
 
 			if (_readyToStartGamePlay && _lerps.Count == 0)
 			{
@@ -214,7 +214,7 @@ namespace Resources
 
 		private void FlipTiles()
 		{
-			Transform localRack = _privateRacks[_localPlayerIx];
+			Transform localRack = _privateRacks[0];
 			Transform otherRack = _privateRacks[_otherRackIx];
 
 			// other rack

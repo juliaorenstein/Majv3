@@ -97,7 +97,7 @@ namespace Resources
 			// do the pass if all players have submitted
 			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, true);
 			if (_charlestonHandlerNetwork.PlayersReady.All(b => b)) DoPass();
-			_charlestonHandlerNetwork.CharlestonVersion++;
+			else _charlestonHandlerNetwork.CharlestonVersion++;
 		}
 
 		private void DoPass()
