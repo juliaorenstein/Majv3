@@ -93,10 +93,7 @@ namespace Resources
 				Debug.Log("Turn Manager server: Pick up is valid - picking up");
 				_fusionManager.CurrentTurnStage = TurnStage.Discard;
 				_tileTracker.PickupTileWallToRack(playerIx);
-				List<int> rack = _tileTracker.GetPrivateRackContentsForPlayer(playerIx);
-				rack.AddRange(_tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(playerIx)));
-				if (HandChecker.AnyMahJongg(rack, _card)) _fusionManager.MahJonggNetworked = true;
-				
+				CheckForMahJongg(playerIx);
 				return;
 			}
 			
@@ -128,7 +125,17 @@ namespace Resources
 			Debug.Log($"Player {exposePlayerIx} called tile {DiscardTileId}");
 			_fusionManager.ExposingPlayerIx = exposePlayerIx;
 			_fusionManager.CurrentTurnStage = TurnStage.Expose;
+			CheckForMahJongg(exposePlayerIx);
 			DoExpose(exposePlayerIx, DiscardTileId);
+		}
+		
+		private bool CheckForMahJongg(int playerIx)
+		{
+			List<int> rack = _tileTracker.GetPrivateRackContentsForPlayer(playerIx);
+			rack.AddRange(_tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(playerIx)));
+			if (!HandChecker.AnyMahJongg(rack, _card)) return false;
+			_fusionManager.MahJonggNetworked = true;
+			return true;
 		}
 	}
 }

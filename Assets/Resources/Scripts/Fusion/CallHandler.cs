@@ -77,6 +77,7 @@ namespace Resources
 			
 			// find the first caller and start expose turn
 			// BUG: choosing wrong one when multiple
+			// TODO: if calling would make somebody win, give them the tile
 			int winner = PlayersConfirmed.OrderBy(candidate => (candidate - discardPlayerIx + 4) % 4).First();
 			PlayersConfirmed.Clear();
 			TurnManager.StartExposeTurn(winner);
