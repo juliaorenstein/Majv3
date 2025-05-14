@@ -8,7 +8,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_BasicConsec_ExactMatch()
 		{
-			string handString = "FFF 1111g FFF 2222r consec";
+			string handString = "FFF 1111g FFF 2222r flexNum";
 			List<Tile> tiles = new()
 			{
 				new(Kind.FlowerWind, -1, 0, Suit.None, Wind.Flower),
@@ -35,7 +35,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_BasicConsec_Permutation()
 		{
-			string handString = "FFF 1111g FFF 2222r consec";
+			string handString = "FFF 1111g FFF 2222r flexNum";
 			List<Tile> tiles = new()
 			{
 				new(Kind.FlowerWind, -1, 0, Suit.None, Wind.Flower),
@@ -62,7 +62,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_BasicConsec_WithJokers()
 		{
-			string handString = "FFF 1111g FFF 2222r consec";
+			string handString = "FFF 1111g FFF 2222r flexNum";
 			List<Tile> tiles = new()
 			{
 				new(Kind.FlowerWind, -1, 0, Suit.None, Wind.Flower),
@@ -89,7 +89,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_BasicConsec_Invalid()
 		{
-			string handString = "FFF 1111g FFF 2222r consec";
+			string handString = "FFF 1111g FFF 2222r flexNum";
 			List<Tile> tiles = new()
 			{
 				new(Kind.FlowerWind, -1, 0, Suit.None, Wind.Flower),
@@ -116,7 +116,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_Quints_ExactMatch()
 		{
-			string handString = "DDDDDb NNNN 11111b consec";
+			string handString = "DDDDDb NNNN 11111b flexNum";
 			List<Tile> tiles = new()
 			{
 				new(Kind.Dragon, suit: Suit.Dot),
@@ -143,7 +143,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_Quints_Permutation()
 		{
-			string handString = "DDDDDb NNNN 11111b consec anyWind";
+			string handString = "DDDDDb NNNN 11111b flexNum flexWind";
 			List<Tile> tiles = new()
 			{
 				new(Kind.Dragon, suit: Suit.Bam),
@@ -170,7 +170,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_Quints_WithJokers()
 		{
-			string handString = "DDDDDb NNNN 11111b consec";
+			string handString = "DDDDDb NNNN 11111b flexNum";
 			List<Tile> tiles = new()
 			{
 				new(Kind.Joker),
@@ -197,7 +197,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void CheckHand_Quints_Invalid()
 		{
-			string handString = "DDDDDb NNNN 11111b consec";
+			string handString = "DDDDDb NNNN 11111b flexNum";
 			List<Tile> tiles = new()
 			{
 				new(Kind.Dragon, suit: Suit.Dot),

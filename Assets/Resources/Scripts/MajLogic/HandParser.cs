@@ -245,7 +245,7 @@ namespace Resources
 			{
 				switch (str)
 				{
-					case "flexNum":			// used on consecutive and like num hands
+					case "flexNum":			// used on flexNumutive and like num hands
 						baseHand.PermutateNum = true;
 						continue;
 					case "even" or "odd":	// specify flexNum should only cover evens or odds

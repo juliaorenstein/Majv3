@@ -54,7 +54,7 @@ namespace Resources
 					$"Tile {tileId} is not in player {playerIx}'s private rack");
 			}
 			
-			Debug.Log($"Updating _passArr for player {playerIx}.");
+			//Debug.Log($"Updating _passArr for player {playerIx}.");
 
 			_numTilesPassedByPlayer[playerIx] = 0;
 			// Update _passArr.
@@ -70,7 +70,7 @@ namespace Resources
 			// Start computer turn if not already done 
 			if (!_computerPassesDone)
 			{
-				Debug.Log("Starting computer turns for other players.");
+				//Debug.Log("Starting computer turns for other players.");
 				_computerPassesDone = true;
 				for (int compPlayerIx = _fusionManager.HumanPlayerCount; compPlayerIx < 4; compPlayerIx++)
 				{
@@ -85,9 +85,11 @@ namespace Resources
 		public void PlayerReady(int playerIx)
 		{
 			// if less than 3 tiles passed and not a partial pass, throw exception
-			Debug.Assert(!(_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum)
-			             && _numTilesPassedByPlayer[playerIx] < 3)
-				, "Players passed < 3 tiles on non-partial passes");
+			if (!_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum)
+			    && _numTilesPassedByPlayer[playerIx] < 3)
+			{
+				throw new UnityException("A player passed less than three tiles on a partial pass.");
+			}
 
 			// do the pass if all players have submitted
 			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, true);
@@ -98,9 +100,11 @@ namespace Resources
 		private void DoPass()
 		{
 			// Verify 3 tiles per player on non-partial passes
-			Debug.Assert(_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum) 
-			             || _numTilesPassedByPlayer.All(numTilesPassed => numTilesPassed == 3), 
-				"A player passed less than three tiles on a non-partial pass.");
+			if (!(_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum) 
+			    || _numTilesPassedByPlayer.All(numTilesPassed => numTilesPassed == 3)))
+			{
+				throw new UnityException("A player passed less than three tiles on a non-partial pass.");
+			}
 			
 			// Build pass result
 			List<List<int>> passList = new();

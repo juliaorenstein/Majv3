@@ -42,7 +42,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void GetBaseHand_BasicConsec()
 		{
-			string testHand = "FFF 1111g FFF 2222r consec";
+			string testHand = "FFF 1111g FFF 2222r flexNum";
 			Hand expectedBaseHand = new()
 			{
 				Groups = new()
@@ -65,7 +65,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void GetBaseHand_Quints()
 		{
-			string testHand = "DDDDDb NNNN 11111b consec";
+			string testHand = "DDDDDb NNNN 11111b flexNum";
 			Hand expectedBaseHand = new()
 			{
 				Groups = new()
@@ -138,18 +138,18 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void PermutateNum_BasicConsec()
 		{
-			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r consec");
+			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r flexNum");
 
 			List<Hand> expectedResults = new()
 			{
 				testBaseHand,
-				Hand.GetBaseHand("FFF 2222g FFF 3333r consec"),
-				Hand.GetBaseHand("FFF 3333g FFF 4444r consec"),
-				Hand.GetBaseHand("FFF 4444g FFF 5555r consec"),
-				Hand.GetBaseHand("FFF 5555g FFF 6666r consec"),
-				Hand.GetBaseHand("FFF 6666g FFF 7777r consec"),
-				Hand.GetBaseHand("FFF 7777g FFF 8888r consec"),
-				Hand.GetBaseHand("FFF 8888g FFF 9999r consec")
+				Hand.GetBaseHand("FFF 2222g FFF 3333r flexNum"),
+				Hand.GetBaseHand("FFF 3333g FFF 4444r flexNum"),
+				Hand.GetBaseHand("FFF 4444g FFF 5555r flexNum"),
+				Hand.GetBaseHand("FFF 5555g FFF 6666r flexNum"),
+				Hand.GetBaseHand("FFF 6666g FFF 7777r flexNum"),
+				Hand.GetBaseHand("FFF 7777g FFF 8888r flexNum"),
+				Hand.GetBaseHand("FFF 8888g FFF 9999r flexNum")
 			};
 
 			List<Hand> actualResults = HandParser.PermutateNum(testBaseHand);
@@ -160,19 +160,19 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void PermutateNum_Quints()
 		{
-			Hand testBaseHand = Hand.GetBaseHand("DDDDDb NNNN 11111b consec");
+			Hand testBaseHand = Hand.GetBaseHand("DDDDDb NNNN 11111b flexNum");
 
 			List<Hand> expectedResults = new()
 			{
 				testBaseHand,
-				Hand.GetBaseHand("DDDDDb NNNN 22222b consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 33333b consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 44444b consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 55555b consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 66666b consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 77777b consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 88888b consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 99999b consec")
+				Hand.GetBaseHand("DDDDDb NNNN 22222b flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 33333b flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 44444b flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 55555b flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 66666b flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 77777b flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 88888b flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 99999b flexNum")
 			};
 
 			List<Hand> actualResults = HandParser.PermutateNum(testBaseHand);
@@ -214,16 +214,16 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void PermutateSuit_BasicConsec()
 		{
-			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r consec");
+			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r flexNum");
 
 			List<Hand> expectedResults = new()
 			{
 				testBaseHand,
-				Hand.GetBaseHand("FFF 1111r FFF 2222b consec"),
-				Hand.GetBaseHand("FFF 1111b FFF 2222g consec"),
-				Hand.GetBaseHand("FFF 1111g FFF 2222b consec"),
-				Hand.GetBaseHand("FFF 1111b FFF 2222r consec"),
-				Hand.GetBaseHand("FFF 1111r FFF 2222g consec")
+				Hand.GetBaseHand("FFF 1111r FFF 2222b flexNum"),
+				Hand.GetBaseHand("FFF 1111b FFF 2222g flexNum"),
+				Hand.GetBaseHand("FFF 1111g FFF 2222b flexNum"),
+				Hand.GetBaseHand("FFF 1111b FFF 2222r flexNum"),
+				Hand.GetBaseHand("FFF 1111r FFF 2222g flexNum")
 			};
 
 			List<Hand> actualResults = HandParser.PermutateSuit(testBaseHand);
@@ -234,16 +234,16 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void PermutateSuit_Quints()
 		{
-			Hand testBaseHand = Hand.GetBaseHand("DDDDDb NNNN 11111b consec");
+			Hand testBaseHand = Hand.GetBaseHand("DDDDDb NNNN 11111b flexNum");
 
 			List<Hand> expectedResults = new()
 			{
 				testBaseHand,
-				Hand.GetBaseHand("DDDDDg NNNN 11111g consec"),
-				Hand.GetBaseHand("DDDDDr NNNN 11111r consec"),
-				Hand.GetBaseHand("DDDDDr NNNN 11111r consec"),
-				Hand.GetBaseHand("DDDDDg NNNN 11111g consec"),
-				Hand.GetBaseHand("DDDDDb NNNN 11111b consec"),
+				Hand.GetBaseHand("DDDDDg NNNN 11111g flexNum"),
+				Hand.GetBaseHand("DDDDDr NNNN 11111r flexNum"),
+				Hand.GetBaseHand("DDDDDr NNNN 11111r flexNum"),
+				Hand.GetBaseHand("DDDDDg NNNN 11111g flexNum"),
+				Hand.GetBaseHand("DDDDDb NNNN 11111b flexNum"),
 			};
 
 			List<Hand> actualResults = HandParser.PermutateSuit(testBaseHand);
@@ -294,14 +294,14 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void PermutateWind_Quints_4Results()
 		{
-			Hand testBaseHand = Hand.GetBaseHand("DDDDDb NNNN 11111b consec anyWind");
+			Hand testBaseHand = Hand.GetBaseHand("DDDDDb NNNN 11111b flexNum flexWind");
 
 			List<Hand> expectedResults = new()
 			{
 				testBaseHand,
-				Hand.GetBaseHand("DDDDDb EEEE 11111b consec anyWind"),
-				Hand.GetBaseHand("DDDDDb WWWW 11111b consec anyWind"),
-				Hand.GetBaseHand("DDDDDb SSSS 11111b consec anyWind"),
+				Hand.GetBaseHand("DDDDDb EEEE 11111b flexNum flexWind"),
+				Hand.GetBaseHand("DDDDDb WWWW 11111b flexNum flexWind"),
+				Hand.GetBaseHand("DDDDDb SSSS 11111b flexNum flexWind"),
 			};
 			
 			List<Hand> actualResults = HandParser.PermutateWind(testBaseHand);
@@ -312,7 +312,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void PermutateWind_BasicConsec_1Result()
 		{
-			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r consec");
+			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r flexNum");
 
 			List<Hand> expectedResults = new() { testBaseHand, };
 
@@ -324,7 +324,7 @@ namespace Resources.MajLogicTests
 		[Test]
 		public void PermutateAll_BasicConsec()
 		{
-			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r consec");
+			Hand testBaseHand = Hand.GetBaseHand("FFF 1111g FFF 2222r flexNum");
 
 			List<Hand> results = HandParser.GetAllPermutations(testBaseHand);
 			

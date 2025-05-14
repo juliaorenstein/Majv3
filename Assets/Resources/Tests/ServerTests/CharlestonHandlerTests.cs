@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
+using Assert = NUnit.Framework.Assert;
 
 namespace Resources.ServerTests
 {
@@ -237,9 +238,12 @@ namespace Resources.ServerTests
 			int[] numTilesPerPlayer = { player0Num, player1Num, player2Num, player3Num };
 			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
-				List<int> rack = _tileTracker.GetPrivateRackContentsForPlayer(playerIx);
-				_charlestonHandler.ClientUpdate(playerIx
-					, rack.GetRange(0, numTilesPerPlayer[playerIx]).ToArray());
+				int[] tiles = { -1, -1, -1 };
+				for (int i = 0; i < numTilesPerPlayer[playerIx]; i++)
+				{
+					tiles[i] = _tileTracker.GetPrivateRackContentsForPlayer(playerIx)[i];
+				}
+				_charlestonHandler.ClientUpdate(playerIx, tiles);
 				
 				_charlestonHandler.PlayerReady(playerIx);
 			}
