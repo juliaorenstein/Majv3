@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ namespace Resources
 	{
 		public readonly InputSender InputSender;
 		private readonly FusionManagerGlobal _fusionManager;
+		private int _passNum;
 		private readonly CharlestonUIHandlerMono _charlestonUIHandler;
 		private readonly CharlestonHandlerNetwork _charlestonHandlerNetwork;
 		private bool[][] OccupiedSpots => _charlestonHandlerNetwork.OccupiedSpots;
@@ -27,6 +29,12 @@ namespace Resources
 		{
 			Debug.Log("Client: Updating charleston state");
 			InputSender.ClearInput();
+
+			if (_charlestonHandlerNetwork.PassNum != _passNum)
+			{
+				ClearOccupiedSpots();
+				_passNum = _charlestonHandlerNetwork.PassNum;
+			}
 			
 			// otherwise, check for other updates
 			for (int playerIx = 0; playerIx < 4; playerIx++)
@@ -37,7 +45,7 @@ namespace Resources
 					_occupiedSpots[playerIx][spotIx] = OccupiedSpots[playerIx][spotIx];
 					if (playerIx == _fusionManager.LocalPlayerIx)
 					{
-						if (_occupiedSpots[playerIx].All(b => b) || _charlestonHandlerNetwork.IsPartialPass)
+						if (OccupiedSpots[playerIx].All(b => b) || _charlestonHandlerNetwork.IsPartialPass)
 						{
 							_charlestonUIHandler.EnablePassButton();
 						}
@@ -57,6 +65,11 @@ namespace Resources
 				}
 			}
 			_charlestonUIHandler.UpdateReadyIndicator(_charlestonHandlerNetwork.PlayersReadyNetworked.Select(b => (bool)b).ToArray());
+		}
+
+		private void ClearOccupiedSpots()
+		{
+			foreach (bool[] spots in _occupiedSpots) Array.Clear(spots, 0, spots.Length);
 		}
 	}
 }

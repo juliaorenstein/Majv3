@@ -62,8 +62,8 @@ namespace Resources
 			Transform spot = _localSpots[spotIx];
 			MoveLocalTileRackToCharlestonBox(tileFace, spot);
 		}
-		
-		public void MoveLocalTileRackToCharlestonBox(Transform tileFace, Transform spot)
+
+		private void MoveLocalTileRackToCharlestonBox(Transform tileFace, Transform spot)
 		{
 			Debug.Assert(_localSpots.Contains(spot));
 			Transform tile = tileFace.parent;

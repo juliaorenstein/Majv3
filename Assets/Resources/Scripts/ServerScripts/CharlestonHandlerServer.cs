@@ -56,12 +56,15 @@ namespace Resources
 			
 			Debug.Log($"Updating _passArr for player {playerIx}.");
 
+			_numTilesPassedByPlayer[playerIx] = 0;
 			// Update _passArr.
 			for (int spotIx = 0; spotIx < 3; spotIx++)
 			{
 				int tileId = tilesInBox[spotIx];
 				_passArr[spotIx][playerIx] = tileId;
-				_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, tileId != -1);
+				if (tileId == -1) continue;
+				_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, true);
+				_numTilesPassedByPlayer[playerIx]++;
 			}
 
 			// Start computer turn if not already done 
@@ -94,6 +97,11 @@ namespace Resources
 
 		private void DoPass()
 		{
+			// Verify 3 tiles per player on non-partial passes
+			Debug.Assert(_charlestonHandlerNetwork.PartialPasses.Contains(_charlestonHandlerNetwork.PassNum) 
+			             || _numTilesPassedByPlayer.All(numTilesPassed => numTilesPassed == 3), 
+				"A player passed less than three tiles on a non-partial pass.");
+			
 			// Build pass result
 			List<List<int>> passList = new();
 			
