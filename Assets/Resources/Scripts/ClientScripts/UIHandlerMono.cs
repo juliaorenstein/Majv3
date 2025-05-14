@@ -104,6 +104,7 @@ namespace Resources
 			// set parent to new location and lerp the face
 			tileTransform.SetParent(locTransform);
 			if (ix != -1) tileTransform.SetSiblingIndex(ix);
+			tileTransform.position = locTransform.position; // for non layout built things.
 			LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)locTransform);
 			
 			lerp.EndX = tileTransform.position.x;
@@ -160,7 +161,6 @@ namespace Resources
 		private readonly List<Lerp> _lerps = new();
 		private const float Speed = 4f;
 
-		// BUG: last tile in rack is off at start
 		public static void Lerp(Lerp lerp)
 		{
 			if (!lerp.Active) return; // quit out immediately unless lerping is active

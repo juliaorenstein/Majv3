@@ -50,7 +50,7 @@ namespace Resources
 						int spotIx = _charlestonNetwork.OccupiedSpots[_fusionManager.LocalPlayerIx].ToList().IndexOf(false);
 						spotIx = spotIx == -1 ? 2 : spotIx;
 						_charlestonUI.MoveLocalTileRackToCharlestonBox(transform, spotIx);
-						_inputSender.RequestTileToCharlestonBox(_tileId, spotIx);
+						//_inputSender.RequestCharlestonUpdate(_tileId, spotIx); TODO: double-click functionality
 						return;
 					}
 					// move from box to rack

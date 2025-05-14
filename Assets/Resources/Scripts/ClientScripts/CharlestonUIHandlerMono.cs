@@ -101,7 +101,7 @@ namespace Resources
 			CreateAndAddLerp(tileBack, spot);
 		}
 
-		// TODO: need to test
+		// TODO: other rack charleston updates looking accurate but clunky
 		public void MoveOtherTileFromBoxToRack(int playerIx, int spotIx)
 		{
 			int rackIx = (playerIx - _localPlayerIx + 4) % 4;
@@ -153,7 +153,6 @@ namespace Resources
 				};
 				_passButtonText.SetText(text);
 			}
-			// BUG: sometimes dragging tile to charleston, the face disappears but charleston pass still works. I think it's when the tile has been passed before.
 		}
 
 		public void EndCharlestons()

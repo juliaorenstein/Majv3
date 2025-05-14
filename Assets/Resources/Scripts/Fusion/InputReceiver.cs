@@ -36,84 +36,76 @@ namespace Resources
 			if (!Runner.IsServer) return;
 			if (GetInput(out Input clientInput))
 			{
-				// CHARLESTON - MOVE TO BOX
-				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.TileToCharlestonBox))
+				// CHARLESTON - UPDATE PASS ARRAY
+				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.CharlestonUpdate))
 				{
-					Debug.Log("Input Receiver: Tile to Charleston Box");
-					_charlestonHandler.TileToCharlestonBox(playerIx, clientInput.TileId, clientInput.SpotIx);
-				}
-				
-				// CHARLESTON - MOVE FROM BOX
-				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.TileFromBoxToRack))
-				{
-					Debug.Log("Input Receiver: Tile from Box to Rack");
-					_charlestonHandler.TileFromBoxToRack(playerIx, clientInput.TileId, clientInput.SpotIx);
-				}
-				
-				// CHARLESTON - DO PASS
-				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.CharlestonPass))
-				{
-					Debug.Log("Input Receiver: Charleston Pass");
-					_charlestonHandler.PlayerReady(playerIx);
-				}
-				
-				// CHARLESTON - START GAMEPLAY
-				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.SkipCharlestons)
-				    || (!_readyFlagFlipped && clientInput.StartGame)) 
-				{
-					Debug.Log("Input Receiver: Start Game Play");
-					_readyFlagFlipped = true;
-					_fusionManager.PlayerReadyToStartGamePlay();
-				}
-				
-				// DISCARD
-				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Discard))
-				{
-					Debug.Log("Input Receiver: Discarding");
-					_turnManager.DoDiscard(playerIx, clientInput.TileId);
-				}
-				
-				// PICK UP
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.PickUp))
-				{
-					Debug.Log("Input Receiver: Picking up");
-					_turnManager.DoPickUp(playerIx);
-				}
-
-				// JOKER SWAP
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.JokerSwap))
-				{
-					Debug.Log("JokerSwap not implemented");
-				}
-				
-				// CALL
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Call))
-				{
-					_callHandler.PlayersCalling.Add(playerIx);
-				}
-
-				// CONFIRM
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Confirm))
-				{
-					_callHandler.PlayersCalling.Remove(playerIx);
-					_callHandler.PlayersConfirmed.Add(playerIx);
-				}
-				
-				// CANCEL
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Cancel))
-				{
-					_callHandler.PlayersCalling.Remove(playerIx);
-				}
-				
-				// EXPOSE
-				else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Expose))
-				{
-					Debug.Log("Input Receiver: Exposed");
-					_turnManager.DoExpose(playerIx, clientInput.TileId);
+					Debug.Log("Input Receiver: Charleston Update");
+					int[] tilesInBox = { clientInput.charleston1, clientInput.charleston2, clientInput.charleston3 };
+					_charlestonHandler.ClientUpdate(playerIx, tilesInBox);
 				}
 			}
+				
+			// CHARLESTON - DO PASS
+			if (clientInput.Action.WasPressed(_previousTurnOptions, Action.CharlestonPass))
+			{
+				Debug.Log("Input Receiver: Charleston Pass");
+				_charlestonHandler.PlayerReady(playerIx);
+			}
+				
+			// CHARLESTON - START GAMEPLAY
+			if (clientInput.Action.WasPressed(_previousTurnOptions, Action.SkipCharlestons)
+			    || (!_readyFlagFlipped && clientInput.StartGame)) 
+			{
+				Debug.Log("Input Receiver: Start Game Play");
+				_readyFlagFlipped = true;
+				_fusionManager.PlayerReadyToStartGamePlay();
+			}
+				
+			// DISCARD
+			if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Discard))
+			{
+				Debug.Log("Input Receiver: Discarding");
+				_turnManager.DoDiscard(playerIx, clientInput.TileId);
+			}
+				
+			// PICK UP
+			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.PickUp))
+			{
+				Debug.Log("Input Receiver: Picking up");
+				_turnManager.DoPickUp(playerIx);
+			}
 
-			_previousTurnOptions = clientInput.Action;
+			// JOKER SWAP
+			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.JokerSwap))
+			{
+				Debug.Log("JokerSwap not implemented");
+			}
+				
+			// CALL
+			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Call))
+			{
+				_callHandler.PlayersCalling.Add(playerIx);
+			}
+
+			// CONFIRM
+			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Confirm))
+			{
+				_callHandler.PlayersCalling.Remove(playerIx);
+				_callHandler.PlayersConfirmed.Add(playerIx);
+			}
+				
+			// CANCEL
+			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Cancel))
+			{
+				_callHandler.PlayersCalling.Remove(playerIx);
+			}
+				
+			// EXPOSE
+			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Expose))
+			{
+				Debug.Log("Input Receiver: Exposed");
+				_turnManager.DoExpose(playerIx, clientInput.TileId);
+			}
 		}
 	}
 }

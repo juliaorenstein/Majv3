@@ -7,7 +7,6 @@ namespace Resources
 	public class ButtonHandlerMono : MonoBehaviour
 	{
 		public InputSender InputSender;
-		private UIHandlerMono _uiHandler;
 		
 		public Button startGame;
 		public Button pickUpButton;
@@ -20,7 +19,6 @@ namespace Resources
 		private void Start()
 		{
 			startGame.gameObject.SetActive(false);
-			_uiHandler = GameObject.Find("GameManager").GetComponent<UIHandlerMono>();
 		}
 
 		public void RequestCharlestonPass()

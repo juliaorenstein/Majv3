@@ -45,6 +45,41 @@ namespace Resources
 			_fusionManager = fusionManager;
 		}
 
+		public void ClientUpdate(int playerIx, int[] tilesInBox)
+		{
+			// validate tile ids are in player's rack
+			foreach (int tileId in tilesInBox.Where(tileId => tileId != -1))
+			{
+				Debug.Assert(_tileTracker.GetPrivateRackContentsForPlayer(playerIx).Contains(tileId), 
+					$"Tile {tileId} is not in player {playerIx}'s private rack");
+			}
+			
+			Debug.Log($"Updating _passArr for player {playerIx}.");
+
+			// Update _passArr.
+			for (int spotIx = 0; spotIx < 3; spotIx++)
+			{
+				int tileId = tilesInBox[spotIx];
+				_passArr[spotIx][playerIx] = tileId;
+				_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, tileId != -1);
+			}
+
+			// Start computer turn if not already done 
+			if (!_computerPassesDone)
+			{
+				Debug.Log("Starting computer turns for other players.");
+				_computerPassesDone = true;
+				for (int compPlayerIx = _fusionManager.HumanPlayerCount; compPlayerIx < 4; compPlayerIx++)
+				{
+					ComputerPass(compPlayerIx);
+				}
+			}
+
+			// Update clients
+			_charlestonHandlerNetwork.CharlestonVersion++;
+		}
+		
+		/*
 		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
 		{
 			// validate that tileId is in playerIx's rack
@@ -86,6 +121,7 @@ namespace Resources
 			_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, false);
 			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
+		*/
 		
 		public void PlayerReady(int playerIx)
 		{
@@ -176,14 +212,16 @@ namespace Resources
 			}
 		}
 
-		void ComputerPass(int playerIx)
+		private void ComputerPass(int playerIx)
 		{
 			List<int> tileIds = _tileTracker.GetPrivateRackContentsForPlayer(playerIx).ToList();
+			List<int> tilesToPass = new();
 			for (int i = 0; i < 3; i++)
 			{
 				while (Tile.IsJoker(tileIds[i])) tileIds.RemoveAt(i); // don't pass jokers
-				TileToCharlestonBox(playerIx, tileIds[i], i);
+				tilesToPass.Add(tileIds[i]);
 			}
+			ClientUpdate(playerIx, tilesToPass.ToArray());
 			PlayerReady(playerIx);
 		}
 	}

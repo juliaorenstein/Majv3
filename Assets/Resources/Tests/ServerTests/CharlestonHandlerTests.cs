@@ -238,10 +238,9 @@ namespace Resources.ServerTests
 			for (int playerIx = 0; playerIx < 4; playerIx++)
 			{
 				List<int> rack = _tileTracker.GetPrivateRackContentsForPlayer(playerIx);
-				for (int i = 0; i < numTilesPerPlayer[playerIx]; i++)
-				{
-					_charlestonHandler.TileToCharlestonBox(playerIx, rack[i], i);
-				}
+				_charlestonHandler.ClientUpdate(playerIx
+					, rack.GetRange(0, numTilesPerPlayer[playerIx]).ToArray());
+				
 				_charlestonHandler.PlayerReady(playerIx);
 			}
 			

@@ -14,7 +14,7 @@ namespace Resources
 		, IBeginDragHandler, IDragHandler, IEndDragHandler
 	{
 		// mono and tileTracker set in SetupMono
-		[FormerlySerializedAs("uiHander")] [FormerlySerializedAs("uiHandlerMono")] public UIHandlerMono uiHandler;
+		public UIHandlerMono uiHandler;
 		public TileTrackerClient TileTracker;
 		public InputSender InputSender;
 		private FusionManagerGlobal _fusionManager;
@@ -68,17 +68,11 @@ namespace Resources
 			// translates candidates to their CLocs. If no valid CLoc, set to pool
 			List<CLoc> candidateLocs = candidates.Select(candidate => 
 				uiHandler.TransformToLoc.GetValueOrDefault(candidate.gameObject.transform)).ToList();
-			
-			if (IsRackToCharleston())
+
+			if (IsCharlestonMove())
 			{
-				Debug.Log("Drag: Rack to Charleston");
-				DoRackToCharleston();
-			}
-			
-			else if (IsTileFromBoxToRack())
-			{
-				Debug.Log("Drag: Tile from Box to Rack");
-				DoCharlestonToRack();
+				Debug.Log("Drag: Charleston Move");
+				DoCharlestonMove();
 			}
 			
 			// if this is a rack rearrange, we don't need to notify the server
@@ -159,16 +153,13 @@ namespace Resources
 				}
 				return false;
 			}
+
+			bool IsCharlestonMove() => _fusionManager.CurrentTurnStage is TurnStage.Charleston
+			                           && CurLoc is CLoc.LocalPrivateRack // this is true even if tile comes from box
+			                           && (candidateLocs.Intersect(_charlestonSpots).Any() // sending to box
+			                               || _tileTransform.parent.parent == _charlestonTransform) // or FROM box
+			                           && !Tile.IsJoker(tileId); // can't send joker to box
 			
-			bool IsRackToCharleston() => _fusionManager.CurrentTurnStage is TurnStage.Charleston 
-			                             && CurLoc is CLoc.LocalPrivateRack 
-			                             && candidateLocs.Intersect(_charlestonSpots).Any() 
-			                             && !Tile.IsJoker(tileId);
-
-			bool IsTileFromBoxToRack() => _fusionManager.CurrentTurnStage is TurnStage.Charleston
-			                              && _charlestonSpots.Contains(uiHandler.TransformToLoc.GetValueOrDefault(_tileTransform.parent))
-			                              && candidateLocs.Contains(CLoc.LocalPrivateRack);
-
 			void DoMoveToRack()
 			{
 				int siblingIndexOfTileDroppedOn = -1;
@@ -245,20 +236,39 @@ namespace Resources
 				MoveBack();
 			}
 
-			void DoRackToCharleston()
+			void DoCharlestonMove()
 			{
-				CLoc spotLoc = candidateLocs.Intersect(_charlestonSpots).FirstOrDefault();
-				Transform spot = uiHandler.LocToTransform[spotLoc];
-				InputSender.RequestTileToCharlestonBox(tileId, _charlestonSpots.IndexOf(spotLoc));
-				_charlestonUI.MoveLocalTileRackToCharlestonBox(transform, spot);
-			}
+				// first move the tile to box if applicable
+				CLoc loc = candidateLocs.Intersect(_charlestonSpots).FirstOrDefault(); // set to charleston spot if approp
+				if (loc == default)
+				{
+					// if not a charleston spot, move to private rack
+					loc = CLoc.LocalPrivateRack;
+				}
+				else
+				{
+					// if a charleston spot, see if there's another tile there and move that tile back to rack
+					Transform spot = uiHandler.LocToTransform[loc];
+					if (spot.childCount > 0)
+					{
+						uiHandler.MoveTile(spot.GetChild(0), CLoc.LocalPrivateRack);
+					}
+				}
+				
+				uiHandler.MoveTile(_tileTransform, loc);
+				
+				// now update server with the whole pass array			
+				int[] tilesInCharleston = { -1, -1, -1 };
+				for (int spotIx = 0; spotIx < 3; spotIx++)
+				{
+					Transform spot = _charlestonTransform.GetChild(spotIx);
+					if (spot.childCount <= 0) continue;
+					// confirm there is only 1 tile in the spot
+					Debug.Assert(spot.childCount == 1, $"Charleston spot {spotIx} has more than one tile in it.");
 
-			void DoCharlestonToRack()
-			{
-				CLoc spotLoc = candidateLocs.Intersect(_charlestonSpots).FirstOrDefault();
-				int spotIx = _tileTransform.parent.GetSiblingIndex();
-				InputSender.RequestTileFromBoxToRack(tileId, spotIx);
-				DoMoveToRack();
+					tilesInCharleston[spotIx] = spot.GetComponentInChildren<DragHandlerMono>().tileId;
+				}
+				InputSender.RequestCharlestonUpdate(tilesInCharleston);
 			}
 
 			void MoveBack()

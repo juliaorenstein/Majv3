@@ -51,7 +51,6 @@ namespace Resources
 						// else, move tile back to private rack
 						else
 						{
-							// BUG: this is causing an issue with how tiles appear on other racks
 							_charlestonUIHandler.MoveOtherTileFromBoxToRack(playerIx, spotIx);
 						}
 					}

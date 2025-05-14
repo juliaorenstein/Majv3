@@ -9,6 +9,9 @@ namespace Resources
 		public int TileId;
 		public int SpotIx;
 		public bool StartGame;
+		public int charleston1;
+		public int charleston2;
+		public int charleston3;
 	}
 	
 	public enum Action
@@ -20,30 +23,22 @@ namespace Resources
 		Cancel = 4,
 		Expose = 5,
 		JokerSwap = 6,
-		TileToCharlestonBox = 7,
-		TileFromBoxToRack = 8,
-		CharlestonPass = 9,
-		SkipCharlestons = 10
+		CharlestonUpdate = 7,
+		CharlestonPass = 8,
+		SkipCharlestons = 9
 	}
 	
 	public class InputSender
 	{
 		public Input Input;
-		
-		public void RequestTileToCharlestonBox(int tileId, int spotIx)
-		{
-			Debug.Log($"InputSender: Requesting tile {tileId} to charleston box");
-			Input.TileId = tileId;
-			Input.SpotIx = spotIx;
-			Input.Action.SetDown(Action.TileToCharlestonBox);
-		}
 
-		public void RequestTileFromBoxToRack(int tileId, int spotIx)
+		public void RequestCharlestonUpdate(int[] tilesInCharlesotn)
 		{
-			Debug.Log($"InputSender: Requesting tile {tileId} from box spot {spotIx} to rack");
-			Input.TileId = tileId;
-			Input.SpotIx = spotIx;
-			Input.Action.SetDown(Action.TileFromBoxToRack);
+			Debug.Log($"InputSender: Requesting charleston update: {tilesInCharlesotn[0]}, {tilesInCharlesotn[1]}, {tilesInCharlesotn[2]}");
+			Input.charleston1 = tilesInCharlesotn[0];
+			Input.charleston2 = tilesInCharlesotn[1];
+			Input.charleston3 = tilesInCharlesotn[2];
+			Input.Action.SetDown(Action.CharlestonUpdate);
 		}
 		
 		public void RequestCharlestonPass()
