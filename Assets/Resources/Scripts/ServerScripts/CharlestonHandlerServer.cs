@@ -79,50 +79,6 @@ namespace Resources
 			_charlestonHandlerNetwork.CharlestonVersion++;
 		}
 		
-		/*
-		public void TileToCharlestonBox(int playerIx, int tileId, int spotIx)
-		{
-			// validate that tileId is in playerIx's rack
-			Debug.Assert(_tileTracker.PlayerPrivateRackContains(playerIx, tileId)
-				, $"Tile {tileId} is not in player {playerIx}'s rack");
-			
-			// Debug.Log("TileToCharlestonBox");
-			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, false); 
-			
-			// start computer turn if not already done
-			if (!_computerPassesDone)
-			{
-				_computerPassesDone = true;
-				for (int compPlayerIx = _fusionManager.HumanPlayerCount; compPlayerIx < 4; compPlayerIx++)
-				{
-					ComputerPass(compPlayerIx);
-				}
-			}
-			
-			// update server-side data
-			if (_passArr[spotIx][playerIx] == -1) _numTilesPassedByPlayer[playerIx]++;
-			_passArr[spotIx][playerIx] = tileId;
-			_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, true);
-			_charlestonHandlerNetwork.CharlestonVersion++;
-		}
-
-		public void TileFromBoxToRack(int playerIx, int tileId, int spotIx)
-		{
-			// make sure arguments are valid
-			Debug.Assert(_passArr[spotIx][playerIx] == tileId,
-				$"_passArr[{spotIx}][{playerIx}] is not tile {tileId}");
-			
-			Debug.Log($"TileFromBoxToRack: playerIx: {playerIx}; spotIx: {spotIx}; tileId: {tileId}");
-			_charlestonHandlerNetwork.SetPlayerReadyState(playerIx, false);
-			
-			// update server-side data
-			_numTilesPassedByPlayer[playerIx]--;
-			_passArr[spotIx][playerIx] = -1;
-			_charlestonHandlerNetwork.SetOccupiedSpots(playerIx, spotIx, false);
-			_charlestonHandlerNetwork.CharlestonVersion++;
-		}
-		*/
-		
 		public void PlayerReady(int playerIx)
 		{
 			// if less than 3 tiles passed and not a partial pass, throw exception
