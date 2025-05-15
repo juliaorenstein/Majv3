@@ -25,6 +25,18 @@ namespace Resources
 		private CLoc GetPrivateRackForPlayer(int playerIx) => PrivateRacks[( 4 + playerIx - GameState.PlayerIx) % 4];
 		private CLoc GetDisplayRackForPlayer(int playerIx) => DisplayRacks[( 4 + playerIx - GameState.PlayerIx) % 4];
 		
+		public static CLoc GetPrivateRackForPlayer(int targetPlayerIx, int localPlayerIx)
+		{
+			int ix = (targetPlayerIx - localPlayerIx) % 4;
+			return (CLoc)(ix * 2 + 1);
+		}
+
+		public static CLoc GetDisplayRackForPlayer(int targetPlayerIx, int localPlayerIx)
+		{
+			int ix = (targetPlayerIx - localPlayerIx) % 4;
+			return (CLoc)(ix * 2 + 2);
+		}
+		
 		private readonly Dictionary<CLoc, List<int>> _inverseGameState = new();
 
 		public TileTrackerClient(IUIHandler uiHandler, List<Tile> allTiles, InputSender inputSender, IFusionManagerGlobal fusionManager)
@@ -92,9 +104,9 @@ namespace Resources
 			_inputSender.ClearInput();
 			
 			// is the game over?
-			if (_fusionManager.MahJongg)
+			if (_fusionManager.MahJonggWinner > -1)
 			{
-				_uiHandler.EndGame();
+				_uiHandler.EndGame(_fusionManager.MahJonggWinner, _fusionManager.Racks);
 				return;
 			}
 

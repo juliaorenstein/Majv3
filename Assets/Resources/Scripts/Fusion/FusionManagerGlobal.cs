@@ -1,6 +1,8 @@
 using System;
 using Fusion;
 using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Resources
 {
@@ -12,13 +14,21 @@ namespace Resources
 		[Networked] public int numTilesExposedThisTurn { get; set; }
 		[Networked] public int DiscardTileId { get; set; }
 		[Networked] public TurnStage CurrentTurnStage { get; set; }
-		[Networked] public NetworkBool MahJonggNetworked {get; set;}
+		[Networked] public int MahJonggWinner { get; set; } = -1;
+		
+		// racks used at end of game when everybody exposes
+		[Networked, Capacity(4)] public NetworkArray<int> Rack0 { get; }
+		[Networked, Capacity(4)] public NetworkArray<int> Rack1 { get; }
+		[Networked, Capacity(4)] public NetworkArray<int> Rack2 { get; }
+		[Networked, Capacity(4)] public NetworkArray<int> Rack3 { get; }
+		private NetworkArray<int>[] _racks;
+		public List<int>[] Racks => _racks.Select(rack => rack.ToList()).ToArray();
+		
 		
 		private int[] PlayerIds => Players.Select(player => player.PlayerId).ToArray();
 		public int LocalPlayerIx => PlayerIx(Runner.LocalPlayer);
 		public bool IsMyTurn => PlayerIx(Runner.LocalPlayer) == TurnPlayerIx;
 		public bool IsMyExpose => PlayerIx(Runner.LocalPlayer) == ExposingPlayerIx;
-		public bool MahJongg => MahJonggNetworked;
 		
 		public int PlayerIx(int playerId) => Array.IndexOf(PlayerIds, playerId);
 		public int PlayerIx(PlayerRef playerRef) => Array.IndexOf(PlayerIds, playerRef.PlayerId);
@@ -38,6 +48,7 @@ namespace Resources
 			TurnPlayerIx = 1;
 			ExposingPlayerIx = -1;
 			numTilesExposedThisTurn = 0;
+			_racks = new[] {Rack0, Rack1, Rack2, Rack3};
 		}
 
 		public void PlayerReadyToStartGamePlay()
@@ -46,6 +57,19 @@ namespace Resources
 			if (_readyToStart == HumanPlayerCount)
 			{
 				TurnManagerServer.StartGame();
+			}
+		}
+
+		public void SetEndGameRacks(List<List<int>> racks)
+		{
+			if (racks.Count != 4) throw new UnityException("SetEndGameRacks: racks does not have 4 entries");
+
+			for (int playerIx = 0; playerIx < 4; playerIx++)
+			{
+				for (int i = 0; i < racks[playerIx].Count; i++)
+				{
+					_racks[playerIx].Set(i, racks[playerIx][i]);
+				}
 			}
 		}
 	}
@@ -73,6 +97,8 @@ namespace Resources
 		INetworkedGameState[] NetworkedGameStates { get; set; }
 		int HumanPlayerCount { get; }
 		public TurnStage CurrentTurnStage { get; set; }
-		public bool MahJongg { get; }
+		public int MahJonggWinner { get; }
+		public void SetEndGameRacks(List<List<int>> racks);
+		public List<int>[] Racks { get; }
 	}
 }

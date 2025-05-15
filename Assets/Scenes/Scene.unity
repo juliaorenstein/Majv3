@@ -1590,7 +1590,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 400, y: 34.341015}
+  m_AnchoredPosition: {x: 403.7, y: 34.341015}
   m_SizeDelta: {x: 163.5425, y: 74.2312}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &439913922
@@ -1695,7 +1695,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 400, y: 110.53}
+  m_AnchoredPosition: {x: 403.7, y: 110.53}
   m_SizeDelta: {x: 163.5425, y: 74.2312}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &449588078
@@ -3163,7 +3163,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: -38.375}
+  m_AnchoredPosition: {x: 403.7, y: -38.527}
   m_SizeDelta: {x: 163.5425, y: 68.2312}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1021007319
@@ -3675,10 +3675,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b5a0ab31a874efdba569188550f67e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tileBackPrefab: {fileID: 0}
-  _otherPrivateRacks: []
-  _pool: {fileID: 0}
-  _uiHandler: {fileID: 0}
 --- !u!1 &1415556747
 GameObject:
   m_ObjectHideFlags: 0

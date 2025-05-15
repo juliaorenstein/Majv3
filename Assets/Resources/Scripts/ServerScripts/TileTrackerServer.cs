@@ -139,6 +139,18 @@ namespace Resources
 			networkedGameState.UpdatePrivateRackCounts(privateRackCounts);
 		}
 
+		public void MakeRacksPublic()
+		{
+			List<List<int>> racks = new()
+			{
+				GetPrivateRackContentsForPlayer(0),
+				GetPrivateRackContentsForPlayer(1),
+				GetPrivateRackContentsForPlayer(2),
+				GetPrivateRackContentsForPlayer(3)
+			};
+			_fusionManager.SetEndGameRacks(racks);
+		}
+
 		// UTILITY
 		Dictionary<SLoc, CLoc> SLocToCLoc(int playerIx)
 		{

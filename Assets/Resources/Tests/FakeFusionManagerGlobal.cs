@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Fusion;
 
 namespace Resources
@@ -6,6 +7,14 @@ namespace Resources
 	{
 		public int HumanPlayerCount => 4;
 		public TurnStage CurrentTurnStage { get; set; }
+		public int MahJonggWinner { get; }
+		public void SetEndGameRacks(List<List<int>> racks)
+		{
+			
+		}
+
+		public List<int>[] Racks { get; }
+
 		public bool MahJongg { get; }
 		public NetworkArray<PlayerRef> Players { get; set; } = new();
 		public int TurnPlayerIx { get; set; }

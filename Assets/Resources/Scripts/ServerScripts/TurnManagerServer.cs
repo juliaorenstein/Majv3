@@ -125,7 +125,7 @@ namespace Resources
 			Debug.Log($"Player {exposePlayerIx} called tile {DiscardTileId}");
 			_fusionManager.ExposingPlayerIx = exposePlayerIx;
 			_fusionManager.CurrentTurnStage = TurnStage.Expose;
-			CheckForMahJongg(exposePlayerIx);
+			if (CheckForMahJongg(exposePlayerIx)) return;
 			DoExpose(exposePlayerIx, DiscardTileId);
 		}
 		
@@ -134,7 +134,9 @@ namespace Resources
 			List<int> rack = _tileTracker.GetPrivateRackContentsForPlayer(playerIx);
 			rack.AddRange(_tileTracker.GetLocContents(_tileTracker.GetDisplayRackForPlayer(playerIx)));
 			if (!HandChecker.AnyMahJongg(rack, _card)) return false;
-			_fusionManager.MahJonggNetworked = true;
+			_tileTracker.MakeRacksPublic();
+			_fusionManager.MahJonggWinner = playerIx;
+			_tileTracker.SendGameStateToAll();
 			return true;
 		}
 	}

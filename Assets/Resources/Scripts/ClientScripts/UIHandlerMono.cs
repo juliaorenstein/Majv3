@@ -70,12 +70,6 @@ namespace Resources
 			
 			_displayRackSpace = UnityEngine.Resources.Load<GameObject>("Prefabs/Space");
 			_mahJongg = GameObject.Find("Mah Jongg");
-
-			//_charlestonBox = GameObject.Find("Charleston").transform;
-			//_charlestonX = LocToTransform[CLoc.OtherDisplayRack1].parent.position.x * 2;
-			//_charlestonY[0] = LocToTransform[CLoc.OtherPrivateRack1].parent.position.y;
-			//_charlestonY[1] = LocToTransform[CLoc.OtherPrivateRack2].parent.position.y;
-			//_charlestonY[2]= LocToTransform[CLoc.OtherPrivateRack3].parent.position.y;
 		}
 		
 		public void MoveTile(int tileId, CLoc loc, int ix = -1)
@@ -143,9 +137,14 @@ namespace Resources
 		public void SetActionButton(Action action, bool state) =>
 			_actionToButton[action].interactable = state;
 
-		public void EndGame()
+		public void EndGame(int winnerIx, List<int>[] racks)
 		{
-			_mahJongg.SetActive(true);
+			// validation checks
+			if (winnerIx is < 0 or > 4) throw new UnityException($"UIHandlerMono.EndGame: Invalid winnerIx: {winnerIx}");
+			if (racks.Length != 4) throw new UnityException($"UIHandlerMono.EndGame: Invalid racks.Length: {racks.Length}");
+			
+			// move all tile backs to display racks
+			
 		}
 		
 		private void Update()
@@ -194,7 +193,7 @@ namespace Resources
 		public void UpdatePrivateRackCount(CLoc privateRack, int count);
 		public void SetActionButton(Action action, bool state);
 		public void AddSpaceToDisplayRack(CLoc loc);
-		public void EndGame();
+		public void EndGame(int winnerIx, List<int>[] racks);
 	}
 
 	public class Lerp

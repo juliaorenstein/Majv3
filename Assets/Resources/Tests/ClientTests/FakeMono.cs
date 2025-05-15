@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Resources;
 
 namespace Resources.ClientTests
@@ -8,6 +9,16 @@ namespace Resources.ClientTests
 		public void UpdatePrivateRackCount(CLoc privateRack, int count) {}
 		public void SetActionButton(Action action, bool state) {}
 		public void AddSpaceToDisplayRack(CLoc loc)
+		{
+			
+		}
+
+		public void EndGame(int winnerIx, List<int>[] racks)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void EndGame(int winnerIx)
 		{
 			
 		}
