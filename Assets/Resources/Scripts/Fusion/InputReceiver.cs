@@ -106,6 +106,7 @@ namespace Resources
 				Debug.Log("Input Receiver: Exposed");
 				_turnManager.DoExpose(playerIx, clientInput.TileId);
 			}
+			_previousTurnOptions = clientInput.Action;
 		}
 	}
 }
