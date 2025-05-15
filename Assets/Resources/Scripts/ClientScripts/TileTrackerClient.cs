@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Fusion;
 
 namespace Resources
 {
@@ -94,7 +95,16 @@ namespace Resources
 			_currentGameState[tileId] = newLoc;
 			
 			// update UI
-			if (GameState.GameStateVersion > 0) _uiHandler.MoveTile(tileId, newLoc, ix);
+			if (GameState.GameStateVersion < 0) return; // GameStateVersion is neg when UI shouldn't be updated
+			// if this is an expose, use method for that
+			if (_fusionManager.CurrentTurnStage is TurnStage.Expose 
+			    && _fusionManager.DiscardTileId != tileId
+			    && !_fusionManager.IsMyExpose)
+			{
+				_uiHandler.ExposeTile(tileId, newLoc);
+			}
+			// otherwise just move the tile
+			else _uiHandler.MoveTile(tileId, newLoc, ix);
 		}
 
 		public void UpdateGameState()
@@ -138,7 +148,6 @@ namespace Resources
 				if (PrivateRackCountsFromServer[playerIx] == _privateRackCounts[playerIx]) continue;
 				// update the count in the privateRackCounts variable and on the UI
 				_privateRackCounts[playerIx] = PrivateRackCountsFromServer[playerIx];
-				_uiHandler.UpdatePrivateRackCount(privateRack, PrivateRackCountsFromServer[playerIx]);
 			}
 
 			UpdateButtons();

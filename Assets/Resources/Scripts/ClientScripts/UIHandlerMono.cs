@@ -79,14 +79,14 @@ namespace Resources
 			
 		}
 
-		public void MoveTile(Transform tileTransform, CLoc loc, int ix = -1)
+		public void MoveTile(Transform tileTransform, CLoc loc, int ix = -1, Transform showTileOnComplete = default)
 		{
 			Transform locTransform = LocToTransform[loc];
-			MoveTile(tileTransform, locTransform, ix);
+			MoveTile(tileTransform, locTransform, ix, showTileOnComplete);
 		}
 
 		// BUG: tile lerps to the a spot a little to the left and then snaps to the right spot
-		public void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1)
+		public void MoveTile(Transform tileTransform, Transform locTransform, int ix = -1, Transform showTileOnComplete = default)
 		{
 			Lerp lerp = new();
 			
@@ -104,6 +104,7 @@ namespace Resources
 			lerp.EndX = tileTransform.position.x;
 			lerp.EndY = tileTransform.position.y;
 			lerp.LocTransform = locTransform;
+			lerp.ShowTileOnComplete = showTileOnComplete;
 			lerp.Active = true;
 			
 			// if loc is the private local rack or charleston, set raycast target = True. Otherwise, false
@@ -115,18 +116,24 @@ namespace Resources
 			
 			_lerps.Add(lerp);
 		}
-
-		// update the number of tile backs showing on a private rack.
-		public void UpdatePrivateRackCount(CLoc privateRack, int count)
+		
+		public void ExposeTile(int tileId, CLoc displayRack)
 		{
-			// TODO: is this still needed?
-			/*
-			// first make sure we're getting another player's private rack
-			Debug.Assert(new [] {CLoc.OtherPrivateRack1, CLoc.OtherPrivateRack2, CLoc.OtherPrivateRack3}.Contains(privateRack));
-			Transform rackTransform = LocToTransform[privateRack];
-			// activate the tiles in the rack up to count, deactivate the rest
-			for (int i = 0; i < 14; i++) rackTransform.GetChild(i).gameObject.SetActive(count > i);
-			*/
+			// get the private rack that corresponds to the given display rack
+            CLoc privateRack = displayRack switch
+            {
+                CLoc.LocalDisplayRack => CLoc.LocalPrivateRack,
+                CLoc.OtherDisplayRack1 => CLoc.OtherPrivateRack1,
+                CLoc.OtherDisplayRack2 => CLoc.OtherPrivateRack2,
+                CLoc.OtherDisplayRack3 => CLoc.OtherPrivateRack3,
+                _ => throw new UnityException("UIHandlerMono.ExposeTile: displayRack isn't a valid display rack.")
+            };
+
+            // Move the tile back to the display rack
+            Transform privateRackTransform = LocToTransform[privateRack];
+            Transform tileBack = privateRackTransform.GetChild(privateRackTransform.childCount - 1);
+            Transform tile = allTileTransforms[tileId];
+            MoveTile(tileBack, displayRack, showTileOnComplete: tile);
 		}
 
 		public void AddSpaceToDisplayRack(CLoc displayRack)
@@ -174,7 +181,7 @@ namespace Resources
 			// Increase the T interpolator
 			lerp.T += Time.deltaTime * Speed;
 
-			// Check if we're done
+			// Check if we're done, quit out here if not
 			if (lerp.T < 1.0f ) return;
 
 			// Final position
@@ -184,13 +191,23 @@ namespace Resources
 			// If there is a location transform, rebuild its layout
 			if (lerp.LocTransform) LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lerp.LocTransform);
 			lerp.TileFace.position = lerp.TileFace.parent.position;
+			
+			// flip tile to show face if needed
+			if (lerp.ShowTileOnComplete == default) return;
+            Transform tile = lerp.ShowTileOnComplete;
+            Vector3 position = lerp.TileFace.position;
+            Destroy(lerp.TileFace.parent.gameObject);
+            tile.SetParent(lerp.LocTransform);
+            tile.position = position;
+            tile.GetChild(0).position = position;
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)lerp.LocTransform);
 		}
 	}
 	
 	public interface IUIHandler
 	{
 		public void MoveTile(int tileId, CLoc loc, int ix = -1);
-		public void UpdatePrivateRackCount(CLoc privateRack, int count);
+		public void ExposeTile(int tileId, CLoc displayRack);
 		public void SetActionButton(Action action, bool state);
 		public void AddSpaceToDisplayRack(CLoc loc);
 		public void EndGame(int winnerIx, List<int>[] racks);
@@ -206,6 +223,7 @@ namespace Resources
 		public float EndY;
 		public float T;
 		public Transform LocTransform;
+		public Transform ShowTileOnComplete;
 	}
 	
 	// TODO: when a player discards, other players should see the tile move from that rack
