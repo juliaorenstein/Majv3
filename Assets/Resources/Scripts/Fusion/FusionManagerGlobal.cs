@@ -17,10 +17,10 @@ namespace Resources
 		[Networked] public int MahJonggWinner { get; set; } = -1;
 		
 		// racks used at end of game when everybody exposes
-		[Networked, Capacity(4)] public NetworkArray<int> Rack0 { get; }
-		[Networked, Capacity(4)] public NetworkArray<int> Rack1 { get; }
-		[Networked, Capacity(4)] public NetworkArray<int> Rack2 { get; }
-		[Networked, Capacity(4)] public NetworkArray<int> Rack3 { get; }
+		[Networked, Capacity(14)] public NetworkArray<int> Rack0 { get; }
+		[Networked, Capacity(14)] public NetworkArray<int> Rack1 { get; }
+		[Networked, Capacity(14)] public NetworkArray<int> Rack2 { get; }
+		[Networked, Capacity(14)] public NetworkArray<int> Rack3 { get; }
 		private NetworkArray<int>[] _racks;
 		public List<int>[] Racks => _racks.Select(rack => rack.ToList()).ToArray();
 		
