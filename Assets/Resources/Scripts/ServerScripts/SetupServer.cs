@@ -7,6 +7,7 @@ namespace Resources
 	{
 		private TileTrackerServer _tileTracker;
 		private FusionManagerGlobal _fusionManager;
+		private bool _devRacks = true;
 		
 		public void SetUp(FusionManagerGlobal fusionManager, CallHandler callHandler)
 		{
@@ -23,12 +24,14 @@ namespace Resources
 				receiver.Initialize(turnManager, callHandler, charlestonHandler, fusionManager); // Pass the shared instance
 			}
 			
-			Shuffle();
+			if (_devRacks) DontShuffle();
+			else Shuffle();
 			Deal();
 		}
 
 		private void Shuffle()
 		{
+			if (!_devRacks) {}
 			// first shuffle the tiles
 			List<int> shuffleTileList = Enumerable.Range(0, 152).ToList();
 			System.Random rnd = new();
@@ -40,6 +43,12 @@ namespace Resources
 			
 			// put them on the wall
 			_tileTracker.PopulateWall(shuffleTileList);
+		}
+
+		private void DontShuffle()
+		{
+			List<int> tileList = Enumerable.Range(0, 152).ToList();
+			_tileTracker.PopulateWall(tileList);
 		}
 
 		private void Deal(int dealerId = 1)
