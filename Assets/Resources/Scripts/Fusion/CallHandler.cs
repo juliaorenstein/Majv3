@@ -62,6 +62,8 @@ namespace Resources
 			TurnManager.StartNextTurn();
 		}
 		
+		// BUG: if you confirm before 2 seconds are up, it's ignored.
+		
 		private void ProcessCalls()
 		{
 			// reset fields

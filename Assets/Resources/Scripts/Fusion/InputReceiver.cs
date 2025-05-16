@@ -40,7 +40,7 @@ namespace Resources
 				if (clientInput.Action.WasPressed(_previousTurnOptions, Action.CharlestonUpdate))
 				{
 					Debug.Log("Input Receiver: Charleston Update");
-					int[] tilesInBox = { clientInput.charleston1, clientInput.charleston2, clientInput.charleston3 };
+					int[] tilesInBox = { clientInput.Charleston1, clientInput.Charleston2, clientInput.Charleston3 };
 					_charlestonHandler.ClientUpdate(playerIx, tilesInBox);
 				}
 			}
@@ -78,9 +78,10 @@ namespace Resources
 			// JOKER SWAP
 			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.JokerSwap))
 			{
-				Debug.Log("JokerSwap not implemented");
+				Debug.Log("Input Receiver: Joker Swap");
+				_turnManager.DoJokerSwap(playerIx, clientInput.TileId, clientInput.JokerTileId);
 			}
-				
+
 			// CALL
 			else if (clientInput.Action.WasPressed(_previousTurnOptions, Action.Call))
 			{
@@ -106,6 +107,7 @@ namespace Resources
 				Debug.Log("Input Receiver: Exposed");
 				_turnManager.DoExpose(playerIx, clientInput.TileId);
 			}
+			
 			_previousTurnOptions = clientInput.Action;
 		}
 	}

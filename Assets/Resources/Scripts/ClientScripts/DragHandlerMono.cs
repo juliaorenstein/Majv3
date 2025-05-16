@@ -93,10 +93,10 @@ namespace Resources
 				DoExpose();
 			}
 
-			else if (IsJokerExchange(out CLoc displayRack, out int exchangeIx))
+			else if (IsJokerSwap(out int jokerTileId))
 			{
 				Debug.Log("Drag: Joker Exchange");
-				DoJokerExchange(displayRack, exchangeIx);
+				DoJokerSwap(jokerTileId);
 			}
 
 			else
@@ -128,18 +128,25 @@ namespace Resources
 			                   && candidateLocs.Contains(CLoc.LocalDisplayRack)
 			                   && Tile.AreSame(tileId, _fusionManager.DiscardTileId);
 
-			bool IsJokerExchange(out CLoc displayRack, out int exchangeIx)
+			bool IsJokerSwap(out int jokerTileId)
 			{ // TODO: need to test this
-				displayRack = default;
-				exchangeIx = -1;
+				jokerTileId = -1;
 				if (CurLoc is not CLoc.LocalPrivateRack) return false;
 				if (_fusionManager.CurrentTurnStage is TurnStage.Discard && _fusionManager.IsMyTurn
 				    || _fusionManager.CurrentTurnStage is TurnStage.Expose && _fusionManager.IsMyExpose)
 				{
-					displayRack = TileTracker.DisplayRacks.Intersect(candidateLocs).FirstOrDefault();
+					// get the rack that the tile was dropped on
+					CLoc displayRack = TileTracker.DisplayRacks.Intersect(candidateLocs).FirstOrDefault();
 					if (displayRack == default) return false;
+					
+					// get the contents, and find all the jokers on the rack (quit out false if none)
 					List<int> displayRackContents = TileTracker.GetLocContents(displayRack);
-					List<int> jokerLocs = displayRackContents.FindAll(Tile.IsJoker);
+					List<int> jokerLocs = new();
+					for (int i = 0; i < displayRackContents.Count; i++)
+					{
+						if (Tile.IsJoker(displayRackContents[i])) jokerLocs.Add(i);
+					}
+					
 					if (jokerLocs.Count == 0) return false;
 
 					// the rack has jokers on it. Now make sure that the tile being offered is valid
@@ -147,8 +154,12 @@ namespace Resources
 					// nobody exposes full joker segments, can't happen in the game
 					foreach (int jokerLoc in jokerLocs)
 					{
+						// check each joker in the rack to see if the tile next to it matches the one just dropped
 						int leftOfJoker = displayRackContents[jokerLoc - 1];
-						if (Tile.AreSame(tileId, leftOfJoker, false)) return true;
+						if (!Tile.AreSame(tileId, leftOfJoker, false)) continue;
+						// if one is found, set JokerTileId and return true
+						jokerTileId = displayRackContents[jokerLoc];
+						return true;
 					}
 				}
 				return false;
@@ -230,10 +241,9 @@ namespace Resources
 				TileTracker.MoveTile(tileId, CLoc.LocalDisplayRack);
 			}
 
-			void DoJokerExchange(CLoc displayRack, int exchangeIx)
+			void DoJokerSwap(int jokerTileId)
 			{
-				Debug.Log("Joker Exchange not implemeneted");
-				MoveBack();
+				InputSender.RequestJokerSwap(tileId, jokerTileId);
 			}
 
 			void DoCharlestonMove()

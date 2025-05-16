@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Resources
 {
+	// BUG: can only joker swap on your own rack right now
+	// BUG: on joker swap other clients see you have one less private rack tile
 	public class TurnManagerServer
 	{
 		private readonly TileTrackerServer _tileTracker;
@@ -127,6 +128,42 @@ namespace Resources
 			_fusionManager.CurrentTurnStage = TurnStage.Expose;
 			if (CheckForMahJongg(exposePlayerIx)) return;
 			DoExpose(exposePlayerIx, DiscardTileId);
+		}
+
+		public void DoJokerSwap(int playerIx, int tileId, int jokerTileId)
+		{
+			// validate player is allowed to do joker swap right now
+			if (!((_fusionManager.CurrentTurnStage is TurnStage.Discard && playerIx == _fusionManager.TurnPlayerIx)
+				    || (_fusionManager.CurrentTurnStage is TurnStage.Expose && playerIx == _fusionManager.ExposingPlayerIx)))
+			{
+				throw new UnityException("TurnManagerServer: Joker swap player is not valid");
+			}
+			
+			// find the rack the joker is on and its ix
+			SLoc displayRack = _tileTracker.GetTileLoc(jokerTileId);
+			List<int> displayRackContents = _tileTracker.GetLocContents(displayRack);
+			int jokerIx = displayRackContents.IndexOf(jokerTileId);
+			
+			// validate that the tile to the left of the joker matches tileId
+			if (!Tile.AreSame(displayRackContents[jokerIx - 1], tileId))
+			{
+				throw new UnityException("TurnManagerServer: Joker swap tile doesn't match group.");
+			}
+			
+			// get the private rack the tileId is on
+			SLoc privateRack = _tileTracker.GetPrivateRackForPlayer(playerIx);
+			
+			// validate that tileId is on that rack
+			if (_tileTracker.GetTileLoc(tileId) != privateRack)
+			{
+				throw new UnityException("TurnManagerServer: Joker swap tile isn't on playerIx's private rack.");
+			}
+			
+			// now do the swap
+			_tileTracker.MoveTile(tileId, displayRack, jokerIx);
+			_tileTracker.MoveTile(jokerTileId, privateRack);
+			
+			_tileTracker.SendGameStateToAll();
 		}
 		
 		private bool CheckForMahJongg(int playerIx)

@@ -5,13 +5,19 @@ namespace Resources
 {
 	public struct Input : INetworkInput
 	{
+		// general use
 		public NetworkButtons Action;
 		public int TileId;
+		
+		// charleston stuff
 		public int SpotIx;
+		public int Charleston1;
+		public int Charleston2;
+		public int Charleston3;
 		public bool StartGame;
-		public int charleston1;
-		public int charleston2;
-		public int charleston3;
+		
+		// joker exchange
+		public int JokerTileId;
 	}
 	
 	public enum Action
@@ -35,9 +41,9 @@ namespace Resources
 		public void RequestCharlestonUpdate(int[] tilesInCharlesotn)
 		{
 			Debug.Log($"InputSender: Requesting charleston update: {tilesInCharlesotn[0]}, {tilesInCharlesotn[1]}, {tilesInCharlesotn[2]}");
-			Input.charleston1 = tilesInCharlesotn[0];
-			Input.charleston2 = tilesInCharlesotn[1];
-			Input.charleston3 = tilesInCharlesotn[2];
+			Input.Charleston1 = tilesInCharlesotn[0];
+			Input.Charleston2 = tilesInCharlesotn[1];
+			Input.Charleston3 = tilesInCharlesotn[2];
 			Input.Action.SetDown(Action.CharlestonUpdate);
 		}
 		
@@ -89,6 +95,14 @@ namespace Resources
 			Debug.Log("InputSender: Requesting expose");
 			Input.Action.SetDown(Action.Expose);
 			Input.TileId = tileId;
+		}
+
+		public void RequestJokerSwap(int tileId, int jokerTileId)
+		{
+			Debug.Log($"InputSender: Requesting joker exchange: tileId: {tileId}; JokerTileId: {jokerTileId}");
+			Input.Action.SetDown(Action.JokerSwap);
+			Input.TileId = tileId;
+			Input.JokerTileId = jokerTileId;
 		}
 
 		public void ClearInput()
